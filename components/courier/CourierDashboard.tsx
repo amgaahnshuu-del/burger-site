@@ -12,7 +12,13 @@ import Card from "@/components/ui/Card";
 import Toast from "@/components/ui/Toast";
 import { claimCourierOrder, updateCourierLocation } from "@/features/courier/courier.service";
 import type { Order } from "@/features/order/order.types";
-import { formatCurrency, formatDateTime, getErrorMessage, getOrderStatusLabel } from "@/lib/helpers";
+import { useAppLanguage } from "@/hooks/useAppLanguage";
+import {
+  formatCurrency,
+  formatDateTime,
+  getErrorMessage,
+  getOrderStatusLabel,
+} from "@/lib/helpers";
 
 type CourierDashboardProps = {
   activeOrders: Order[];
@@ -34,11 +40,9 @@ function getContactPhone(order: Order) {
 }
 
 function getAvailableOrderAddressLabel(order: Order) {
-  return [
-    order.addressLabel,
-    order.addressDistrict,
-    order.addressKhoroo,
-  ].filter(Boolean).join(" / ") || order.address;
+  return [order.addressLabel, order.addressDistrict, order.addressKhoroo]
+    .filter(Boolean)
+    .join(" / ") || order.address;
 }
 
 function SummaryTile({
@@ -69,6 +73,7 @@ export default function CourierDashboard({
   completedToday,
   onRefresh,
 }: CourierDashboardProps) {
+  const { t } = useAppLanguage();
   const activeOrder = activeOrders[0] ?? null;
   const activeOrderId = activeOrder?.id ?? null;
   const [actionError, setActionError] = useState<string | null>(null);
@@ -238,21 +243,29 @@ export default function CourierDashboard({
       <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
         <div>
           <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-orange-300/70">
-            Courier dashboard
+            {t({ en: "Courier dashboard", mn: "Хүргэгчийн самбар" })}
           </p>
           <h1 className="mt-3 text-[2.6rem] font-black leading-[0.95] tracking-[-0.04em] text-white">
-            Live deliveries
+            {t({ en: "Live deliveries", mn: "Шууд хүргэлтүүд" })}
           </h1>
           <p className="mt-3 max-w-[44rem] text-sm leading-7 text-white/56">
-            Claim an order, contact the customer, and keep live GPS coordinates
-            flowing into the customer tracking screen.
+            {t({
+              en: "Claim an order, contact the customer, and keep live GPS coordinates flowing into the customer tracking screen.",
+              mn: "Захиалга хүлээн авч, хэрэглэгчтэй холбогдоод GPS байршлаа хэрэглэгчийн tracking дэлгэц рүү шууд илгээнэ үү.",
+            })}
           </p>
         </div>
 
         <div className="rounded-[1.3rem] border border-white/8 bg-white/[0.03] px-4 py-3 text-sm text-white/62">
           {activeOrder
-            ? `Active route: #${activeOrder.id.slice(0, 8)}`
-            : "No active route assigned yet."}
+            ? t({
+              en: `Active route: #${activeOrder.id.slice(0, 8)}`,
+              mn: `Идэвхтэй маршрут: #${activeOrder.id.slice(0, 8)}`,
+            })
+            : t({
+              en: "No active route assigned yet.",
+              mn: "Одоогоор идэвхтэй маршрут оноогдоогүй байна.",
+            })}
         </div>
       </div>
 
@@ -261,17 +274,17 @@ export default function CourierDashboard({
       <div className="grid gap-4 md:grid-cols-3">
         <SummaryTile
           icon={TruckIcon}
-          label="Active deliveries"
+          label={t({ en: "Active deliveries", mn: "Идэвхтэй хүргэлт" })}
           value={String(activeOrders.length)}
         />
         <SummaryTile
           icon={ClockIcon}
-          label="Waiting orders"
+          label={t({ en: "Waiting orders", mn: "Хүлээж буй захиалга" })}
           value={String(availableOrders.length)}
         />
         <SummaryTile
           icon={CheckCircleIcon}
-          label="Delivered today"
+          label={t({ en: "Delivered today", mn: "Өнөөдөр хүргэсэн" })}
           value={String(completedToday)}
         />
       </div>
@@ -281,14 +294,14 @@ export default function CourierDashboard({
           <div className="flex items-center justify-between gap-3">
             <div>
               <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-white/34">
-                Available orders
+                {t({ en: "Available orders", mn: "Боломжит захиалгууд" })}
               </p>
               <h2 className="mt-2 text-2xl font-bold text-white">
-                Ready for pickup
+                {t({ en: "Ready for pickup", mn: "Авахад бэлэн" })}
               </h2>
             </div>
             <span className="rounded-full bg-white/[0.05] px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-white/58">
-              {availableOrders.length} open
+              {availableOrders.length} {t({ en: "open", mn: "нээлттэй" })}
             </span>
           </div>
 
@@ -303,58 +316,68 @@ export default function CourierDashboard({
                     className="rounded-[1.35rem] border border-white/8 bg-white/[0.03] p-4"
                     key={order.id}
                   >
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <p className="text-sm font-semibold text-white">
-                        {order.user?.name ?? "Customer"}
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <p className="text-sm font-semibold text-white">
+                          {order.user?.name ?? t({ en: "Customer", mn: "Хэрэглэгч" })}
+                        </p>
+                        <p className="mt-1 text-xs text-white/42">
+                          #{order.id.slice(0, 8)} • {formatDateTime(order.createdAt)}
+                        </p>
+                      </div>
+                      <span className="rounded-full border border-white/10 bg-black/20 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-white/56">
+                        {getOrderStatusLabel(order.status)}
+                      </span>
+                    </div>
+
+                    <div className="mt-4 space-y-2 text-sm text-white/72">
+                      <p>
+                        <span className="text-white/44">
+                          {t({ en: "Customer contact:", mn: "Холбоо барих утас:" })}
+                        </span>{" "}
+                        {contactPhone
+                          ? contactPhone
+                          : t({ en: "Unlocks after claim", mn: "Хүлээн авсны дараа харагдана" })}
                       </p>
-                      <p className="mt-1 text-xs text-white/42">
-                        #{order.id.slice(0, 8)} • {formatDateTime(order.createdAt)}
+                      <p>
+                        <span className="text-white/44">
+                          {t({ en: "Delivery area:", mn: "Хүргэлтийн бүс:" })}
+                        </span>{" "}
+                        {areaLabel}
+                      </p>
+                      <p>
+                        <span className="text-white/44">
+                          {t({ en: "Items:", mn: "Бүтээгдэхүүн:" })}
+                        </span>{" "}
+                        {order.items.length} • {formatCurrency(order.totalPrice)}
                       </p>
                     </div>
-                    <span className="rounded-full border border-white/10 bg-black/20 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-white/56">
-                      {getOrderStatusLabel(order.status)}
-                    </span>
-                  </div>
 
-                  <div className="mt-4 space-y-2 text-sm text-white/72">
-                    <p>
-                      <span className="text-white/44">Customer contact:</span>{" "}
-                      {contactPhone ? contactPhone : "Unlocks after claim"}
-                    </p>
-                    <p>
-                      <span className="text-white/44">Delivery area:</span>{" "}
-                      {areaLabel}
-                    </p>
-                    <p>
-                      <span className="text-white/44">Items:</span>{" "}
-                      {order.items.length} • {formatCurrency(order.totalPrice)}
-                    </p>
-                  </div>
-
-                  <div className="mt-4 flex flex-wrap gap-3">
-                    <Button
-                      isLoading={isClaimingId === order.id}
-                      onClick={() => handleClaim(order.id)}
-                      size="sm"
-                    >
-                      Take delivery
-                    </Button>
-                    {contactPhone ? (
-                      <Button asChild size="sm" variant="secondary">
-                        <a href={`tel:${contactPhone}`}>
-                          Call
-                        </a>
+                    <div className="mt-4 flex flex-wrap gap-3">
+                      <Button
+                        isLoading={isClaimingId === order.id}
+                        onClick={() => handleClaim(order.id)}
+                        size="sm"
+                      >
+                        {t({ en: "Take delivery", mn: "Хүргэлт авах" })}
                       </Button>
-                    ) : null}
-                  </div>
+                      {contactPhone ? (
+                        <Button asChild size="sm" variant="secondary">
+                          <a href={`tel:${contactPhone}`}>
+                            {t({ en: "Call", mn: "Залгах" })}
+                          </a>
+                        </Button>
+                      ) : null}
+                    </div>
                   </article>
                 );
               })
             ) : (
               <div className="rounded-[1.35rem] border border-white/8 bg-white/[0.03] p-4 text-sm text-white/56">
-                No open orders are waiting right now. Keep this tab open and it
-                will refresh automatically.
+                {t({
+                  en: "No open orders are waiting right now. Keep this tab open and it will refresh automatically.",
+                  mn: "Одоогоор хүлээж буй нээлттэй захиалга алга. Энэ tab-аа нээлттэй байлгавал автоматаар шинэчлэгдэнэ.",
+                })}
               </div>
             )}
           </div>

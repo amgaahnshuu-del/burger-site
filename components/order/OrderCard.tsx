@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -6,6 +8,7 @@ import {
 } from "@heroicons/react/24/outline";
 
 import type { Order } from "@/features/order/order.types";
+import { useAppLanguage } from "@/hooks/useAppLanguage";
 import {
   cn,
   formatCurrency,
@@ -47,6 +50,7 @@ function getPaymentTone(status: string) {
 }
 
 export default function OrderCard({ order }: OrderCardProps) {
+  const { t } = useAppLanguage();
   const statusLabel = getOrderStatusLabel(order.status);
   const paymentLabel = getPaymentStatusLabel(order.payment?.status ?? "PENDING");
   const paymentTone = getPaymentTone(paymentLabel);
@@ -61,7 +65,9 @@ export default function OrderCard({ order }: OrderCardProps) {
     >
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_230px_150px_140px_150px] xl:items-start xl:gap-x-[22px]">
         <div className="min-w-0">
-          <p className="text-[11px] uppercase tracking-[0.18em] text-white/[0.42]">ORDER ID</p>
+          <p className="text-[11px] uppercase tracking-[0.18em] text-white/[0.42]">
+            {t({ en: "Order ID", mn: "Захиалгын ID" })}
+          </p>
           <p className="mt-2 break-all text-[15px] font-bold text-white">#{order.id}</p>
         </div>
 
@@ -83,7 +89,9 @@ export default function OrderCard({ order }: OrderCardProps) {
         </div>
 
         <div className="xl:text-right">
-          <p className="text-[11px] uppercase tracking-[0.18em] text-white/[0.42]">TOTAL</p>
+          <p className="text-[11px] uppercase tracking-[0.18em] text-white/[0.42]">
+            {t({ en: "Total", mn: "Нийт" })}
+          </p>
           <p className="mt-1 text-[31px] font-black leading-none text-white">
             {formatCurrency(order.totalPrice)}
           </p>
@@ -94,7 +102,7 @@ export default function OrderCard({ order }: OrderCardProps) {
             className="inline-flex h-[44px] items-center justify-center gap-2 rounded-[12px] border border-[#ff6a00] bg-transparent px-[22px] text-[14px] font-extrabold text-white transition hover:bg-orange-500/10 hover:text-orange-100"
             href={`/protected/order/track/${order.id}`}
           >
-            View Details
+            {t({ en: "View details", mn: "Дэлгэрэнгүй" })}
             <ArrowRightIcon className="h-4 w-4" />
           </Link>
         </div>
@@ -123,7 +131,7 @@ export default function OrderCard({ order }: OrderCardProps) {
               <p className="truncate text-[15px] font-bold text-white">{item.food.name}</p>
               {index === order.items.length - 1 ? (
                 <p className="mt-1 text-[13px] text-white/58">
-                  Payment: <span className={paymentTone}>{paymentLabel}</span>
+                  {t({ en: "Payment", mn: "Төлбөр" })}: <span className={paymentTone}>{paymentLabel}</span>
                 </p>
               ) : null}
             </div>

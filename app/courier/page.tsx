@@ -11,9 +11,11 @@ import Loader from "@/components/ui/Loader";
 import PageHeader from "@/components/ui/PageHeader";
 import Toast from "@/components/ui/Toast";
 import { useCourierOrders } from "@/features/courier/courier.hooks";
+import { useAppLanguage } from "@/hooks/useAppLanguage";
 import { useAuth } from "@/hooks/useAuth";
 
 export default function CourierPage() {
+  const { t } = useAppLanguage();
   const router = useRouter();
   const { isAuthenticated, isLoading: authLoading, user } = useAuth();
   const isCourier = user?.role === "COURIER";
@@ -45,18 +47,26 @@ export default function CourierPage() {
     return (
       <main className="space-y-6">
         <PageHeader
-          description="Sign in with a courier account to receive live delivery assignments."
-          eyebrow="Courier"
-          title="Courier Access"
+          description={t({
+            en: "Sign in with a courier account to receive live delivery assignments.",
+            mn: "Шууд хүргэлтийн даалгавар авахын тулд хүргэгчийн эрхтэй бүртгэлээр нэвтэрнэ үү.",
+          })}
+          eyebrow={t({ en: "Courier", mn: "Хүргэгч" })}
+          title={t({ en: "Courier access", mn: "Хүргэгчийн хандалт" })}
         />
         <EmptyState
-          action={
+          action={(
             <Button asChild>
-              <Link href="/auth/login?redirect=/courier">Go to login</Link>
+              <Link href="/auth/login?redirect=/courier">
+                {t({ en: "Go to login", mn: "Нэвтрэх" })}
+              </Link>
             </Button>
-          }
-          description="Courier deliveries, customer phone numbers, and live GPS updates are available after sign-in."
-          title="Courier login required."
+          )}
+          description={t({
+            en: "Courier deliveries, customer phone numbers, and live GPS updates are available after sign-in.",
+            mn: "Хүргэлтүүд, хэрэглэгчийн утас, GPS шинэчлэлтүүд нэвтэрсний дараа харагдана.",
+          })}
+          title={t({ en: "Courier login required.", mn: "Хүргэгчийн нэвтрэлт шаардлагатай." })}
         />
       </main>
     );
@@ -66,18 +76,24 @@ export default function CourierPage() {
     return (
       <main className="space-y-6">
         <PageHeader
-          description="This route is reserved for delivery staff accounts."
-          eyebrow="Courier"
-          title="Restricted courier area"
+          description={t({
+            en: "This route is reserved for delivery staff accounts.",
+            mn: "Энэ хэсэг зөвхөн хүргэлтийн ажилтны бүртгэлд зориулагдсан.",
+          })}
+          eyebrow={t({ en: "Courier", mn: "Хүргэгч" })}
+          title={t({ en: "Restricted courier area", mn: "Хязгаарлагдсан хүргэгчийн хэсэг" })}
         />
         <EmptyState
-          action={
+          action={(
             <Button asChild variant="secondary">
-              <Link href="/">Back to home</Link>
+              <Link href="/">{t({ en: "Back to home", mn: "Нүүр рүү буцах" })}</Link>
             </Button>
-          }
-          description="Ask an admin to provide a courier account if you need access to live deliveries."
-          title="You do not have courier access."
+          )}
+          description={t({
+            en: "Ask an admin to provide a courier account if you need access to live deliveries.",
+            mn: "Хэрэв танд live хүргэлтэд хандах шаардлагатай бол админаас courier эрх хүснэ үү.",
+          })}
+          title={t({ en: "You do not have courier access.", mn: "Танд хүргэгчийн эрх алга." })}
         />
       </main>
     );
@@ -87,9 +103,12 @@ export default function CourierPage() {
     return (
       <main className="space-y-6">
         <PageHeader
-          description="Courier orders will appear here as soon as the delivery feed is available."
-          eyebrow="Courier"
-          title="Delivery queue"
+          description={t({
+            en: "Courier orders will appear here as soon as the delivery feed is available.",
+            mn: "Хүргэлтийн урсгал бэлэн болмогц захиалгууд энд харагдана.",
+          })}
+          eyebrow={t({ en: "Courier", mn: "Хүргэгч" })}
+          title={t({ en: "Delivery queue", mn: "Хүргэлтийн дараалал" })}
         />
         {error ? <Toast message={error} tone="error" /> : null}
       </main>

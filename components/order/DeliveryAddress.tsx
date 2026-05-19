@@ -8,6 +8,7 @@ import {
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import type { DeliveryLocationInput } from "@/features/order/order.types";
+import { useAppLanguage } from "@/hooks/useAppLanguage";
 import {
   getGoogleMapsApiKey,
   loadGoogleMapsApi,
@@ -50,6 +51,7 @@ function composeManualLocation(options: {
   apartmentUnit: string;
   details: string;
   district: string;
+  fallbackLabel: string;
   khoroo: string;
   label: string;
 }) {
@@ -66,7 +68,7 @@ function composeManualLocation(options: {
     address,
     addressDistrict: options.district.trim() || null,
     addressKhoroo: options.khoroo.trim() || null,
-    addressLabel: options.label.trim() || "Manual address",
+    addressLabel: options.label.trim() || options.fallbackLabel,
     addressLatitude: null,
     addressLongitude: null,
     addressNotes: null,
@@ -74,8 +76,10 @@ function composeManualLocation(options: {
   } satisfies DeliveryLocationInput;
 }
 
-function formatCoordinateAddress(coords: Coordinates) {
-  return `Detected location (${coords.latitude.toFixed(5)}, ${coords.longitude.toFixed(5)})`;
+function formatCoordinateAddress(coords: Coordinates, isMn: boolean) {
+  return isMn
+    ? `Танигдсан байршил (${coords.latitude.toFixed(5)}, ${coords.longitude.toFixed(5)})`
+    : `Detected location (${coords.latitude.toFixed(5)}, ${coords.longitude.toFixed(5)})`;
 }
 
 function formatCoordinateLabel(coords: Coordinates) {
@@ -115,6 +119,8 @@ function findAddressComponent(
 
 function buildDetectedLocationValue(options: {
   coords: Coordinates;
+  fallbackLabel: string;
+  isMn: boolean;
   labelOverride?: string;
   result: BrowserGoogleGeocoderResult | null;
 }) {
@@ -122,12 +128,12 @@ function buildDetectedLocationValue(options: {
     options.labelOverride ||
     findAddressComponent(options.result, ["premise", "point_of_interest", "route"]) ||
     options.result?.formatted_address.split(",")[0]?.trim() ||
-    "Current location";
+    options.fallbackLabel;
 
   return {
     address:
       options.result?.formatted_address?.trim() ||
-      formatCoordinateAddress(options.coords),
+      formatCoordinateAddress(options.coords, options.isMn),
     addressDistrict: findAddressComponent(options.result, [
       "administrative_area_level_2",
       "administrative_area_level_1",
@@ -149,20 +155,32 @@ function buildDetectedLocationValue(options: {
   } satisfies DeliveryLocationInput;
 }
 
-function getLocationStatusMessage(status: LocationStatus) {
+function getLocationStatusMessage(status: LocationStatus, isMn: boolean) {
   switch (status) {
     case "blocked":
-      return "Location permission is blocked. Allow GPS access or switch to manual entry.";
+      return isMn
+        ? "Байршлын зөвшөөрөл хаалттай байна. GPS-ээ зөвшөөрөх эсвэл гараар оруулна уу."
+        : "Location permission is blocked. Allow GPS access or switch to manual entry.";
     case "error":
-      return "Unable to detect your current location right now. Try again or enter it manually.";
+      return isMn
+        ? "Одоогоор таны байршлыг тогтоож чадсангүй. Дахин оролдох эсвэл гараар оруулна уу."
+        : "Unable to detect your current location right now. Try again or enter it manually.";
     case "loading":
-      return "Checking your live GPS position...";
+      return isMn
+        ? "Таны GPS байршлыг шалгаж байна..."
+        : "Checking your live GPS position...";
     case "ready":
-      return "Your selected delivery point is ready.";
+      return isMn
+        ? "Таны сонгосон хүргэлтийн цэг бэлэн байна."
+        : "Your selected delivery point is ready.";
     case "unsupported":
-      return "This browser does not support location access. Use manual entry instead.";
+      return isMn
+        ? "Энэ browser байршил ашиглахыг дэмжихгүй байна. Гараар оруулна уу."
+        : "This browser does not support location access. Use manual entry instead.";
     default:
-      return "Use your current location, or type the address manually.";
+      return isMn
+        ? "Одоогийн байршлаа ашиглах эсвэл хаягаа гараар бичнэ үү."
+        : "Use your current location, or type the address manually.";
   }
 }
 
@@ -191,6 +209,7 @@ export default function DeliveryAddress({
   onChange,
   value,
 }: DeliveryAddressProps) {
+  const { isMn, t } = useAppLanguage();
   const initialMode = getInitialMode(value);
   const [mode, setMode] = useState<AddressMode>(initialMode);
   const [manualLabel, setManualLabel] = useState(value.addressLabel ?? "");
@@ -210,6 +229,14 @@ export default function DeliveryAddress({
   const geocoderRef = useRef<BrowserGoogleGeocoder | null>(null);
   const mapsApiRef = useRef<BrowserGoogleMapsApi | null>(null);
   const lastEmittedRef = useRef("");
+  const manualFallbackLabel = t({
+    en: "Manual address",
+    mn: "Гараар оруулсан хаяг",
+  });
+  const currentLocationLabel = t({
+    en: "Current location",
+    mn: "Одоогийн байршил",
+  });
 
   useEffect(() => {
     const serializedValue = serializeLocation(value);
@@ -294,7 +321,7 @@ export default function DeliveryAddress({
   );
 
   const applyDetectedLocation = useCallback(
-    async (coords: Coordinates, labelOverride = "Current location") => {
+    async (coords: Coordinates, labelOverride = currentLocationLabel) => {
       setLocationError(null);
       setSelectedCoords(coords);
       setSelectedLabel(labelOverride);
@@ -303,6 +330,8 @@ export default function DeliveryAddress({
         const result = getGoogleMapsApiKey() ? await reverseGeocode(coords) : null;
         const nextValue = buildDetectedLocationValue({
           coords,
+          fallbackLabel: currentLocationLabel,
+          isMn,
           labelOverride,
           result,
         });
@@ -314,6 +343,8 @@ export default function DeliveryAddress({
       } catch {
         const fallbackValue = buildDetectedLocationValue({
           coords,
+          fallbackLabel: currentLocationLabel,
+          isMn,
           labelOverride,
           result: null,
         });
@@ -322,12 +353,15 @@ export default function DeliveryAddress({
         setSelectedLabel(fallbackValue.addressLabel ?? labelOverride);
         setLocationStatus("ready");
         setLocationError(
-          "Your coordinates were saved, but the full address could not be looked up."
+          t({
+            en: "Your coordinates were saved, but the full address could not be looked up.",
+            mn: "Координат хадгалагдсан ч бүтэн хаягийг тодорхойлж чадсангүй.",
+          })
         );
         emitChange(fallbackValue);
       }
     },
-    [emitChange, reverseGeocode]
+    [currentLocationLabel, emitChange, isMn, reverseGeocode, t]
   );
 
   const syncManualAddress = useCallback(
@@ -342,13 +376,22 @@ export default function DeliveryAddress({
         apartmentUnit: nextValues?.apartmentUnit ?? apartmentUnit,
         details: nextValues?.details ?? manualDetails,
         district: nextValues?.district ?? district,
+        fallbackLabel: manualFallbackLabel,
         khoroo: nextValues?.khoroo ?? khoroo,
         label: nextValues?.label ?? manualLabel,
       });
 
       emitChange(nextValue);
     },
-    [apartmentUnit, district, emitChange, khoroo, manualDetails, manualLabel]
+    [
+      apartmentUnit,
+      district,
+      emitChange,
+      khoroo,
+      manualDetails,
+      manualFallbackLabel,
+      manualLabel,
+    ]
   );
 
   async function handleSelectCurrent() {
@@ -405,7 +448,7 @@ export default function DeliveryAddress({
   return (
     <div>
       <span className="mb-3 block text-xs font-semibold uppercase tracking-[0.24em] text-white/50">
-        Delivery address
+        {t({ en: "Delivery address", mn: "Хүргэлтийн хаяг" })}
       </span>
 
       <div className="grid gap-3 md:grid-cols-2">
@@ -431,9 +474,14 @@ export default function DeliveryAddress({
               <MapPinIcon className="h-5 w-5" />
             </span>
             <div>
-              <p className="font-medium text-white">Use current location</p>
+              <p className="font-medium text-white">
+                {t({ en: "Use current location", mn: "Одоогийн байршлыг ашиглах" })}
+              </p>
               <p className="mt-2 text-sm leading-6 text-white/50">
-                Detect your live GPS location and drop it straight into checkout.
+                {t({
+                  en: "Detect your live GPS location and drop it straight into checkout.",
+                  mn: "Таны GPS байршлыг илрүүлээд шууд захиалгад оруулна.",
+                })}
               </p>
             </div>
           </div>
@@ -461,9 +509,14 @@ export default function DeliveryAddress({
               <PencilSquareIcon className="h-5 w-5" />
             </span>
             <div>
-              <p className="font-medium text-white">Enter manually</p>
+              <p className="font-medium text-white">
+                {t({ en: "Enter manually", mn: "Гараар оруулах" })}
+              </p>
               <p className="mt-2 text-sm leading-6 text-white/50">
-                Type the district, apartment, and landmark details yourself.
+                {t({
+                  en: "Type the district, apartment, and landmark details yourself.",
+                  mn: "Дүүрэг, тоот, ойролцоох тэмдэглэлээ гараар оруулна уу.",
+                })}
               </p>
             </div>
           </div>
@@ -474,7 +527,7 @@ export default function DeliveryAddress({
         <div className="mt-4 space-y-4">
           <label className="block w-full rounded-[1.2rem] border border-white/10 bg-[#101011] p-4">
             <span className="block text-[11px] font-semibold uppercase tracking-[0.22em] text-white/42">
-              Place label
+              {t({ en: "Place label", mn: "Шошго" })}
             </span>
             <input
               className="mt-3 block w-full bg-transparent text-sm text-white outline-none placeholder:text-white/28"
@@ -482,7 +535,10 @@ export default function DeliveryAddress({
                 setManualLabel(event.target.value);
                 syncManualAddress({ label: event.target.value });
               }}
-              placeholder="Home, Office, Campus"
+              placeholder={t({
+                en: "Home, Office, Campus",
+                mn: "Гэр, Оффис, Сургууль",
+              })}
               value={manualLabel}
             />
           </label>
@@ -490,7 +546,7 @@ export default function DeliveryAddress({
           <div className="grid items-start gap-3 sm:grid-cols-3">
             <label className="block w-full rounded-[1.2rem] border border-white/10 bg-[#101011] p-4">
               <span className="block text-[11px] font-semibold uppercase tracking-[0.22em] text-white/42">
-                Duureg
+                {t({ en: "District", mn: "Дүүрэг" })}
               </span>
               <input
                 className="mt-3 block w-full bg-transparent text-sm text-white outline-none placeholder:text-white/28"
@@ -498,14 +554,17 @@ export default function DeliveryAddress({
                   setDistrict(event.target.value);
                   syncManualAddress({ district: event.target.value });
                 }}
-                placeholder="Sukhbaatar"
+                placeholder={t({
+                  en: "Sukhbaatar",
+                  mn: "Сүхбаатар",
+                })}
                 value={district}
               />
             </label>
 
             <label className="block w-full rounded-[1.2rem] border border-white/10 bg-[#101011] p-4">
               <span className="block text-[11px] font-semibold uppercase tracking-[0.22em] text-white/42">
-                Khoroo
+                {t({ en: "Khoroo", mn: "Хороо" })}
               </span>
               <input
                 className="mt-3 block w-full bg-transparent text-sm text-white outline-none placeholder:text-white/28"
@@ -520,7 +579,7 @@ export default function DeliveryAddress({
 
             <label className="block w-full rounded-[1.2rem] border border-white/10 bg-[#101011] p-4">
               <span className="block text-[11px] font-semibold uppercase tracking-[0.22em] text-white/42">
-                Unit
+                {t({ en: "Unit", mn: "Тоот" })}
               </span>
               <input
                 className="mt-3 block w-full bg-transparent text-sm text-white outline-none placeholder:text-white/28"
@@ -540,20 +599,28 @@ export default function DeliveryAddress({
               setManualDetails(event.target.value);
               syncManualAddress({ details: event.target.value });
             }}
-            placeholder="Building name, entrance, landmark, and rider notes"
+            placeholder={t({
+              en: "Building name, entrance, landmark, and rider notes",
+              mn: "Байрны нэр, орц, ойролцоох тэмдэглэл, хүргэгчид өгөх тайлбар",
+            })}
             value={manualDetails}
           />
           <p className="text-xs text-white/38">
-            Include floor, entrance, gate code, or any landmark that helps the courier.
+            {t({
+              en: "Include floor, entrance, gate code, or any landmark that helps the courier.",
+              mn: "Давхар, орц, код эсвэл хүргэгчид тус болох нэмэлт тайлбараа оруулна уу.",
+            })}
           </p>
         </div>
       ) : (
         <div className="mt-4 overflow-hidden rounded-[1.6rem] border border-white/10 bg-[#101011]">
           <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/8 px-4 py-3">
             <div>
-              <p className="text-sm font-semibold text-white">Current location</p>
+              <p className="text-sm font-semibold text-white">
+                {t({ en: "Current location", mn: "Одоогийн байршил" })}
+              </p>
               <p className="mt-1 text-xs text-white/46">
-                {getLocationStatusMessage(locationStatus)}
+                {getLocationStatusMessage(locationStatus, isMn)}
               </p>
             </div>
 
@@ -565,37 +632,49 @@ export default function DeliveryAddress({
               type="button"
             >
               <ArrowPathIcon className="h-4 w-4" />
-              Refresh location
+              {t({ en: "Refresh location", mn: "Байршил шинэчлэх" })}
             </button>
           </div>
 
           <div className="grid gap-4 p-4 md:grid-cols-2">
             <div className="rounded-[1.2rem] border border-white/10 bg-white/[0.03] p-4">
               <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-white/42">
-                Selected place
+                {t({ en: "Selected place", mn: "Сонгосон байршил" })}
               </p>
               <p className="mt-3 text-base font-semibold text-white">
-                {selectedLabel || "Current location"}
+                {selectedLabel || currentLocationLabel}
               </p>
               <p className="mt-2 text-sm leading-7 text-white/60">
-                {selectedAddress ||
-                  "Allow location access and we will use your live coordinates for delivery."}
+                {selectedAddress
+                  || t({
+                    en: "Allow location access and we will use your live coordinates for delivery.",
+                    mn: "Байршлын зөвшөөрөл өгвөл таны бодит координатыг хүргэлтэд ашиглана.",
+                  })}
               </p>
             </div>
 
             <div className="rounded-[1.2rem] border border-white/10 bg-white/[0.03] p-4">
               <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-white/42">
-                Coordinates
+                {t({ en: "Coordinates", mn: "Координат" })}
               </p>
               <p className="mt-3 text-sm text-white/72">
                 {selectedCoords
                   ? formatCoordinateLabel(selectedCoords)
-                  : "No live coordinates detected yet."}
+                  : t({
+                    en: "No live coordinates detected yet.",
+                    mn: "Одоогоор координат илрээгүй байна.",
+                  })}
               </p>
               <p className="mt-2 text-xs leading-6 text-white/42">
                 {selectedCoords
-                  ? "We use your live GPS position for delivery and save the coordinates with the order."
-                  : "Tap refresh location and allow browser location access to detect your current position."}
+                  ? t({
+                    en: "We use your live GPS position for delivery and save the coordinates with the order.",
+                    mn: "Хүргэлтэд таны GPS байршлыг ашиглаж, захиалгатай хамт координатыг хадгална.",
+                  })
+                  : t({
+                    en: "Tap refresh location and allow browser location access to detect your current position.",
+                    mn: "Байршлаа шинэчилж, browser-ийн байршлын зөвшөөрлийг өгөөд одоогийн цэгээ илрүүлнэ үү.",
+                  })}
               </p>
             </div>
 

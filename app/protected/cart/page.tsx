@@ -11,10 +11,12 @@ import Loader from "@/components/ui/Loader";
 import PageHeader from "@/components/ui/PageHeader";
 import Toast from "@/components/ui/Toast";
 import { useCart } from "@/features/cart/cart.hooks";
+import { useAppLanguage } from "@/hooks/useAppLanguage";
 import { useAuth } from "@/hooks/useAuth";
 import { formatCurrency } from "@/lib/helpers";
 
 export default function CartPage() {
+  const { t } = useAppLanguage();
   const { isAuthenticated, isLoading: authLoading } = useAuth();
   const { cart, error, isLoading, isMutating, removeItem, updateItem } = useCart();
 
@@ -30,18 +32,29 @@ export default function CartPage() {
     return (
       <main className="space-y-6">
         <PageHeader
-          description="Sign in to sync your basket and continue the checkout flow."
-          eyebrow="Cart"
-          title="Сагс"
+          description={t({
+            en: "Sign in to sync your basket and continue the checkout flow.",
+            mn: "Сагсаа синк хийгээд захиалгаа үргэлжлүүлэхийн тулд нэвтэрнэ үү.",
+          })}
+          eyebrow={t({ en: "Cart", mn: "Сагс" })}
+          title={t({ en: "Cart", mn: "Сагс" })}
         />
         <EmptyState
-          action={
+          action={(
             <Button asChild>
-              <Link href="/auth/login?redirect=/protected/cart">Go to login</Link>
+              <Link href="/auth/login?redirect=/protected/cart">
+                {t({ en: "Go to login", mn: "Нэвтрэх" })}
+              </Link>
             </Button>
-          }
-          description="The cart route is protected by your backend session endpoint."
-          title="Sign in to open your cart."
+          )}
+          description={t({
+            en: "The cart route is protected by your backend session endpoint.",
+            mn: "Энэ сагсны хэсэг нь таны нэвтрэлтийн session-ээр хамгаалагдсан.",
+          })}
+          title={t({
+            en: "Sign in to open your cart.",
+            mn: "Сагсаа нээхийн тулд нэвтэрнэ үү.",
+          })}
         />
       </main>
     );
@@ -49,11 +62,14 @@ export default function CartPage() {
 
   return (
     <main className="space-y-6">
-      <TopBar searchPlaceholder="Search your cart items" />
+      <TopBar searchPlaceholder={t({ en: "Search your cart items", mn: "Сагсан дахь хоолоо хайх" })} />
       <PageHeader
-        description="Review quantities, remove items, and move directly into the premium checkout flow."
-        eyebrow="Cart"
-        title="Сагс"
+        description={t({
+          en: "Review quantities, remove items, and move directly into the premium checkout flow.",
+          mn: "Тоо хэмжээгээ шалгаж, бүтээгдэхүүнээ хасаж, шууд захиалгын шат руу орно уу.",
+        })}
+        eyebrow={t({ en: "Cart", mn: "Сагс" })}
+        title={t({ en: "Cart", mn: "Сагс" })}
       />
 
       {error ? <Toast message={error} tone="error" /> : null}
@@ -72,7 +88,11 @@ export default function CartPage() {
                       {item.food.name}
                     </h2>
                     <p className="mt-4 max-w-xl text-sm leading-7 text-white/58">
-                      {item.food.description ?? "Freshly synced menu item from backend."}
+                      {item.food.description
+                        ?? t({
+                          en: "Freshly synced menu item from backend.",
+                          mn: "Backend-ээс шинээр синк хийгдсэн хоол.",
+                        })}
                     </p>
                   </div>
 
@@ -113,7 +133,7 @@ export default function CartPage() {
                       size="sm"
                       variant="ghost"
                     >
-                      Remove
+                      {t({ en: "Remove", mn: "Хасах" })}
                     </Button>
                   </div>
                 </div>
@@ -124,22 +144,30 @@ export default function CartPage() {
           <div className="space-y-4">
             <OrderSummary items={cart.items} subtotal={cart.subtotal} />
             <Button asChild fullWidth size="lg" variant="secondary">
-              <Link href="/menu">Add food</Link>
+              <Link href="/menu">{t({ en: "Add food", mn: "Хоол нэмэх" })}</Link>
             </Button>
             <Button asChild fullWidth size="lg">
-              <Link href="/protected/order">Continue to checkout</Link>
+              <Link href="/protected/order">
+                {t({ en: "Continue to checkout", mn: "Захиалга үргэлжлүүлэх" })}
+              </Link>
             </Button>
           </div>
         </section>
       ) : (
         <EmptyState
-          action={
+          action={(
             <Button asChild>
-              <Link href="/public/explore">Explore menu</Link>
+              <Link href="/public/explore">{t({ en: "Explore menu", mn: "Цэс үзэх" })}</Link>
             </Button>
-          }
-          description="Add products from the explore page and they will show up here instantly."
-          title="Your cart is empty."
+          )}
+          description={t({
+            en: "Add products from the explore page and they will show up here instantly.",
+            mn: "Explore хэсгээс хоол нэмэхэд энд шууд харагдана.",
+          })}
+          title={t({
+            en: "Your cart is empty.",
+            mn: "Таны сагс хоосон байна.",
+          })}
         />
       )}
     </main>

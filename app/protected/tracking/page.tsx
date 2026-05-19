@@ -1,25 +1,24 @@
 "use client";
 
-import Link from "next/link";
 import Image from "next/image";
-import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
+import { useMemo } from "react";
 import { MapPinIcon } from "@heroicons/react/24/outline";
 
+import Footer from "@/components/layout/Footer";
 import TrackingDashboard from "@/components/tracking/TrackingDashboard";
 import Button from "@/components/ui/Button";
-import Footer from "@/components/layout/Footer";
 import { useOrderDetail, useOrders } from "@/features/order/order.hooks";
+import { useAppLanguage } from "@/hooks/useAppLanguage";
+import { useHasHydrated } from "@/hooks/useHasHydrated";
 import { useAuth } from "@/hooks/useAuth";
 import { isOrderTrackable } from "@/lib/dashboard";
 
 export default function TrackingPage() {
+  const { t } = useAppLanguage();
   const { isAuthenticated, isLoading: isAuthLoading } = useAuth();
-  const [hasHydrated, setHasHydrated] = useState(false);
+  const hasHydrated = useHasHydrated();
   const trackingEnabled = hasHydrated && isAuthenticated;
-
-  useEffect(() => {
-    setHasHydrated(true);
-  }, []);
 
   const { error: ordersError, isLoading: ordersLoading, orders, refresh } = useOrders(
     trackingEnabled,
@@ -64,10 +63,13 @@ export default function TrackingPage() {
           </span>
           <div>
             <h1 className="text-[30px] font-[850] leading-none text-white">
-              Захиалгын байршил
+              {t({ en: "Order tracking", mn: "Захиалгын байршил" })}
             </h1>
             <p className="mt-2 text-[13px] text-white/65">
-              Идэвхтэй захиалгын хүргэлтийн явцыг эндээс хянаарай.
+              {t({
+                en: "Follow the delivery progress of your active order from here.",
+                mn: "Идэвхтэй захиалгынхаа хүргэлтийн явцыг эндээс хянаарай.",
+              })}
             </p>
           </div>
         </div>
@@ -75,7 +77,9 @@ export default function TrackingPage() {
 
       {ordersError || orderError ? (
         <section className="rounded-[24px] border border-red-500/20 bg-[linear-gradient(145deg,rgba(26,12,10,0.94),rgba(10,8,8,0.98))] px-[34px] py-[32px] text-white shadow-[0_24px_70px_rgba(0,0,0,.45)]">
-          <h2 className="text-[26px] font-[850] text-white">Unable to load tracking</h2>
+          <h2 className="text-[26px] font-[850] text-white">
+            {t({ en: "Unable to load tracking", mn: "Байршлыг ачаалж чадсангүй" })}
+          </h2>
           <p className="mt-3 max-w-[620px] text-[15px] leading-7 text-white/68">
             {orderError ?? ordersError}
           </p>
@@ -86,26 +90,29 @@ export default function TrackingPage() {
               size="sm"
               variant="outline"
             >
-              Try again
+              {t({ en: "Try again", mn: "Дахин оролдох" })}
             </Button>
           </div>
         </section>
       ) : showLoading ? (
         <section className="rounded-[24px] border border-[rgba(255,106,0,.24)] bg-[linear-gradient(145deg,rgba(18,18,20,.96),rgba(8,8,10,.98))] px-[34px] py-[32px] text-white/68 shadow-[0_24px_70px_rgba(0,0,0,.45)]">
-          Loading your latest order...
+          {t({ en: "Loading your latest order...", mn: "Сүүлийн захиалгыг ачаалж байна..." })}
         </section>
       ) : !activeOrder ? (
-        <section className="relative flex min-h-[260px] h-[380px] items-center justify-between overflow-hidden rounded-[24px] border border-[rgba(255,106,0,.24)] bg-[linear-gradient(145deg,rgba(18,18,20,.96),rgba(8,8,10,.98))] px-[34px] py-[34px] shadow-[0_24px_70px_rgba(0,0,0,.45)]">
+        <section className="relative flex h-[380px] min-h-[260px] items-center justify-between overflow-hidden rounded-[24px] border border-[rgba(255,106,0,.24)] bg-[linear-gradient(145deg,rgba(18,18,20,.96),rgba(8,8,10,.98))] px-[34px] py-[34px] shadow-[0_24px_70px_rgba(0,0,0,.45)]">
           <div className="pointer-events-none absolute right-[22px] top-1/2 h-[220px] w-[220px] -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(255,106,0,0.28),transparent_68%)] blur-[26px]" />
           <div className="relative z-10 max-w-[460px]">
             <span className="inline-flex h-[46px] w-[46px] items-center justify-center rounded-[14px] border border-orange-400/18 bg-[rgba(255,106,0,0.1)] text-orange-300 shadow-[0_16px_30px_rgba(255,106,0,0.14)]">
               <MapPinIcon className="h-6 w-6" />
             </span>
             <h2 className="mt-6 text-[28px] font-[850] leading-tight text-white">
-              No active order to track
+              {t({ en: "No active order to track", mn: "Хянах идэвхтэй захиалга алга" })}
             </h2>
             <p className="mt-[10px] max-w-[430px] text-[15px] leading-7 text-white/68">
-              Live location stops appearing after an order is delivered or cancelled.
+              {t({
+                en: "Live location stops appearing after an order is delivered or cancelled.",
+                mn: "Захиалга хүргэгдсэн эсвэл цуцлагдсаны дараа шууд байршил харагдахаа болино.",
+              })}
             </p>
             <Button
               asChild
@@ -113,14 +120,14 @@ export default function TrackingPage() {
               size="sm"
               variant="outline"
             >
-              <Link href="/menu">Order from the menu</Link>
+              <Link href="/menu">{t({ en: "Order from the menu", mn: "Цэснээс захиалах" })}</Link>
             </Button>
           </div>
 
           <div className="pointer-events-none absolute bottom-[-20px] right-[-34px] z-0 w-[480px] opacity-100">
             <Image
               alt="Burger astronaut delivery visual"
-              className="h-auto w-full object-contain mb-4"
+              className="mb-4 h-auto w-full object-contain"
               height={320}
               priority
               src="/track.png"
@@ -129,13 +136,11 @@ export default function TrackingPage() {
           </div>
         </section>
       ) : (
-        <TrackingDashboard
-          onRefresh={handleRefresh}
-          order={activeOrder}
-        />
+        <TrackingDashboard onRefresh={handleRefresh} order={activeOrder} />
       )}
-      <div className="mt-48"><Footer /></div>
-        
+      <div className="mt-48">
+        <Footer />
+      </div>
     </main>
   );
 }

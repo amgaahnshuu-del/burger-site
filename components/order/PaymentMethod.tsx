@@ -4,6 +4,7 @@ import { DocumentDuplicateIcon } from "@heroicons/react/24/outline";
 import { useState } from "react";
 
 import type { PaymentMethod as PaymentMethodValue } from "@/features/order/order.types";
+import { useAppLanguage } from "@/hooks/useAppLanguage";
 
 type PaymentMethodProps = {
   onChange: (value: PaymentMethodValue) => void;
@@ -14,7 +15,8 @@ export default function PaymentMethod({
   onChange,
   value,
 }: PaymentMethodProps) {
-  const [copyLabel, setCopyLabel] = useState("Copy");
+  const { t } = useAppLanguage();
+  const [copyLabel, setCopyLabel] = useState(t({ en: "Copy", mn: "Хуулах" }));
 
   void onChange;
   void value;
@@ -22,24 +24,24 @@ export default function PaymentMethod({
   async function handleCopy() {
     try {
       await navigator.clipboard.writeText("5005413360");
-      setCopyLabel("Copied");
+      setCopyLabel(t({ en: "Copied", mn: "Хуулагдлаа" }));
     } catch {
-      setCopyLabel("Failed");
+      setCopyLabel(t({ en: "Failed", mn: "Амжилтгүй" }));
     }
 
     window.setTimeout(() => {
-      setCopyLabel("Copy");
+      setCopyLabel(t({ en: "Copy", mn: "Хуулах" }));
     }, 1800);
   }
 
   return (
     <div>
       <p className="mb-3 text-xs font-semibold uppercase tracking-[0.24em] text-white/50">
-        Payment method
+        {t({ en: "Payment method", mn: "Төлбөрийн хэрэгсэл" })}
       </p>
       <div className="rounded-[1.3rem] border border-orange-400/18 bg-orange-500/10 px-4 py-4 text-left">
         <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-orange-200/78">
-          Bank account
+          {t({ en: "Bank account", mn: "Данс" })}
         </p>
         <div className="mt-3 flex flex-wrap items-center gap-3">
           <p className="text-2xl font-black tracking-[0.02em] text-white">
@@ -57,7 +59,10 @@ export default function PaymentMethod({
           </button>
         </div>
         <p className="mt-3 text-sm leading-6 text-white/72">
-          Гүйлгээний утган дээр утасны дугаараа бичнэ үү.
+          {t({
+            en: "Please enter your phone number in the transfer note.",
+            mn: "Гүйлгээний утган дээр утасны дугаараа бичнэ үү.",
+          })}
         </p>
       </div>
     </div>

@@ -2,18 +2,23 @@
 
 import Image from "next/image";
 import { HeartIcon } from "@heroicons/react/24/outline";
-import { HeartIcon as HeartSolidIcon, PlusIcon, StarIcon } from "@heroicons/react/24/solid";
+import {
+  HeartIcon as HeartSolidIcon,
+  PlusIcon,
+  StarIcon,
+} from "@heroicons/react/24/solid";
 import { useState } from "react";
 
 import { getFoodCategoryLabel } from "@/features/food/food-categories";
 import type { Food } from "@/features/food/food.types";
+import { useAppLanguage } from "@/hooks/useAppLanguage";
 import { getFoodRating, getFoodReviewCount } from "@/lib/dashboard";
 import { cn, formatCurrency } from "@/lib/helpers";
 
 type ProductCardProps = {
   food: Food;
-  onAddToCart?: (food: Food) => void;
   isFavorite?: boolean;
+  onAddToCart?: (food: Food) => void;
   onToggleFavorite?: (food: Food) => void;
 };
 
@@ -101,10 +106,11 @@ const CATEGORY_CARD_STYLES: Record<
 
 export default function ProductCard({
   food,
-  onAddToCart,
   isFavorite = false,
+  onAddToCart,
   onToggleFavorite,
 }: ProductCardProps) {
+  const { t } = useAppLanguage();
   const [imageSrc, setImageSrc] = useState(food.image);
   const rating = getFoodRating(food);
   const reviews = getFoodReviewCount(food);
@@ -115,7 +121,9 @@ export default function ProductCard({
     <article className="card-hover card-hover-neutral dashboard-card group relative flex h-full min-w-0 flex-col overflow-hidden rounded-[22px] p-[16px]">
       {onToggleFavorite ? (
         <button
-          aria-label={isFavorite ? "Remove favorite" : "Add favorite"}
+          aria-label={isFavorite
+            ? t({ en: "Remove favorite", mn: "Дуртайгаас хасах" })
+            : t({ en: "Add favorite", mn: "Дуртайд нэмэх" })}
           className={cn(
             "absolute right-4 top-4 z-10 inline-flex h-9 w-9 items-center justify-center rounded-full border",
             isFavorite
@@ -171,26 +179,35 @@ export default function ProductCard({
             {food.name}
           </h3>
           <span className="max-w-[7.5rem] shrink-0 truncate rounded-full bg-white/[0.04] px-2.5 py-1 text-[11px] font-medium text-white/60">
-            {reviews} reviews
+            {reviews} {t({ en: "reviews", mn: "үнэлгээ" })}
           </span>
         </div>
         <p className="mt-2 min-h-[56px] break-words text-sm leading-5 text-[var(--text-secondary)]">
-          {food.description ?? "Freshly prepared and made for quick cravings."}
+          {food.description
+            ?? t({
+              en: "Freshly prepared and made for quick cravings.",
+              mn: "Шинэхэн бэлтгэсэн, хурдан идэхэд яг таарсан сонголт.",
+            })}
         </p>
         <div className="mt-3 flex items-center gap-1 text-[13px] text-[var(--text-secondary)]">
           <StarIcon className="h-4 w-4 text-[var(--accent-3)]" />
           <span>{rating}</span>
           <span className="text-white/28">|</span>
-          <span>Top rated</span>
+          <span>{t({ en: "Top rated", mn: "Өндөр үнэлгээтэй" })}</span>
         </div>
 
         <div className="mt-auto flex items-end justify-between gap-3 pt-5">
           <div>
-            <p className="text-[11px] uppercase tracking-[0.14em] text-white/36">Price</p>
+            <p className="text-[11px] uppercase tracking-[0.14em] text-white/36">
+              {t({ en: "Price", mn: "Үнэ" })}
+            </p>
             <p className="mt-1 text-[18px] font-semibold text-white">{formatCurrency(food.price)}</p>
           </div>
           <button
-            aria-label={`Add ${food.name}`}
+            aria-label={t({
+              en: `Add ${food.name}`,
+              mn: `${food.name} нэмэх`,
+            })}
             className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-[12px] bg-orange-500 text-white hover:brightness-110"
             onClick={() => onAddToCart?.(food)}
             type="button"

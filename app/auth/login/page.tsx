@@ -6,9 +6,11 @@ import { useEffect, useState } from "react";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 import { useRouter, useSearchParams } from "next/navigation";
 
+import LanguageToggle from "@/components/ui/LanguageToggle";
 import Button from "@/components/ui/Button";
 import Toast from "@/components/ui/Toast";
 import { loginUser } from "@/features/auth/auth.service";
+import { useAppLanguage } from "@/hooks/useAppLanguage";
 import { useAuth } from "@/hooks/useAuth";
 import { AUTH_UPDATED_EVENT, CART_UPDATED_EVENT } from "@/lib/constants";
 import { dispatchAppEvent, getErrorMessage } from "@/lib/helpers";
@@ -79,6 +81,7 @@ function BrandMark() {
 }
 
 export default function LoginPage() {
+  const { t } = useAppLanguage();
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get("redirect");
@@ -109,9 +112,9 @@ export default function LoginPage() {
               ? "/admin?section=most-sell"
               : user.role === "MANAGER"
                 ? "/manager"
-              : user.role === "COURIER"
-                ? "/courier"
-                : "/"
+                : user.role === "COURIER"
+                  ? "/courier"
+                  : "/"
           )
       );
     }
@@ -132,9 +135,9 @@ export default function LoginPage() {
               ? "/admin?section=most-sell"
               : authenticatedUser.role === "MANAGER"
                 ? "/manager"
-              : authenticatedUser.role === "COURIER"
-                ? "/courier"
-                : "/"
+                : authenticatedUser.role === "COURIER"
+                  ? "/courier"
+                  : "/"
           )
       );
     } catch (submitError) {
@@ -161,7 +164,7 @@ export default function LoginPage() {
 
           <div className="relative z-10 max-w-[430px]">
             <p className="text-[18px] font-bold text-[#ff7a1a]">
-              Welcome back
+              {t({ en: "Welcome back", mn: "Эргэн тавтай морил" })}
             </p>
             <h1 className="mt-[18px] text-[54px] font-black leading-[0.92] tracking-[-0.08em] text-white sm:text-[66px] xl:text-[76px]">
               Midnight
@@ -170,22 +173,25 @@ export default function LoginPage() {
               </span>
             </h1>
             <p className="mt-[24px] max-w-[370px] text-[15px] leading-[1.7] text-white/74 xl:text-[16px]">
-              Continue your checkout, track live orders, and jump back into the premium food dashboard without losing state.
+              {t({
+                en: "Continue your checkout, track live orders, and jump back into the premium food dashboard without losing state.",
+                mn: "Захиалгаа үргэлжлүүлж, шууд байршилтай захиалгаа хянаад, premium food dashboard руу төлвөө алдалгүй буцна уу.",
+              })}
             </p>
           </div>
 
           <div className="relative z-10 flex items-end gap-3 pt-6">
             <BrandMark />
             <div className="pb-1 text-[14px] font-medium italic leading-[1.05] text-white/95">
-              <p>Premium Burgers.</p>
-              <p>Delivered Fast.</p>
+              <p>{t({ en: "Premium Burgers.", mn: "Premium бургер." })}</p>
+              <p>{t({ en: "Delivered Fast.", mn: "Хурдан хүргэнэ." })}</p>
             </div>
           </div>
 
           <div className="pointer-events-none absolute bottom-[8px] right-[-6px] z-[2] hidden w-[230px] sm:block md:w-[280px] xl:bottom-[8px] xl:right-[0px] xl:w-[520px]">
             <Image
               alt="Burger astronaut mascot"
-              className="h-auto w-full object-contain mb-10 ml-10"
+              className="mb-10 ml-10 h-auto w-full object-contain"
               height={460}
               priority
               src="/ai-agenthero.png"
@@ -196,15 +202,17 @@ export default function LoginPage() {
 
         <div className="relative flex flex-col justify-center rounded-[30px] border border-[rgba(255,255,255,.08)] bg-[linear-gradient(145deg,rgba(16,16,18,.98),rgba(8,8,10,.99))] px-7 py-8 shadow-[0_0_50px_rgba(0,0,0,.45)] sm:px-8 xl:px-[34px] xl:py-[34px]">
           <div className="w-full">
-            <p className="text-[18px] text-[#ff7a1a]">Sign in</p>
+            <p className="text-[18px] text-[#ff7a1a]">
+              {t({ en: "Sign in", mn: "Нэвтрэх" })}
+            </p>
             <h2 className="mt-3 max-w-[360px] text-[36px] font-[850] leading-[1.03] text-white sm:text-[42px] xl:mb-[28px] xl:text-[46px]">
-              Access your dashboard
+              {t({ en: "Access your dashboard", mn: "Самбартаа нэвтрэх" })}
             </h2>
 
             <div className="space-y-0">
               <label className="block">
                 <span className="mb-[12px] block text-[12px] font-medium uppercase tracking-[0.32em] text-white/55">
-                  Email
+                  {t({ en: "Email", mn: "Имэйл" })}
                 </span>
                 <input
                   autoComplete="email"
@@ -218,18 +226,21 @@ export default function LoginPage() {
 
               <label className="block">
                 <span className="mb-[12px] block text-[12px] font-medium uppercase tracking-[0.32em] text-white/55">
-                  Password
+                  {t({ en: "Password", mn: "Нууц үг" })}
                 </span>
                 <div className="relative mb-[28px]">
                   <input
                     autoComplete="current-password"
                     className="h-[56px] w-full rounded-[18px] border border-white/8 bg-white/[0.03] px-[20px] pr-14 text-[17px] text-white outline-none placeholder:text-white/32 focus:border-orange-400/70 focus:shadow-[0_0_0_3px_rgba(255,106,0,0.12)]"
                     onChange={(event) => setPassword(event.target.value)}
-                    placeholder="Enter your password"
+                    placeholder={t({ en: "Enter your password", mn: "Нууц үгээ оруулна уу" })}
                     type={showPassword ? "text" : "password"}
                     value={password}
                   />
                   <button
+                    aria-label={showPassword
+                      ? t({ en: "Hide password", mn: "Нууц үг нуух" })
+                      : t({ en: "Show password", mn: "Нууц үг харах" })}
                     className="absolute right-[18px] top-1/2 -translate-y-1/2 text-white/60 transition hover:text-white/85"
                     onClick={() => setShowPassword((current) => !current)}
                     type="button"
@@ -256,13 +267,13 @@ export default function LoginPage() {
                 onClick={handleSubmit}
                 size="lg"
               >
-                Sign in to account
+                {t({ en: "Sign in to account", mn: "Бүртгэлдээ нэвтрэх" })}
               </Button>
 
               <div className="my-[24px] flex items-center gap-4">
                 <span className="h-px flex-1 bg-white/8" />
                 <span className="text-[12px] uppercase tracking-[0.32em] text-white/34">
-                  OR CONTINUE WITH
+                  {t({ en: "OR CONTINUE WITH", mn: "ЭСВЭЛ ҮРГЭЛЖЛҮҮЛЭХ" })}
                 </span>
                 <span className="h-px flex-1 bg-white/8" />
               </div>
@@ -272,16 +283,16 @@ export default function LoginPage() {
                 href={googleAuthHref}
               >
                 <GoogleIcon />
-                <span>Continue with Google</span>
+                <span>{t({ en: "Continue with Google", mn: "Google-ээр үргэлжлүүлэх" })}</span>
               </a>
 
               <p className="mt-[24px] text-[14px] text-white/52">
-                No account yet?{" "}
+                {t({ en: "No account yet?", mn: "Бүртгэлгүй юу?" })}{" "}
                 <Link
                   className="text-[#ff7a1a] transition hover:underline"
                   href="/auth/register"
                 >
-                  Register here
+                  {t({ en: "Register here", mn: "Энд бүртгүүлэх" })}
                 </Link>
               </p>
             </div>
@@ -289,13 +300,9 @@ export default function LoginPage() {
         </div>
       </section>
 
-      <button
-        className="fixed bottom-4 left-4 inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/8 bg-[rgba(12,12,14,.82)] text-base font-semibold text-white shadow-[0_16px_34px_rgba(0,0,0,.38)] backdrop-blur"
-        type="button"
-      >
-        N
-        <span className="absolute right-[5px] top-[5px] h-2.5 w-2.5 rounded-full bg-orange-500 shadow-[0_0_10px_rgba(255,106,0,.48)]" />
-      </button>
+      <div className="fixed bottom-4 left-4">
+        <LanguageToggle />
+      </div>
     </main>
   );
 }

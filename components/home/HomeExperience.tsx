@@ -17,6 +17,7 @@ import {
 } from "@/features/food/food-categories";
 import { useFoodCatalog } from "@/features/food/food.hooks";
 import type { Food } from "@/features/food/food.types";
+import { useAppLanguage } from "@/hooks/useAppLanguage";
 import { ApiError } from "@/lib/fetcher";
 import { cn, formatCurrency } from "@/lib/helpers";
 
@@ -26,15 +27,19 @@ type CategoryTab = {
   label: string;
 };
 
-function getCategoryTabLabel(category: string) {
+function getCategoryTabLabel(category: string, isMn: boolean) {
+  if (!isMn) {
+    return category;
+  }
+
   const labels: Record<string, string> = {
-    All: "Бүх хоол",
+    All: "Бүгд",
     Burger: "Бургер",
-    Chicken: "Тахианы мах",
+    Chicken: "Тахиа",
     Combo: "Комбо",
     Dessert: "Амттан",
     Drink: "Ундаа",
-    Fries: "Хачир",
+    Fries: "Шарсан төмс",
     Pizza: "Пицца",
     Salad: "Салат",
     Sauce: "Соус",
@@ -48,6 +53,7 @@ export default function HomeExperience() {
   const router = useRouter();
   const { addItem } = useCart();
   const { error, foods, isLoading } = useFoodCatalog();
+  const { isMn, t } = useAppLanguage();
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [feedback, setFeedback] = useState<string | null>(null);
@@ -82,7 +88,7 @@ export default function HomeExperience() {
 
       categoryMap.set(category, {
         count: 1,
-        label: getCategoryTabLabel(category),
+        label: getCategoryTabLabel(category, isMn),
       });
     });
 
@@ -104,9 +110,7 @@ export default function HomeExperience() {
           return leftIndex - rightIndex;
         }
 
-        return (
-          right.count - left.count || left.label.localeCompare(right.label)
-        );
+        return right.count - left.count || left.label.localeCompare(right.label);
       })
       .map(([category, data]) => ({
         category,
@@ -118,11 +122,11 @@ export default function HomeExperience() {
       {
         category: "All",
         count: foods.length,
-        label: getCategoryTabLabel("All"),
+        label: getCategoryTabLabel("All", isMn),
       },
       ...orderedTabs,
     ];
-  }, [foods]);
+  }, [foods, isMn]);
 
   const activeCategory = categoryTabs.some(
     (category) => category.category === selectedCategory
@@ -131,8 +135,8 @@ export default function HomeExperience() {
     : (categoryTabs[0]?.category ?? "All");
 
   const activeCategoryLabel =
-    categoryTabs.find((category) => category.category === activeCategory)
-      ?.label ?? activeCategory;
+    categoryTabs.find((category) => category.category === activeCategory)?.label
+    ?? activeCategory;
 
   const filteredFoods = foods
     .filter((food) => matchesFoodCategory(food, activeCategory))
@@ -142,31 +146,45 @@ export default function HomeExperience() {
         return true;
       }
 
-      return `${food.name} ${food.description ?? ""}`
-        .toLowerCase()
-        .includes(query);
+      return `${food.name} ${food.description ?? ""}`.toLowerCase().includes(query);
     });
 
   const heroPick = filteredFoods[0] ?? foods[0] ?? null;
   const heroMetrics = [
     {
-      label: "хоол",
-      value: `${foods.length} төрөл`,
+      label: t({ en: "Menu", mn: "Цэс" }),
+      value: t({
+        en: `${foods.length} items`,
+        mn: `${foods.length} төрөл`,
+      }),
     },
     {
-      label: "категори",
-      value: `${Math.max(categoryTabs.length - 1, 0)} сонголт`,
+      label: t({ en: "Categories", mn: "Ангилал" }),
+      value: t({
+        en: `${Math.max(categoryTabs.length - 1, 0)} choices`,
+        mn: `${Math.max(categoryTabs.length - 1, 0)} сонголт`,
+      }),
     },
     {
-      label: "үнэ",
-      value: heroPick ? formatCurrency(heroPick.price) : "Fresh today",
+      label: t({ en: "Price", mn: "Үнэ" }),
+      value: heroPick
+        ? formatCurrency(heroPick.price)
+        : t({
+          en: "Fresh today",
+          mn: "Өнөөдрийн шинэ",
+        }),
     },
   ];
 
   async function handleAddToCart(food: Food) {
     try {
       await addItem(food.id, 1);
-      setFeedback(`${food.name} added to cart.`);
+      setFeedback(
+        t({
+          en: `${food.name} added to cart.`,
+          mn: `${food.name} сагсанд нэмэгдлээ.`,
+        })
+      );
     } catch (cartError) {
       if (cartError instanceof ApiError && cartError.status === 401) {
         router.push("/auth/login?redirect=/protected/cart");
@@ -176,7 +194,10 @@ export default function HomeExperience() {
       setFeedback(
         cartError instanceof Error
           ? cartError.message
-          : "Cart update failed."
+          : t({
+            en: "Cart update failed.",
+            mn: "Сагсны шинэчлэлт амжилтгүй боллоо.",
+          })
       );
     }
   }
@@ -212,21 +233,36 @@ export default function HomeExperience() {
               <div className="max-w-[500px]">
                 <span className="inline-flex w-fit items-center gap-2 rounded-full border border-orange-500/14 bg-[rgba(255,106,0,0.12)] px-4 py-2 text-sm font-medium text-[var(--accent-3)]">
                   <FireIcon className="h-4 w-4" />
-                  Халуун & Шинхэн
+                  {t({
+                    en: "Hot & Fresh",
+                    mn: "Халуун, шинэхэн",
+                  })}
                 </span>
 
                 <p className="mt-7 text-[11px] font-semibold uppercase tracking-[0.24em] text-white/44">
-                  Та сонго бид хүргэж өгье.
+                  {t({
+                    en: "You choose it. We deliver it.",
+                    mn: "Та сонгоно. Бид хүргэнэ.",
+                  })}
                 </p>
 
                 <h1 className="mt-4 text-[40px] font-extrabold leading-[1.02] text-white sm:text-[48px]">
-                  Өвөрмөц амт.
+                  {t({
+                    en: "Bold flavor.",
+                    mn: "Өвөрмөц амт.",
+                  })}
                   <br />
-                  Шинлэг мэдрэмж.
+                  {t({
+                    en: "Fresh cravings.",
+                    mn: "Шинэ мэдрэмж.",
+                  })}
                 </h1>
 
                 <p className="mt-4 max-w-[400px] text-base leading-7 text-[var(--text-secondary)]">
-                  Та өнөөдөр юу идэхээ шийдэж чадахгүй байна уу? Манай өргөн сонголттой цэсээс сонгооройв
+                  {t({
+                    en: "Not sure what to eat today? Browse our premium menu and let your next favorite meal find you.",
+                    mn: "Өнөөдөр юу идэхээ шийдээгүй байна уу? Манай premium цэсийг үзээд дараагийн дуртай хоолоо олоорой.",
+                  })}
                 </p>
 
                 <div className="mt-8 flex flex-wrap items-center gap-3">
@@ -234,14 +270,20 @@ export default function HomeExperience() {
                     className="inline-flex h-[54px] items-center gap-3 rounded-[14px] bg-orange-500 px-6 text-sm font-semibold text-white hover:brightness-110"
                     href="/public/explore"
                   >
-                    Меню үзэх
+                    {t({
+                      en: "Browse menu",
+                      mn: "Цэс үзэх",
+                    })}
                     <ArrowRightIcon className="h-4 w-4" />
                   </Link>
                   <Link
                     className="inline-flex h-[54px] items-center rounded-[14px] border border-white/10 bg-black/20 px-6 text-sm font-semibold text-white/76 backdrop-blur hover:border-orange-400/24 hover:text-white"
                     href="/public/ai-agent"
                   >
-                    AI туслах
+                    {t({
+                      en: "Ask AI assistant",
+                      mn: "AI туслах асуух",
+                    })}
                   </Link>
                 </div>
               </div>
@@ -271,10 +313,16 @@ export default function HomeExperience() {
           <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-white/34">
-                Цэс
+                {t({
+                  en: "Menu",
+                  mn: "Цэс",
+                })}
               </p>
               <h2 className="section-title mt-2 text-white">
-                Хоолны төрлүүд
+                {t({
+                  en: "Food categories",
+                  mn: "Хоолны төрлүүд",
+                })}
               </h2>
             </div>
           </div>
@@ -284,7 +332,10 @@ export default function HomeExperience() {
               className="rounded-[18px] border border-[var(--border-soft)] px-5 py-6 text-sm text-[var(--text-secondary)]"
               variant="default"
             >
-              Loading menu categories from the database...
+              {t({
+                en: "Loading menu categories from the database...",
+                mn: "Цэсний ангиллуудыг уншиж байна...",
+              })}
             </Card>
           ) : categoryTabs.length ? (
             <div className="dashboard-pill flex flex-wrap items-center gap-3 rounded-[22px] p-3">
@@ -323,7 +374,10 @@ export default function HomeExperience() {
               className="rounded-[18px] border border-[var(--border-soft)] px-5 py-6 text-sm text-[var(--text-secondary)]"
               variant="default"
             >
-              Таны бүхий л дуртай хоолны төрөл манай санд байхгүй байна. Уучлаарай!
+              {t({
+                en: "The menu is still empty. Please check back again soon.",
+                mn: "Цэс одоогоор хоосон байна. Дараа дахин шалгаарай.",
+              })}
             </Card>
           )}
         </section>
@@ -332,7 +386,10 @@ export default function HomeExperience() {
           <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-white/34">
-                Таны сонгосон
+                {t({
+                  en: "Your selection",
+                  mn: "Таны сонголт",
+                })}
               </p>
               <h2 className="section-title mt-2 text-white">
                 {activeCategoryLabel}
@@ -342,7 +399,10 @@ export default function HomeExperience() {
               className="text-sm font-medium text-[var(--accent)] hover:text-[var(--accent-3)]"
               href="/public/explore"
             >
-              Бүгдийг үзэх
+              {t({
+                en: "See everything",
+                mn: "Бүгдийг үзэх",
+              })}
             </Link>
           </div>
 
@@ -351,7 +411,10 @@ export default function HomeExperience() {
               className="rounded-[18px] border border-[var(--border-soft)] px-5 py-6 text-sm text-[var(--text-secondary)]"
               variant="default"
             >
-              Уншиж байна...
+              {t({
+                en: "Loading menu items...",
+                mn: "Хоолнуудыг ачаалж байна...",
+              })}
             </Card>
           ) : filteredFoods.length ? (
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4 2xl:grid-cols-5">
@@ -368,7 +431,10 @@ export default function HomeExperience() {
               className="rounded-[18px] border border-[var(--border-soft)] px-5 py-6 text-sm text-[var(--text-secondary)]"
               variant="default"
             >
-              Тохирох хоол олдсонгүй. Өөр төрлийг сонгоод үзээрэй!
+              {t({
+                en: "No matching food found. Try a different category or search term.",
+                mn: "Тохирох хоол олдсонгүй. Өөр ангилал эсвэл хайлтаар үзээрэй.",
+              })}
             </Card>
           )}
         </section>

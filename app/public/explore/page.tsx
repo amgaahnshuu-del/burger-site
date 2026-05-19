@@ -20,6 +20,7 @@ import {
 } from "@/features/food/food-categories";
 import { useFoodCatalog } from "@/features/food/food.hooks";
 import type { Food } from "@/features/food/food.types";
+import { useAppLanguage } from "@/hooks/useAppLanguage";
 import { ApiError } from "@/lib/fetcher";
 import { cn } from "@/lib/helpers";
 
@@ -49,7 +50,30 @@ function isComboFood(food: Food) {
   return haystack.includes("combo") || haystack.includes("set");
 }
 
+function getCategoryLabel(category: string, isMn: boolean) {
+  if (!isMn) {
+    return category;
+  }
+
+  const labels: Record<string, string> = {
+    All: "Бүгд",
+    Burger: "Бургер",
+    Chicken: "Тахиа",
+    Combo: "Комбо",
+    Dessert: "Амттан",
+    Drink: "Ундаа",
+    Fries: "Шарсан төмс",
+    Pizza: "Пицца",
+    Salad: "Салат",
+    Sauce: "Соус",
+    Sides: "Хачир",
+  };
+
+  return labels[category] ?? category;
+}
+
 export default function ExplorePage() {
+  const { isMn, t } = useAppLanguage();
   const router = useRouter();
   const { addItem } = useCart();
   const { isFavorite, toggleFavorite } = useFavoriteFoods();
@@ -63,7 +87,7 @@ export default function ExplorePage() {
     const tabs: Record<string, ExploreTab> = {
       All: {
         count: foods.length,
-        label: "All",
+        label: getCategoryLabel("All", isMn),
       },
     };
 
@@ -73,7 +97,7 @@ export default function ExplorePage() {
       if (!tabs[category]) {
         tabs[category] = {
           count: 0,
-          label: category,
+          label: getCategoryLabel(category, isMn),
         };
       }
 
@@ -81,7 +105,7 @@ export default function ExplorePage() {
     }
 
     return tabs;
-  }, [foods]);
+  }, [foods, isMn]);
 
   const orderedTabs = useMemo(() => {
     const categoryEntries = Object.entries(categoryTabs).filter(
@@ -132,14 +156,26 @@ export default function ExplorePage() {
   async function handleAddToCart(food: Food) {
     try {
       await addItem(food.id, 1);
-      setFeedback(`${food.name} added to cart.`);
+      setFeedback(
+        t({
+          en: `${food.name} added to cart.`,
+          mn: `${food.name} сагсанд нэмэгдлээ.`,
+        })
+      );
     } catch (cartError) {
       if (cartError instanceof ApiError && cartError.status === 401) {
         router.push("/auth/login?redirect=/menu");
         return;
       }
 
-      setFeedback(cartError instanceof Error ? cartError.message : "Cart update failed.");
+      setFeedback(
+        cartError instanceof Error
+          ? cartError.message
+          : t({
+            en: "Cart update failed.",
+            mn: "Сагсны шинэчлэлт амжилтгүй боллоо.",
+          })
+      );
     }
   }
 
@@ -148,8 +184,14 @@ export default function ExplorePage() {
     toggleFavorite(food.id);
     setFeedback(
       nextFavoriteState
-        ? `${food.name} added to favorites.`
-        : `${food.name} removed from favorites.`
+        ? t({
+          en: `${food.name} added to favorites.`,
+          mn: `${food.name} дуртайд нэмэгдлээ.`,
+        })
+        : t({
+          en: `${food.name} removed from favorites.`,
+          mn: `${food.name} дуртайгаас хасагдлаа.`,
+        })
     );
   }
 
@@ -157,7 +199,7 @@ export default function ExplorePage() {
     <main className="space-y-6 lg:space-y-7">
       <div className="fixed left-[calc(1rem+var(--safe-area-left))] right-[calc(1rem+var(--safe-area-right))] top-[calc(4.75rem+var(--safe-area-top))] z-40 space-y-3 overflow-hidden border-b border-white/[0.04] bg-[#050505] py-3 shadow-[0_18px_40px_rgba(0,0,0,0.42)] backdrop-blur-xl before:pointer-events-none before:absolute before:-top-4 before:inset-x-0 before:h-4 before:bg-[#050505] before:content-[''] lg:left-[268px] lg:right-7 lg:top-0 lg:space-y-4 lg:pb-3 lg:pt-5 lg:before:hidden sm:inset-x-6 sm:space-y-4">
         <div className="flex min-w-0 items-center justify-between gap-4">
-          <PageHeader title="Menu" />
+          <PageHeader title={t({ en: "Menu", mn: "Цэс" })} />
         </div>
         <TopBar onSearchChange={setSearch} searchValue={search} />
       </div>
@@ -171,7 +213,7 @@ export default function ExplorePage() {
         {orderedTabs.map(([tabKey, tab]) => (
           <button
             className={cn(
-              "inline-flex min-w-fit max-w-full items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium whitespace-nowrap transition",
+              "inline-flex min-w-fit max-w-full items-center gap-2 whitespace-nowrap rounded-full border px-4 py-2 text-sm font-medium transition",
               tabKey === activeCategory
                 ? "border-orange-300/35 bg-orange-500 text-white shadow-[0_12px_30px_rgba(255,106,0,0.2)]"
                 : "border-transparent bg-[#18181B] text-white/80 hover:border-white/8 hover:bg-white/[0.08] hover:text-white"
@@ -197,7 +239,9 @@ export default function ExplorePage() {
 
       <section className="pb-2">
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-          <h2 className="section-title text-white">Popular</h2>
+          <h2 className="section-title text-white">
+            {t({ en: "Popular", mn: "Онцлох" })}
+          </h2>
           <div className="flex items-center gap-3">
             <button
               className="inline-flex h-10 w-10 items-center justify-center rounded-[12px] border border-[var(--border-soft)] bg-[#141416] text-[var(--text-secondary)] hover:text-white"
@@ -206,14 +250,14 @@ export default function ExplorePage() {
               <FunnelIcon className="h-4 w-4" />
             </button>
             <Link className="shrink-0 text-sm text-[var(--orange)] hover:text-[var(--orange-3)]" href="/public/explore">
-              View all
+              {t({ en: "View all", mn: "Бүгдийг үзэх" })}
             </Link>
           </div>
         </div>
 
         {isLoading ? (
           <div className="rounded-[16px] border border-[var(--border-soft)] bg-[var(--bg-card)] px-5 py-6 text-sm text-[var(--text-secondary)]">
-            Loading menu items from the database...
+            {t({ en: "Loading menu items from the database...", mn: "Цэсийн хоолнуудыг ачаалж байна..." })}
           </div>
         ) : visibleFoods.length ? (
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -229,28 +273,33 @@ export default function ExplorePage() {
           </div>
         ) : (
           <EmptyState
-            action={
+            action={(
               <Button onClick={() => setActiveTab("All")} variant="secondary">
-                Reset Filters
+                {t({ en: "Reset filters", mn: "Шүүлтүүр цэвэрлэх" })}
               </Button>
-            }
-            description="Try a different category or search term."
-            title="No products found."
+            )}
+            description={t({
+              en: "Try a different category or search term.",
+              mn: "Өөр ангилал эсвэл хайлтын үгээр оролдоно уу.",
+            })}
+            title={t({ en: "No products found.", mn: "Бүтээгдэхүүн олдсонгүй." })}
           />
         )}
       </section>
 
       <section>
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-          <h2 className="section-title text-white">Combos</h2>
+          <h2 className="section-title text-white">
+            {t({ en: "Combos", mn: "Комбо" })}
+          </h2>
           <Link className="shrink-0 text-sm text-[var(--orange)] hover:text-[var(--orange-3)]" href="/public/explore">
-            View all
+            {t({ en: "View all", mn: "Бүгдийг үзэх" })}
           </Link>
         </div>
 
         {isLoading ? (
           <div className="rounded-[16px] border border-[var(--border-soft)] bg-[var(--bg-card)] px-5 py-6 text-sm text-[var(--text-secondary)]">
-            Loading combo items from the database...
+            {t({ en: "Loading combo items from the database...", mn: "Комбо хоолнуудыг ачаалж байна..." })}
           </div>
         ) : combos.length ? (
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
@@ -267,7 +316,7 @@ export default function ExplorePage() {
           </div>
         ) : (
           <div className="rounded-[16px] border border-[var(--border-soft)] bg-[var(--bg-card)] px-5 py-6 text-sm text-[var(--text-secondary)]">
-            No combo items were found in the current database.
+            {t({ en: "No combo items were found in the current database.", mn: "Одоогийн санд комбо хоол олдсонгүй." })}
           </div>
         )}
       </section>

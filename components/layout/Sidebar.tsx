@@ -21,6 +21,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import Button from "@/components/ui/Button";
+import LanguageToggle from "@/components/ui/LanguageToggle";
 import { useCourierOrders } from "@/features/courier/courier.hooks";
 import { useAuth } from "@/hooks/useAuth";
 import { useInterfaceSettings } from "@/hooks/useInterfaceSettings";
@@ -116,7 +117,7 @@ function getAdminNavItems(isMn: boolean): readonly NavItem[] {
     {
       href: "/admin/managers",
       icon: BriefcaseIcon,
-      label: "Managers",
+      label: isMn ? "Менежерүүд" : "Managers",
       match: ["/admin/managers"],
     },
     {
@@ -148,7 +149,7 @@ function getCourierNavItems(isMn: boolean): readonly NavItem[] {
     {
       href: "/courier/active-track",
       icon: MapIcon,
-      label: "Active Track",
+      label: isMn ? "Идэвхтэй хяналт" : "Active Track",
       match: ["/courier/active-track"],
       exactMatch: ["/courier/active-track"],
     },
@@ -173,21 +174,21 @@ function getManagerNavItems(isMn: boolean): readonly NavItem[] {
     {
       href: "/manager/preparing",
       icon: Squares2X2Icon,
-      label: "Preparing",
+      label: isMn ? "Бэлтгэж буй" : "Preparing",
       match: ["/manager/preparing"],
       exactMatch: ["/manager/preparing"],
     },
     {
       href: "/manager/ready",
       icon: TruckIcon,
-      label: "Ready",
+      label: isMn ? "Бэлэн" : "Ready",
       match: ["/manager/ready"],
       exactMatch: ["/manager/ready"],
     },
     {
       href: "/manager/delivering",
       icon: MapIcon,
-      label: "On Road",
+      label: isMn ? "Замд" : "On Road",
       match: ["/manager/delivering"],
       exactMatch: ["/manager/delivering"],
     },
@@ -248,7 +249,7 @@ export default function Sidebar({ mobileOpen, onClose }: SidebarProps) {
   const brandHref = isAdmin ? "/admin?section=most-sell" : isManager ? "/manager" : isCourier ? "/courier" : "/";
   const adminNavItems: readonly NavItem[] = [
     ...getAdminNavItems(isMn),
-    { href: "/admin/settings", icon: Cog6ToothIcon, label: "Settings", match: ["/admin/settings"] },
+    { href: "/admin/settings", icon: Cog6ToothIcon, label: isMn ? "Тохиргоо" : "Settings", match: ["/admin/settings"] },
   ];
   const navItems = isAdmin
     ? adminNavItems
@@ -266,7 +267,7 @@ export default function Sidebar({ mobileOpen, onClose }: SidebarProps) {
     ? `${activeCourierOrder.addressLabel.trim()}${activeCourierOrder.address ? ` • ${activeCourierOrder.address}` : ""}`
     : activeCourierOrder?.address ?? null;
   const activeCourierLocationLabel = activeCourierLocation?.replace("â€¢", " - ");
-  const activeCourierCustomerName = activeCourierOrder?.user?.name ?? "Customer";
+  const activeCourierCustomerName = activeCourierOrder?.user?.name ?? (isMn ? "Хэрэглэгч" : "Customer");
   void activeCourierLocationLabel;
   void activeCourierCustomerName;
 
@@ -495,7 +496,7 @@ export default function Sidebar({ mobileOpen, onClose }: SidebarProps) {
               <div className="mt-4 hidden rounded-[14px] border border-orange-400/14 bg-orange-500/[0.06] p-3">
                 <div className="flex items-center justify-between gap-3">
                   <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-orange-200/72">
-                    Active Track
+                    {isMn ? "Идэвхтэй хяналт" : "Active Track"}
                   </p>
                   {activeCourierOrder ? (
                     <span className="rounded-full border border-white/10 bg-black/20 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-white/62">
@@ -627,6 +628,9 @@ export default function Sidebar({ mobileOpen, onClose }: SidebarProps) {
                 : "mt-3 border-white/6"
           )}
         >
+          <div className="mb-3 flex justify-start">
+            <LanguageToggle compact />
+          </div>
           <div className={cn(
             "border p-3 shadow-[0_16px_40px_rgba(0,0,0,0.26)]",
             isOrdersDashboardPage

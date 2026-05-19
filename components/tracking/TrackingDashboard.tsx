@@ -17,6 +17,7 @@ import Button from "@/components/ui/Button";
 import Toast from "@/components/ui/Toast";
 import { cancelOrder } from "@/features/order/order.service";
 import type { Order } from "@/features/order/order.types";
+import { useAppLanguage } from "@/hooks/useAppLanguage";
 import { isOrderTrackable, resolveTrackingStep } from "@/lib/dashboard";
 import {
   cn,
@@ -34,42 +35,44 @@ type TrackingDashboardProps = {
   order: Order;
 };
 
-const TRACKING_STEPS = [
-  {
-    key: "placed",
-    label: "Захиалга баталгаажсан",
-    hint: "Order accepted",
-    icon: CheckCircleIcon,
-  },
-  {
-    key: "preparing",
-    label: "Бэлтгэж байна",
-    hint: "Kitchen in progress",
-    icon: ClockIcon,
-  },
-  {
-    key: "ontheway",
-    label: "Хүргэлтэнд гарсан",
-    hint: "Courier en route",
-    icon: TruckIcon,
-  },
-  {
-    key: "delivered",
-    label: "Хүргэгдсэн",
-    hint: "Final handoff",
-    icon: MapPinIcon,
-  },
-] as const;
-
 export default function TrackingDashboard({
   onRefresh,
   order,
 }: TrackingDashboardProps) {
+  const { t } = useAppLanguage();
+  const trackingSteps = [
+    {
+      hint: t({ en: "Order accepted", mn: "Захиалга баталгаажсан" }),
+      icon: CheckCircleIcon,
+      key: "placed",
+      label: t({ en: "Placed", mn: "Баталгаажсан" }),
+    },
+    {
+      hint: t({ en: "Kitchen in progress", mn: "Гал тогоонд бэлтгэж байна" }),
+      icon: ClockIcon,
+      key: "preparing",
+      label: t({ en: "Preparing", mn: "Бэлтгэж байна" }),
+    },
+    {
+      hint: t({ en: "Courier en route", mn: "Хүргэгч замдаа" }),
+      icon: TruckIcon,
+      key: "ontheway",
+      label: t({ en: "On the way", mn: "Хүргэлтэд гарсан" }),
+    },
+    {
+      hint: t({ en: "Final handoff", mn: "Эцсийн хүлээлгэн өгөлт" }),
+      icon: MapPinIcon,
+      key: "delivered",
+      label: t({ en: "Delivered", mn: "Хүргэгдсэн" }),
+    },
+  ] as const;
+
   const currentStep = resolveTrackingStep(order);
   const isDelivered =
     order.status === "DELIVERED" || order.tracking?.status === "DELIVERED";
   const courierPhone = order.courier?.phone ?? null;
-  const courierName = order.courier?.name ?? "Courier pending";
+  const courierName = order.courier?.name
+    ?? t({ en: "Courier pending", mn: "Хүргэгч хүлээгдэж байна" });
   const showLiveLocation = isOrderTrackable(order);
   const canCancelOrder = canCustomerCancelOrder(
     order.status,
@@ -78,13 +81,13 @@ export default function TrackingDashboard({
   const trackingStatus = showLiveLocation && order.tracking
     ? getTrackingStatusLabel(order.tracking.status)
     : isDelivered
-      ? "Delivered"
-      : "Tracking unavailable";
+      ? t({ en: "Delivered", mn: "Хүргэгдсэн" })
+      : t({ en: "Tracking unavailable", mn: "Хяналт боломжгүй" });
   const etaText = isDelivered
-    ? "Delivered"
+    ? t({ en: "Delivered", mn: "Хүргэгдсэн" })
     : order.tracking?.status === "ON_THE_WAY" || order.status === "DELIVERING"
-      ? "8-12 min"
-      : "18-25 min";
+      ? t({ en: "8-12 min", mn: "8-12 мин" })
+      : t({ en: "18-25 min", mn: "18-25 мин" });
 
   const [actionError, setActionError] = useState<string | null>(null);
   const [actionSuccess, setActionSuccess] = useState<string | null>(null);
@@ -100,7 +103,12 @@ export default function TrackingDashboard({
         order.id,
         "Cancelled by customer from the tracking dashboard."
       );
-      setActionSuccess("Your order has been cancelled.");
+      setActionSuccess(
+        t({
+          en: "Your order has been cancelled.",
+          mn: "Таны захиалга цуцлагдлаа.",
+        })
+      );
       onRefresh?.();
     } catch (error) {
       setActionError(getErrorMessage(error));
@@ -118,7 +126,7 @@ export default function TrackingDashboard({
         <div className="grid gap-4 xl:grid-cols-[minmax(0,1.25fr)_220px_190px]">
           <div className="rounded-[20px] border border-white/8 bg-white/[0.03] px-5 py-5">
             <p className="text-[11px] uppercase tracking-[0.24em] text-white/42">
-              Order ID
+              {t({ en: "Order ID", mn: "Захиалгын ID" })}
             </p>
             <p className="mt-2 text-[15px] font-bold text-white">
               #{order.id}
@@ -130,7 +138,7 @@ export default function TrackingDashboard({
               </span>
               <span className="inline-flex items-center gap-2">
                 <MapPinIcon className="h-[18px] w-[18px] text-white/42" />
-                {order.addressLabel ?? "Delivery address"}
+                {order.addressLabel ?? t({ en: "Delivery address", mn: "Хүргэлтийн хаяг" })}
               </span>
             </div>
             <p className="mt-4 text-sm leading-7 text-white/74">
@@ -140,7 +148,7 @@ export default function TrackingDashboard({
 
           <div className="rounded-[20px] border border-white/8 bg-white/[0.03] px-5 py-5">
             <p className="text-[11px] uppercase tracking-[0.24em] text-white/42">
-              Status
+              {t({ en: "Status", mn: "Төлөв" })}
             </p>
             <span className="mt-4 inline-flex h-[28px] items-center gap-2 rounded-full border border-orange-400/22 bg-orange-500/12 px-3 text-[12px] font-semibold text-orange-200">
               <span className="h-2 w-2 rounded-full bg-orange-400 shadow-[0_0_12px_rgba(255,106,0,0.55)]" />
@@ -151,30 +159,39 @@ export default function TrackingDashboard({
             </p>
             <p className="mt-2 text-[13px] text-white/46">
               {order.tracking?.updatedAt
-                ? `Updated ${formatDateTime(order.tracking.updatedAt)}`
-                : "Courier update pending"}
+                ? t({
+                  en: `Updated ${formatDateTime(order.tracking.updatedAt)}`,
+                  mn: `${formatDateTime(order.tracking.updatedAt)} шинэчлэгдсэн`,
+                })
+                : t({
+                  en: "Courier update pending",
+                  mn: "Хүргэгчийн шинэчлэлт хүлээгдэж байна",
+                })}
             </p>
           </div>
 
           <div className="rounded-[20px] border border-white/8 bg-white/[0.03] px-5 py-5">
             <p className="text-[11px] uppercase tracking-[0.24em] text-white/42">
-              Total
+              {t({ en: "Total", mn: "Нийт" })}
             </p>
             <p className="mt-3 text-[31px] font-black leading-none text-white">
               {formatCurrency(order.totalPrice)}
             </p>
             <p className="mt-4 text-[13px] text-white/62">
-              {order.items.length} item{order.items.length > 1 ? "s" : ""}
+              {t({
+                en: `${order.items.length} item${order.items.length > 1 ? "s" : ""}`,
+                mn: `${order.items.length} бүтээгдэхүүн`,
+              })}
             </p>
             <p className="mt-2 text-[13px] text-white/46">
-              ETA {etaText}
+              {t({ en: "ETA", mn: "Хүрэх хугацаа" })} {etaText}
             </p>
           </div>
         </div>
 
         <div className="mt-6 rounded-[22px] border border-white/8 bg-[linear-gradient(145deg,rgba(20,20,23,0.92),rgba(11,11,13,0.98))] px-5 py-6">
           <div className="grid gap-5 lg:grid-cols-4">
-            {TRACKING_STEPS.map((step, index) => {
+            {trackingSteps.map((step, index) => {
               const Icon = step.icon;
               const completed = isDelivered
                 ? index <= currentStep
@@ -183,7 +200,7 @@ export default function TrackingDashboard({
 
               return (
                 <div className="relative" key={step.key}>
-                  {index < TRACKING_STEPS.length - 1 ? (
+                  {index < trackingSteps.length - 1 ? (
                     <span className="absolute left-[calc(50%+28px)] right-[-18px] top-[18px] hidden h-[2px] bg-white/10 lg:block">
                       <span
                         className={cn(
@@ -246,12 +263,18 @@ export default function TrackingDashboard({
                   <MapPinIcon className="h-7 w-7" />
                 </span>
                 <h3 className="mt-5 text-[22px] font-bold text-white">
-                  Live location unavailable
+                  {t({ en: "Live location unavailable", mn: "Шууд байршил боломжгүй" })}
                 </h3>
                 <p className="mt-3 max-w-[460px] text-sm leading-7 text-white/66">
                   {isDelivered
-                    ? "This order has already been delivered, so courier location is no longer shown."
-                    : "Location tracking only appears while an order is actively being prepared or delivered."}
+                    ? t({
+                      en: "This order has already been delivered, so courier location is no longer shown.",
+                      mn: "Энэ захиалга хүргэгдсэн тул хүргэгчийн байршил цааш харагдахгүй.",
+                    })
+                    : t({
+                      en: "Location tracking only appears while an order is actively being prepared or delivered.",
+                      mn: "Байршлын хяналт нь захиалга бэлтгэгдэж эсвэл хүргэгдэж байх үед л харагдана.",
+                    })}
                 </p>
               </div>
             )}
@@ -260,7 +283,7 @@ export default function TrackingDashboard({
           <div className="space-y-4">
             <div className="rounded-[20px] border border-white/8 bg-white/[0.03] px-5 py-5">
               <p className="text-[11px] uppercase tracking-[0.24em] text-white/42">
-                Delivery partner
+                {t({ en: "Delivery partner", mn: "Хүргэлтийн ажилтан" })}
               </p>
               <div className="mt-4 flex items-center gap-3">
                 <div className="relative h-12 w-12 overflow-hidden rounded-full bg-[rgba(255,90,0,0.14)] ring-1 ring-orange-300/14">
@@ -275,7 +298,7 @@ export default function TrackingDashboard({
                 <div>
                   <p className="text-sm font-semibold text-white">{courierName}</p>
                   <p className="mt-1 text-[13px] text-white/48">
-                    {courierPhone ?? "Phone appears when a courier is assigned."}
+                    {courierPhone ?? t({ en: "Phone appears when a courier is assigned.", mn: "Хүргэгч оноогдсоны дараа утас харагдана." })}
                   </p>
                 </div>
               </div>
@@ -287,7 +310,7 @@ export default function TrackingDashboard({
                     href={`tel:${courierPhone}`}
                   >
                     <PhoneIcon className="h-4 w-4" />
-                    Call
+                    {t({ en: "Call", mn: "Залгах" })}
                   </a>
                 ) : (
                   <button
@@ -296,7 +319,7 @@ export default function TrackingDashboard({
                     type="button"
                   >
                     <PhoneIcon className="h-4 w-4" />
-                    Call
+                    {t({ en: "Call", mn: "Залгах" })}
                   </button>
                 )}
 
@@ -305,28 +328,28 @@ export default function TrackingDashboard({
                   type="button"
                 >
                   <ChatBubbleLeftEllipsisIcon className="h-4 w-4" />
-                  Support
+                  {t({ en: "Support", mn: "Тусламж" })}
                 </button>
               </div>
             </div>
 
             <div className="rounded-[20px] border border-white/8 bg-white/[0.03] px-5 py-5">
               <p className="text-[11px] uppercase tracking-[0.24em] text-white/42">
-                Delivery address
+                {t({ en: "Delivery address", mn: "Хүргэлтийн хаяг" })}
               </p>
               <p className="mt-4 text-sm leading-7 text-white/74">
                 {order.address}
               </p>
               {order.contactPhone ? (
                 <p className="mt-4 text-[13px] text-white/48">
-                  Contact {order.contactPhone}
+                  {t({ en: "Contact", mn: "Утас" })} {order.contactPhone}
                 </p>
               ) : null}
             </div>
 
             <div className="rounded-[20px] border border-white/8 bg-white/[0.03] px-5 py-5">
               <p className="text-[11px] uppercase tracking-[0.24em] text-white/42">
-                Quick actions
+                {t({ en: "Quick actions", mn: "Шуурхай үйлдэл" })}
               </p>
               <div className="mt-4 space-y-3">
                 <Button
@@ -335,7 +358,7 @@ export default function TrackingDashboard({
                   size="sm"
                   variant="outline"
                 >
-                  <Link href="/orders">All Orders</Link>
+                  <Link href="/orders">{t({ en: "All orders", mn: "Бүх захиалга" })}</Link>
                 </Button>
                 <Button
                   asChild
@@ -343,7 +366,7 @@ export default function TrackingDashboard({
                   size="sm"
                   variant="secondary"
                 >
-                  <Link href="/messages">Support</Link>
+                  <Link href="/messages">{t({ en: "Support", mn: "Тусламж" })}</Link>
                 </Button>
                 {canCancelOrder ? (
                   <Button
@@ -353,7 +376,7 @@ export default function TrackingDashboard({
                     size="sm"
                     variant="danger"
                   >
-                    Cancel order
+                    {t({ en: "Cancel order", mn: "Захиалга цуцлах" })}
                   </Button>
                 ) : null}
               </div>
@@ -366,14 +389,17 @@ export default function TrackingDashboard({
             <div className="flex items-center justify-between gap-3">
               <div>
                 <p className="text-[11px] uppercase tracking-[0.24em] text-white/42">
-                  Order items
+                  {t({ en: "Order items", mn: "Захиалсан бүтээгдэхүүн" })}
                 </p>
                 <h2 className="mt-3 text-[22px] font-bold text-white">
-                  Your active delivery
+                  {t({ en: "Your active delivery", mn: "Таны идэвхтэй хүргэлт" })}
                 </h2>
               </div>
               <p className="text-sm text-white/54">
-                {order.items.length} item{order.items.length > 1 ? "s" : ""}
+                {t({
+                  en: `${order.items.length} item${order.items.length > 1 ? "s" : ""}`,
+                  mn: `${order.items.length} бүтээгдэхүүн`,
+                })}
               </p>
             </div>
 
@@ -398,7 +424,7 @@ export default function TrackingDashboard({
                         {item.food.name}
                       </p>
                       <p className="mt-1 text-[13px] text-white/48">
-                        Qty {item.quantity}
+                        {t({ en: "Qty", mn: "Тоо" })} {item.quantity}
                       </p>
                     </div>
                   </div>
@@ -413,17 +439,26 @@ export default function TrackingDashboard({
           <div className="space-y-4">
             <div className="rounded-[20px] border border-white/8 bg-white/[0.03] px-5 py-5">
               <p className="text-[11px] uppercase tracking-[0.24em] text-white/42">
-                Payment
+                {t({ en: "Payment", mn: "Төлбөр" })}
               </p>
               <p className="mt-3 text-[17px] font-semibold text-white">
                 {getPaymentStatusLabel(order.payment?.status ?? "PENDING")}
               </p>
               <p className="mt-3 text-[13px] leading-6 text-white/56">
                 {order.payment?.providerReference
-                  ? `Reference ${order.payment.providerReference}`
+                  ? t({
+                    en: `Reference ${order.payment.providerReference}`,
+                    mn: `Лавлах ${order.payment.providerReference}`,
+                  })
                   : order.payment?.method
-                    ? `${order.payment.method} selected`
-                    : "Payment has not been attached yet."}
+                    ? t({
+                      en: `${order.payment.method} selected`,
+                      mn: `${order.payment.method} сонгосон`,
+                    })
+                    : t({
+                      en: "Payment has not been attached yet.",
+                      mn: "Төлбөрийн мэдээлэл хараахан холбогдоогүй байна.",
+                    })}
               </p>
               {order.payment?.failureReason ? (
                 <p className="mt-3 text-[13px] text-orange-300">
@@ -434,17 +469,26 @@ export default function TrackingDashboard({
 
             <div className="rounded-[20px] border border-white/8 bg-white/[0.03] px-5 py-5">
               <p className="text-[11px] uppercase tracking-[0.24em] text-white/42">
-                Live route status
+                {t({ en: "Live route status", mn: "Шууд маршрут" })}
               </p>
               <p className="mt-3 text-[17px] font-semibold text-white">
                 {trackingStatus}
               </p>
               <p className="mt-3 text-[13px] leading-6 text-white/56">
                 {!showLiveLocation
-                  ? "Live courier location is hidden after delivery is completed."
+                  ? t({
+                    en: "Live courier location is hidden after delivery is completed.",
+                    mn: "Захиалга хүргэгдсэний дараа хүргэгчийн байршил харагдахгүй.",
+                  })
                   : order.courier
-                    ? `Assigned to ${order.courier.name}`
-                    : "A courier will appear here once the order is claimed."}
+                    ? t({
+                      en: `Assigned to ${order.courier.name}`,
+                      mn: `${order.courier.name}-д оноогдсон`,
+                    })
+                    : t({
+                      en: "A courier will appear here once the order is claimed.",
+                      mn: "Захиалгыг хүлээн авмагц хүргэгч энд харагдана.",
+                    })}
               </p>
             </div>
           </div>
