@@ -541,7 +541,7 @@ PAYMENT_WEBHOOK_SECRET=your-random-secret-key-here
 ```bash
 NEXT_PUBLIC_APP_URL=https://yourdomain.com
 ENABLE_DEMO_ACCOUNTS=true  # Dev only
-NODE_VERSION=20
+NODE_VERSION=22
 ```
 
 ---
@@ -607,7 +607,7 @@ enum PaymentMethod {
    NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
    PAYMENT_WEBHOOK_SECRET
    NEXT_PUBLIC_APP_URL       (your deployed domain)
-   NODE_VERSION              (20)
+   NODE_VERSION              (22)
    ```
 
 4. **Deploy**
