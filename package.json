@@ -1,0 +1,40 @@
+{
+  "name": "my-app",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "prisma generate && next build",
+    "build:render": "npm run prisma:generate && npm run build",
+    "start": "next start",
+    "lint": "eslint",
+    "test": "node --test --experimental-strip-types tests",
+    "prisma:generate": "prisma generate",
+    "migrate:deploy": "prisma migrate deploy",
+    "db:seed:menu": "prisma db execute --file prisma/seed-menu.sql",
+    "db:ensure-menu": "node ./node_modules/jiti/lib/jiti-cli.mjs scripts/ensure-menu-foods.mts",
+    "db:seed:orders": "node ./node_modules/jiti/lib/jiti-cli.mjs scripts/seed-demo-orders.mts",
+    "db:seed:demo": "npm run db:ensure-menu && npm run db:seed:orders"
+  },
+  "dependencies": {
+    "@heroicons/react": "^2.2.0",
+    "@prisma/adapter-mariadb": "^7.8.0",
+    "@prisma/client": "^7.8.0",
+    "next": "16.2.4",
+    "nodemailer": "^8.0.7",
+    "react": "19.2.4",
+    "react-dom": "19.2.4"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.2.4",
+    "prisma": "^7.8.0",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+  
+}

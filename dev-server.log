@@ -1,0 +1,60 @@
+
+> my-app@0.1.0 dev
+> next dev --hostname 127.0.0.1 --port 3005
+
+▲ Next.js 16.2.4 (Turbopack)
+- Local:         http://127.0.0.1:3005
+- Network:       http://127.0.0.1:3005
+- Environments: .env
+✓ Ready in 610ms
+Creating turbopack project {
+  dir: 'C:\\Users\\Acer\\OneDrive\\Desktop\\final-fullstack-project\\my-app',
+  testMode: true
+}
+
+prisma:query SELECT `Food`.`id`, `Food`.`name`, `Food`.`description`, `Food`.`price`, `Food`.`image`, `Food`.`category`, `Food`.`restaurantId`, `Food`.`createdAt` FROM `Food` WHERE 1=1 ORDER BY `Food`.`createdAt` DESC
+prisma:query SELECT `Restaurant`.`id`, `Restaurant`.`name`, `Restaurant`.`description`, `Restaurant`.`image`, `Restaurant`.`address`, `Restaurant`.`createdAt` FROM `Restaurant` WHERE `Restaurant`.`id` IN (?)
+ GET /api/food 200 in 724ms (next.js: 302ms, application-code: 423ms)
+ GET /api/cart 401 in 66ms (next.js: 53ms, application-code: 12ms)
+prisma:query SELECT `Restaurant`.`id`, `Restaurant`.`name`, `Restaurant`.`description`, `Restaurant`.`image`, `Restaurant`.`address`, `Restaurant`.`createdAt` FROM `Restaurant` WHERE 1=1 ORDER BY `Restaurant`.`createdAt` DESC
+ GET /api/auth/me 401 in 73ms (next.js: 55ms, application-code: 18ms)
+prisma:query SELECT `Food`.`id`, `Food`.`name`, `Food`.`description`, `Food`.`price`, `Food`.`image`, `Food`.`category`, `Food`.`restaurantId`, `Food`.`createdAt` FROM `Food` WHERE `Food`.`restaurantId` IN (?) ORDER BY `Food`.`createdAt` DESC
+prisma:query SELECT `Restaurant`.`id`, `Restaurant`.`name`, `Restaurant`.`description`, `Restaurant`.`image`, `Restaurant`.`address`, `Restaurant`.`createdAt` FROM `Restaurant` WHERE `Restaurant`.`id` IN (?)
+ GET /api/restaurant 200 in 215ms (next.js: 108ms, application-code: 107ms)
+prisma:query SELECT `User`.`id`, `User`.`name`, `User`.`email`, `User`.`password`, `User`.`phone`, `User`.`createdAt` FROM `User` WHERE (`User`.`email` = ? AND 1=1) LIMIT ? OFFSET ?
+prisma:query INSERT INTO `User` (`id`,`name`,`email`,`password`,`createdAt`) VALUES (?,?,?,?,?)
+prisma:query INSERT INTO `Cart` (`id`,`userId`,`createdAt`) VALUES (?,?,?)
+prisma:query SELECT `User`.`id`, `User`.`email`, `User`.`name`, `User`.`phone`, `User`.`createdAt` FROM `User` WHERE `User`.`id` = ? LIMIT ? OFFSET ?
+prisma:query -- Implicit "COMMIT" query via underlying driver
+prisma:query INSERT INTO `Session` (`id`,`tokenHash`,`userId`,`expiresAt`,`createdAt`) VALUES (?,?,?,?,?)
+prisma:query SELECT `Session`.`id`, `Session`.`tokenHash`, `Session`.`userId`, `Session`.`expiresAt`, `Session`.`createdAt` FROM `Session` WHERE `Session`.`id` = ? LIMIT ? OFFSET ?
+prisma:query -- Implicit "COMMIT" query via underlying driver
+ POST /api/auth/register 201 in 276ms (next.js: 55ms, application-code: 221ms)
+prisma:query SELECT `User`.`id`, `User`.`name`, `User`.`email`, `User`.`password`, `User`.`phone`, `User`.`createdAt` FROM `User` WHERE (`User`.`email` = ? AND 1=1) LIMIT ? OFFSET ?
+prisma:query INSERT INTO `User` (`id`,`name`,`email`,`password`,`createdAt`) VALUES (?,?,?,?,?)
+prisma:query INSERT INTO `Cart` (`id`,`userId`,`createdAt`) VALUES (?,?,?)
+prisma:query SELECT `User`.`id`, `User`.`email`, `User`.`name`, `User`.`phone`, `User`.`createdAt` FROM `User` WHERE `User`.`id` = ? LIMIT ? OFFSET ?
+prisma:query -- Implicit "COMMIT" query via underlying driver
+prisma:query INSERT INTO `Session` (`id`,`tokenHash`,`userId`,`expiresAt`,`createdAt`) VALUES (?,?,?,?,?)
+prisma:query SELECT `Session`.`id`, `Session`.`tokenHash`, `Session`.`userId`, `Session`.`expiresAt`, `Session`.`createdAt` FROM `Session` WHERE `Session`.`id` = ? LIMIT ? OFFSET ?
+prisma:query -- Implicit "COMMIT" query via underlying driver
+ POST /api/auth/register 201 in 102ms (next.js: 4ms, application-code: 97ms)
+prisma:query SELECT `Session`.`id`, `Session`.`expiresAt`, `Session`.`userId` FROM `Session` WHERE (`Session`.`tokenHash` = ? AND 1=1) LIMIT ? OFFSET ?
+prisma:query SELECT `User`.`id`, `User`.`email`, `User`.`name`, `User`.`phone`, `User`.`createdAt` FROM `User` WHERE `User`.`id` = ?
+ GET /api/auth/me 200 in 27ms (next.js: 7ms, application-code: 19ms)
+prisma:query SELECT `Session`.`id`, `Session`.`expiresAt`, `Session`.`userId` FROM `Session` WHERE (`Session`.`tokenHash` = ? AND 1=1) LIMIT ? OFFSET ?
+prisma:query SELECT `User`.`id`, `User`.`email`, `User`.`name`, `User`.`phone`, `User`.`createdAt` FROM `User` WHERE `User`.`id` = ?
+prisma:query SELECT `Cart`.`id` FROM `Cart` WHERE (`Cart`.`userId` = ? AND 1=1)
+prisma:query SELECT `Cart`.`id`, `Cart`.`userId`, `Cart`.`createdAt` FROM `Cart` WHERE `Cart`.`id` = ? LIMIT ? OFFSET ?
+prisma:query SELECT `CartItem`.`id`, `CartItem`.`cartId`, `CartItem`.`foodId`, `CartItem`.`quantity` FROM `CartItem` WHERE `CartItem`.`cartId` = ? ORDER BY `CartItem`.`id` ASC
+prisma:query SELECT `Food`.`id`, `Food`.`name`, `Food`.`description`, `Food`.`price`, `Food`.`image`, `Food`.`category`, `Food`.`restaurantId`, `Food`.`createdAt` FROM `Food` WHERE `Food`.`id` IN (NULL)
+prisma:query SELECT `Restaurant`.`id`, `Restaurant`.`name`, `Restaurant`.`description`, `Restaurant`.`image`, `Restaurant`.`address`, `Restaurant`.`createdAt` FROM `Restaurant` WHERE `Restaurant`.`id` IN (NULL)
+prisma:query -- Implicit "COMMIT" query via underlying driver
+ GET /api/cart 200 in 51ms (next.js: 3ms, application-code: 48ms)
+prisma:query SELECT `Food`.`id`, `Food`.`name`, `Food`.`description`, `Food`.`price`, `Food`.`image`, `Food`.`category`, `Food`.`restaurantId`, `Food`.`createdAt` FROM `Food` WHERE 1=1 ORDER BY `Food`.`createdAt` DESC
+prisma:query SELECT `Restaurant`.`id`, `Restaurant`.`name`, `Restaurant`.`description`, `Restaurant`.`image`, `Restaurant`.`address`, `Restaurant`.`createdAt` FROM `Restaurant` WHERE `Restaurant`.`id` IN (?)
+ GET /api/food 200 in 123ms (next.js: 86ms, application-code: 38ms)
+prisma:query SELECT `Food`.`id`, `Food`.`name`, `Food`.`description`, `Food`.`price`, `Food`.`image`, `Food`.`category`, `Food`.`restaurantId`, `Food`.`createdAt` FROM `Food` WHERE 1=1 ORDER BY `Food`.`createdAt` DESC
+prisma:query SELECT `Restaurant`.`id`, `Restaurant`.`name`, `Restaurant`.`description`, `Restaurant`.`image`, `Restaurant`.`address`, `Restaurant`.`createdAt` FROM `Restaurant` WHERE `Restaurant`.`id` IN (?)
+ GET /api/food 200 in 30ms (next.js: 8ms, application-code: 22ms)
+[?25h

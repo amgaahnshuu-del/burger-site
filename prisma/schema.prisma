@@ -1,0 +1,318 @@
+generator client {
+  provider = "prisma-client"
+  output = "../generated/prisma"
+  engineType = "binary"
+  runtime = "nodejs"
+}
+
+datasource db {
+  provider = "mysql" 
+}
+
+//////////////////////
+// 👤 USER
+//////////////////////
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  phone     String?
+  role      UserRole @default(CUSTOMER)
+  createdAt DateTime @default(now())
+
+  orders      Order[]       @relation("CustomerOrders")
+  deliveries  Order[]       @relation("CourierOrders")
+  cart        Cart?
+  feedbacks   Feedback[]
+  sessions    Session[]
+  settings    UserSettings?
+}
+
+//////////////////////
+// RESTAURANT
+//////////////////////
+
+model Restaurant {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  image       String?
+  address     String?
+  createdAt   DateTime @default(now())
+
+  foods       Food[]
+}
+
+//////////////////////
+// 🍔 FOOD
+//////////////////////
+
+model Food {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  price       Int
+  image       String   @db.LongText
+  category    String
+  isAvailable Boolean  @default(true)
+  restaurantId String?
+  createdAt   DateTime @default(now())
+
+  restaurant  Restaurant? @relation(fields: [restaurantId], references: [id], onDelete: SetNull)
+  orderItems  OrderItem[]
+  cartItems   CartItem[]
+
+  @@index([isAvailable, createdAt])
+  @@index([restaurantId, isAvailable, createdAt])
+}
+
+//////////////////////
+// 🛒 CART
+//////////////////////
+
+model Cart {
+  id        String     @id @default(uuid())
+  userId    String     @unique
+  user      User       @relation(fields: [userId], references: [id])
+  items     CartItem[]
+  createdAt DateTime   @default(now())
+}
+
+model CartItem {
+  id       String @id @default(uuid())
+  cartId   String
+  foodId   String
+  quantity Int
+
+  cart Cart @relation(fields: [cartId], references: [id])
+  food Food @relation(fields: [foodId], references: [id])
+
+  @@unique([cartId, foodId])
+}
+
+//////////////////////
+// 📦 ORDER
+//////////////////////
+
+model Order {
+  id          String   @id @default(uuid())
+  userId      String
+  courierId   String?
+  status      OrderStatus @default(PENDING)
+  totalPrice  Int
+  address     String
+  addressLabel String?
+  addressDistrict String?
+  addressKhoroo String?
+  addressUnit String?
+  addressLatitude Float?
+  addressLongitude Float?
+  addressNotes String? @db.Text
+  contactPhone String?
+  acceptedAt  DateTime?
+  readyForCourierAt DateTime?
+  deliveredAt DateTime?
+  cancelledAt DateTime?
+  cancelReason String? @db.Text
+  createdAt   DateTime @default(now())
+
+  user        User     @relation("CustomerOrders", fields: [userId], references: [id])
+  courier     User?    @relation("CourierOrders", fields: [courierId], references: [id], onDelete: SetNull)
+  items       OrderItem[]
+  payment     Payment?
+  tracking    Tracking?
+  deliveryVerification DeliveryVerification?
+
+  @@index([courierId])
+  @@index([userId, createdAt])
+}
+
+model OrderItem {
+  id           String @id @default(uuid())
+  orderId      String
+  foodId       String?
+  foodName     String
+  foodImage    String @db.LongText
+  foodCategory String
+  quantity     Int
+  price        Int
+
+  order Order @relation(fields: [orderId], references: [id])
+  food  Food? @relation(fields: [foodId], references: [id], onDelete: SetNull)
+
+  @@index([foodId])
+}
+
+//////////////////////
+// 💳 PAYMENT
+//////////////////////
+
+model Payment {
+  id        String   @id @default(uuid())
+  orderId   String   @unique
+  method    PaymentMethod
+  status    PaymentStatus @default(PENDING)
+  providerReference String?
+  providerPayload Json?
+  paidAt    DateTime?
+  failedAt  DateTime?
+  refundedAt DateTime?
+  failureReason String?
+  createdAt DateTime @default(now())
+
+  order Order @relation(fields: [orderId], references: [id])
+}
+
+//////////////////////
+// 🚚 TRACKING
+//////////////////////
+
+model Tracking {
+  id        String   @id @default(uuid())
+  orderId   String   @unique
+  status    TrackingStatus
+  latitude  Float?
+  longitude Float?
+  updatedAt DateTime @updatedAt
+
+  order Order @relation(fields: [orderId], references: [id])
+}
+
+model DeliveryVerification {
+  id             String   @id @default(uuid())
+  orderId         String   @unique
+  codeHash        String
+  channel         String
+  recipientPhone  String?
+  recipientEmail  String?
+  attempts        Int      @default(0)
+  lastSentAt      DateTime
+  expiresAt       DateTime
+  verifiedAt      DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
+
+model UserSettings {
+  id                     String         @id @default(uuid())
+  userId                 String         @unique
+  notificationsEnabled   Boolean        @default(true)
+  preferredPaymentMethod PaymentMethod  @default(QPAY)
+  createdAt              DateTime       @default(now())
+  updatedAt              DateTime       @updatedAt
+
+  user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  savedAddresses SavedAddress[]
+}
+
+model SavedAddress {
+  id             String   @id @default(uuid())
+  userSettingsId String
+  label          String
+  details        String   @db.Text
+  isDefault      Boolean  @default(false)
+  district       String?
+  khoroo         String?
+  apartmentUnit  String?
+  latitude       Float?
+  longitude      Float?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  userSettings UserSettings @relation(fields: [userSettingsId], references: [id], onDelete: Cascade)
+
+  @@index([userSettingsId])
+}
+
+//////////////////////
+// SESSION
+//////////////////////
+
+model Session {
+  id        String   @id @default(uuid())
+  tokenHash String   @unique
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model PendingRegistration {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  name         String
+  passwordHash String
+  codeHash     String
+  attempts     Int      @default(0)
+  expiresAt    DateTime
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Feedback {
+  id         String         @id @default(uuid())
+  userId     String?
+  name       String
+  email      String
+  type       FeedbackType
+  status     FeedbackStatus @default(OPEN)
+  message    String         @db.Text
+  createdAt  DateTime       @default(now())
+  resolvedAt DateTime?
+
+  user       User?          @relation(fields: [userId], references: [id], onDelete: SetNull)
+}
+
+//////////////////////
+// 🔢 ENUMS
+//////////////////////
+
+enum UserRole {
+  CUSTOMER
+  ADMIN
+  MANAGER
+  COURIER
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  COOKING
+  DELIVERING
+  DELIVERED
+  CANCELLED
+}
+
+enum PaymentMethod {
+  CASH
+  CARD
+  QPAY
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+enum TrackingStatus {
+  PREPARING
+  ON_THE_WAY
+  DELIVERED
+}
+
+enum FeedbackType {
+  COMPLAINT
+  SUGGESTION
+}
+
+enum FeedbackStatus {
+  OPEN
+  RESOLVED
+}

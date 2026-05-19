@@ -1,0 +1,85 @@
+<svg width="1600" height="900" viewBox="0 0 1600 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="160" y1="120" x2="1460" y2="760" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#17171B"/>
+      <stop offset="1" stop-color="#0E0E11"/>
+    </linearGradient>
+    <radialGradient id="glowWest" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(360 620) rotate(90) scale(340 560)">
+      <stop stop-color="#FF6A00" stop-opacity="0.16"/>
+      <stop offset="1" stop-color="#FF6A00" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glowEast" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(1280 310) rotate(90) scale(300 500)">
+      <stop stop-color="#FF6A00" stop-opacity="0.14"/>
+      <stop offset="1" stop-color="#FF6A00" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="avenue" x1="208" y1="470" x2="1398" y2="430" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FF8A2A" stop-opacity="0.95"/>
+      <stop offset="1" stop-color="#FFC37A" stop-opacity="0.7"/>
+    </linearGradient>
+    <filter id="soft" x="-40" y="-40" width="1680" height="980" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="20"/>
+    </filter>
+  </defs>
+
+  <rect width="1600" height="900" rx="36" fill="url(#bg)"/>
+  <rect width="1600" height="900" rx="36" fill="url(#glowWest)"/>
+  <rect width="1600" height="900" rx="36" fill="url(#glowEast)"/>
+
+  <g opacity="0.2">
+    <path d="M0 96H1600" stroke="#FFFFFF" stroke-width="1"/>
+    <path d="M0 184H1600" stroke="#FFFFFF" stroke-width="1"/>
+    <path d="M0 272H1600" stroke="#FFFFFF" stroke-width="1"/>
+    <path d="M0 360H1600" stroke="#FFFFFF" stroke-width="1"/>
+    <path d="M0 448H1600" stroke="#FFFFFF" stroke-width="1"/>
+    <path d="M0 536H1600" stroke="#FFFFFF" stroke-width="1"/>
+    <path d="M0 624H1600" stroke="#FFFFFF" stroke-width="1"/>
+    <path d="M0 712H1600" stroke="#FFFFFF" stroke-width="1"/>
+    <path d="M0 800H1600" stroke="#FFFFFF" stroke-width="1"/>
+    <path d="M132 0V900" stroke="#FFFFFF" stroke-width="1"/>
+    <path d="M264 0V900" stroke="#FFFFFF" stroke-width="1"/>
+    <path d="M396 0V900" stroke="#FFFFFF" stroke-width="1"/>
+    <path d="M528 0V900" stroke="#FFFFFF" stroke-width="1"/>
+    <path d="M660 0V900" stroke="#FFFFFF" stroke-width="1"/>
+    <path d="M792 0V900" stroke="#FFFFFF" stroke-width="1"/>
+    <path d="M924 0V900" stroke="#FFFFFF" stroke-width="1"/>
+    <path d="M1056 0V900" stroke="#FFFFFF" stroke-width="1"/>
+    <path d="M1188 0V900" stroke="#FFFFFF" stroke-width="1"/>
+    <path d="M1320 0V900" stroke="#FFFFFF" stroke-width="1"/>
+    <path d="M1452 0V900" stroke="#FFFFFF" stroke-width="1"/>
+  </g>
+
+  <path d="M112 642C205 646 274 650 350 640C440 628 521 594 610 584C707 573 795 595 879 582C992 565 1090 506 1180 497C1271 488 1379 510 1488 520" stroke="#FFFFFF" stroke-opacity="0.09" stroke-width="84" stroke-linecap="round"/>
+  <path d="M154 524C242 503 328 491 430 495C547 499 640 542 742 537C850 531 946 472 1070 458C1188 445 1308 454 1444 470" stroke="url(#avenue)" stroke-width="9" stroke-linecap="round"/>
+  <path d="M874 322L960 438L1046 564" stroke="#FF7A12" stroke-width="7" stroke-linecap="round" stroke-opacity="0.88"/>
+  <path d="M684 596L812 562" stroke="#FF7A12" stroke-width="7" stroke-linecap="round" stroke-opacity="0.88"/>
+  <path d="M1048 456L1214 422" stroke="#FF7A12" stroke-width="6" stroke-linecap="round" stroke-opacity="0.78"/>
+  <path d="M518 408L620 438L732 420" stroke="#FFD5A3" stroke-opacity="0.42" stroke-width="4.5" stroke-linecap="round"/>
+  <path d="M618 356L704 402" stroke="#FFD5A3" stroke-opacity="0.32" stroke-width="4" stroke-linecap="round"/>
+  <path d="M948 248L1034 324L1114 352" stroke="#FFD5A3" stroke-opacity="0.26" stroke-width="4" stroke-linecap="round"/>
+  <path d="M1150 604L1232 560L1320 582" stroke="#FFD5A3" stroke-opacity="0.26" stroke-width="4" stroke-linecap="round"/>
+  <path d="M324 694L420 666L522 684" stroke="#FFD5A3" stroke-opacity="0.22" stroke-width="4" stroke-linecap="round"/>
+
+  <g opacity="0.78">
+    <circle cx="748" cy="482" r="18" fill="#FFD08F"/>
+    <circle cx="748" cy="482" r="40" fill="#FFD08F" fill-opacity="0.12"/>
+    <circle cx="1034" cy="458" r="15" fill="#FFAE57"/>
+    <circle cx="1034" cy="458" r="36" fill="#FFAE57" fill-opacity="0.12"/>
+    <circle cx="1240" cy="430" r="14" fill="#FF7A12"/>
+    <circle cx="1240" cy="430" r="34" fill="#FF7A12" fill-opacity="0.18"/>
+    <circle cx="502" cy="505" r="11" fill="#E7E7EA" fill-opacity="0.84"/>
+    <circle cx="502" cy="505" r="24" fill="#FFFFFF" fill-opacity="0.08"/>
+  </g>
+
+  <g filter="url(#soft)" opacity="0.16">
+    <path d="M602 168L820 260L944 452L848 710L612 778L462 598L474 348L602 168Z" fill="#FFFFFF"/>
+  </g>
+
+  <g opacity="0.55" font-family="Inter, Arial, sans-serif">
+    <text x="1118" y="213" fill="#F5BC84" font-size="30" font-weight="700" letter-spacing="0.08em">ULAANBAATAR</text>
+    <text x="690" y="452" fill="#FFF4E7" font-size="22" font-weight="700">Sukhbaatar Sq.</text>
+    <text x="1166" y="398" fill="#F8D0AB" font-size="18" font-weight="600">Bayanzurkh</text>
+    <text x="972" y="620" fill="#D8D8DC" font-size="18" font-weight="600">Zaisan</text>
+    <text x="218" y="560" fill="#D8D8DC" font-size="18" font-weight="600">Songinokhairkhan</text>
+    <text x="336" y="760" fill="#D8D8DC" font-size="18" font-weight="600">Yarmag</text>
+  </g>
+</svg>
