@@ -1,3 +1,4 @@
+import { APP_NAME } from "@/lib/constants";
 import { prisma } from "@/lib/prisma";
 import { formatCurrency } from "@/lib/helpers";
 
@@ -1020,7 +1021,7 @@ function buildGreetingReply(context: AssistantContext) {
   const personalization = getPersonalizationLine(context);
 
   return [
-    `Сайн байна уу${name}! Би таны Burger AI туслах байна.`,
+    `Сайн байна уу${name}! Би таны ${APP_NAME} AI туслах байна.`,
     context.user
       ? "Би одоогийн цэс, таны сүүлийн захиалгууд, хүргэлтийн төлөв дээр тулгуурлаад шууд санал өгч чадна."
       : "Би одоогийн цэс, хямдрал, QPay төлбөрийн алхмууд, мөн захиалгын ерөнхий урсгал дээр тулгуурлаад тусалж чадна.",

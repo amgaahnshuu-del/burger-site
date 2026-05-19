@@ -260,7 +260,6 @@ export type PendingRegistrationOrderByWithRelationInput = {
   expiresAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-  _relevance?: Prisma.PendingRegistrationOrderByRelevanceInput
 }
 
 export type PendingRegistrationWhereUniqueInput = Prisma.AtLeast<{
@@ -394,12 +393,6 @@ export type PendingRegistrationUncheckedUpdateManyInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
-export type PendingRegistrationOrderByRelevanceInput = {
-  fields: Prisma.PendingRegistrationOrderByRelevanceFieldEnum | Prisma.PendingRegistrationOrderByRelevanceFieldEnum[]
-  sort: Prisma.SortOrder
-  search: string
-}
-
 export type PendingRegistrationCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   email?: Prisma.SortOrder
@@ -458,7 +451,29 @@ export type PendingRegistrationSelect<ExtArgs extends runtime.Types.Extensions.I
   updatedAt?: boolean
 }, ExtArgs["result"]["pendingRegistration"]>
 
+export type PendingRegistrationSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  id?: boolean
+  email?: boolean
+  name?: boolean
+  passwordHash?: boolean
+  codeHash?: boolean
+  attempts?: boolean
+  expiresAt?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
+}, ExtArgs["result"]["pendingRegistration"]>
 
+export type PendingRegistrationSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  id?: boolean
+  email?: boolean
+  name?: boolean
+  passwordHash?: boolean
+  codeHash?: boolean
+  attempts?: boolean
+  expiresAt?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
+}, ExtArgs["result"]["pendingRegistration"]>
 
 export type PendingRegistrationSelectScalar = {
   id?: boolean
@@ -605,6 +620,30 @@ export interface PendingRegistrationDelegate<ExtArgs extends runtime.Types.Exten
   createMany<T extends PendingRegistrationCreateManyArgs>(args?: Prisma.SelectSubset<T, PendingRegistrationCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
 
   /**
+   * Create many PendingRegistrations and returns the data saved in the database.
+   * @param {PendingRegistrationCreateManyAndReturnArgs} args - Arguments to create many PendingRegistrations.
+   * @example
+   * // Create many PendingRegistrations
+   * const pendingRegistration = await prisma.pendingRegistration.createManyAndReturn({
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * 
+   * // Create many PendingRegistrations and only return the `id`
+   * const pendingRegistrationWithIdOnly = await prisma.pendingRegistration.createManyAndReturn({
+   *   select: { id: true },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * Note, that providing `undefined` is treated as the value not being there.
+   * Read more here: https://pris.ly/d/null-undefined
+   * 
+   */
+  createManyAndReturn<T extends PendingRegistrationCreateManyAndReturnArgs>(args?: Prisma.SelectSubset<T, PendingRegistrationCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PendingRegistrationPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+  /**
    * Delete a PendingRegistration.
    * @param {PendingRegistrationDeleteArgs} args - Arguments to delete one PendingRegistration.
    * @example
@@ -667,6 +706,36 @@ export interface PendingRegistrationDelegate<ExtArgs extends runtime.Types.Exten
    * 
    */
   updateMany<T extends PendingRegistrationUpdateManyArgs>(args: Prisma.SelectSubset<T, PendingRegistrationUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
+
+  /**
+   * Update zero or more PendingRegistrations and returns the data updated in the database.
+   * @param {PendingRegistrationUpdateManyAndReturnArgs} args - Arguments to update many PendingRegistrations.
+   * @example
+   * // Update many PendingRegistrations
+   * const pendingRegistration = await prisma.pendingRegistration.updateManyAndReturn({
+   *   where: {
+   *     // ... provide filter here
+   *   },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * 
+   * // Update zero or more PendingRegistrations and only return the `id`
+   * const pendingRegistrationWithIdOnly = await prisma.pendingRegistration.updateManyAndReturn({
+   *   select: { id: true },
+   *   where: {
+   *     // ... provide filter here
+   *   },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * Note, that providing `undefined` is treated as the value not being there.
+   * Read more here: https://pris.ly/d/null-undefined
+   * 
+   */
+  updateManyAndReturn<T extends PendingRegistrationUpdateManyAndReturnArgs>(args: Prisma.SelectSubset<T, PendingRegistrationUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PendingRegistrationPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
   /**
    * Create or update one PendingRegistration.
@@ -1079,6 +1148,25 @@ export type PendingRegistrationCreateManyArgs<ExtArgs extends runtime.Types.Exte
 }
 
 /**
+ * PendingRegistration createManyAndReturn
+ */
+export type PendingRegistrationCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PendingRegistration
+   */
+  select?: Prisma.PendingRegistrationSelectCreateManyAndReturn<ExtArgs> | null
+  /**
+   * Omit specific fields from the PendingRegistration
+   */
+  omit?: Prisma.PendingRegistrationOmit<ExtArgs> | null
+  /**
+   * The data used to create many PendingRegistrations.
+   */
+  data: Prisma.PendingRegistrationCreateManyInput | Prisma.PendingRegistrationCreateManyInput[]
+  skipDuplicates?: boolean
+}
+
+/**
  * PendingRegistration update
  */
 export type PendingRegistrationUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1104,6 +1192,32 @@ export type PendingRegistrationUpdateArgs<ExtArgs extends runtime.Types.Extensio
  * PendingRegistration updateMany
  */
 export type PendingRegistrationUpdateManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * The data used to update PendingRegistrations.
+   */
+  data: Prisma.XOR<Prisma.PendingRegistrationUpdateManyMutationInput, Prisma.PendingRegistrationUncheckedUpdateManyInput>
+  /**
+   * Filter which PendingRegistrations to update
+   */
+  where?: Prisma.PendingRegistrationWhereInput
+  /**
+   * Limit how many PendingRegistrations to update.
+   */
+  limit?: number
+}
+
+/**
+ * PendingRegistration updateManyAndReturn
+ */
+export type PendingRegistrationUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PendingRegistration
+   */
+  select?: Prisma.PendingRegistrationSelectUpdateManyAndReturn<ExtArgs> | null
+  /**
+   * Omit specific fields from the PendingRegistration
+   */
+  omit?: Prisma.PendingRegistrationOmit<ExtArgs> | null
   /**
    * The data used to update PendingRegistrations.
    */

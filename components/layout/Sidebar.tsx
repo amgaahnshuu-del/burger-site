@@ -341,10 +341,16 @@ export default function Sidebar({ mobileOpen, onClose }: SidebarProps) {
           }}
         >
           <span className={cn(
-            "inline-flex items-center justify-center rounded-full bg-[var(--gradient-accent)] text-sm font-black text-white shadow-[0_0_26px_rgba(255,106,0,0.18)]",
-            isOrdersDashboardPage ? "h-8 w-8" : isAIAgentPage ? "h-7 w-7 text-[11px]" : "h-8 w-8"
+            "relative inline-flex items-center justify-center overflow-hidden rounded-[12px] bg-white/6 ring-1 ring-white/10",
+            isOrdersDashboardPage ? "h-8 w-8" : isAIAgentPage ? "h-7 w-7" : "h-8 w-8"
           )}>
-            B
+            <Image
+              alt={`${APP_NAME} logo`}
+              className="object-contain "
+              fill
+              sizes={isAIAgentPage ? "38px" : "42px"}
+              src="/logo.png"
+            />
           </span>
           <span className={cn("font-extrabold text-white", isOrdersDashboardPage ? "text-[21px]" : isAIAgentPage ? "text-[18px]" : "text-[22px]")}>
             {APP_NAME}

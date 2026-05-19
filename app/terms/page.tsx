@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import LegalPage from "@/components/legal/LegalPage";
+import { APP_NAME } from "@/lib/constants";
 
 export const metadata: Metadata = {
   title: "Terms of Service",
@@ -9,7 +10,7 @@ export const metadata: Metadata = {
 export default function TermsPage() {
   return (
     <LegalPage
-      description="These terms describe how customers, managers, couriers, and admins are expected to use Burger responsibly."
+      description={`These terms describe how customers, managers, couriers, and admins are expected to use ${APP_NAME} responsibly.`}
       sections={[
         {
           body: "By placing an order, you confirm that the contact details, address, and payment method you provide are accurate and authorized for use.",

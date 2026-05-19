@@ -6,7 +6,7 @@ export const DEFAULT_ADMIN_EMAIL = (process.env.ADMIN_EMAIL ?? "admin@burger.mn"
   .trim()
   .toLowerCase();
 export const DEFAULT_ADMIN_PASSWORD = (process.env.ADMIN_PASSWORD ?? "Admin123456").trim();
-export const DEFAULT_ADMIN_NAME = (process.env.ADMIN_NAME ?? "Burger Admin").trim();
+export const DEFAULT_ADMIN_NAME = (process.env.ADMIN_NAME ?? "Burgernaut Admin").trim();
 
 export async function getOrBootstrapDefaultAdmin(email: string) {
   if (!areDemoAccountsEnabled()) {

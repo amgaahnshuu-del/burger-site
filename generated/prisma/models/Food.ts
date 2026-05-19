@@ -266,7 +266,6 @@ export type FoodOrderByWithRelationInput = {
   restaurant?: Prisma.RestaurantOrderByWithRelationInput
   orderItems?: Prisma.OrderItemOrderByRelationAggregateInput
   cartItems?: Prisma.CartItemOrderByRelationAggregateInput
-  _relevance?: Prisma.FoodOrderByRelevanceInput
 }
 
 export type FoodWhereUniqueInput = Prisma.AtLeast<{
@@ -418,12 +417,6 @@ export type FoodListRelationFilter = {
 
 export type FoodOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
-}
-
-export type FoodOrderByRelevanceInput = {
-  fields: Prisma.FoodOrderByRelevanceFieldEnum | Prisma.FoodOrderByRelevanceFieldEnum[]
-  sort: Prisma.SortOrder
-  search: string
 }
 
 export type FoodCountOrderByAggregateInput = {
@@ -871,7 +864,31 @@ export type FoodSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   _count?: boolean | Prisma.FoodCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["food"]>
 
+export type FoodSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  id?: boolean
+  name?: boolean
+  description?: boolean
+  price?: boolean
+  image?: boolean
+  category?: boolean
+  isAvailable?: boolean
+  restaurantId?: boolean
+  createdAt?: boolean
+  restaurant?: boolean | Prisma.Food$restaurantArgs<ExtArgs>
+}, ExtArgs["result"]["food"]>
 
+export type FoodSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  id?: boolean
+  name?: boolean
+  description?: boolean
+  price?: boolean
+  image?: boolean
+  category?: boolean
+  isAvailable?: boolean
+  restaurantId?: boolean
+  createdAt?: boolean
+  restaurant?: boolean | Prisma.Food$restaurantArgs<ExtArgs>
+}, ExtArgs["result"]["food"]>
 
 export type FoodSelectScalar = {
   id?: boolean
@@ -891,6 +908,12 @@ export type FoodInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   orderItems?: boolean | Prisma.Food$orderItemsArgs<ExtArgs>
   cartItems?: boolean | Prisma.Food$cartItemsArgs<ExtArgs>
   _count?: boolean | Prisma.FoodCountOutputTypeDefaultArgs<ExtArgs>
+}
+export type FoodIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  restaurant?: boolean | Prisma.Food$restaurantArgs<ExtArgs>
+}
+export type FoodIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  restaurant?: boolean | Prisma.Food$restaurantArgs<ExtArgs>
 }
 
 export type $FoodPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1028,6 +1051,30 @@ export interface FoodDelegate<ExtArgs extends runtime.Types.Extensions.InternalA
   createMany<T extends FoodCreateManyArgs>(args?: Prisma.SelectSubset<T, FoodCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
 
   /**
+   * Create many Foods and returns the data saved in the database.
+   * @param {FoodCreateManyAndReturnArgs} args - Arguments to create many Foods.
+   * @example
+   * // Create many Foods
+   * const food = await prisma.food.createManyAndReturn({
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * 
+   * // Create many Foods and only return the `id`
+   * const foodWithIdOnly = await prisma.food.createManyAndReturn({
+   *   select: { id: true },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * Note, that providing `undefined` is treated as the value not being there.
+   * Read more here: https://pris.ly/d/null-undefined
+   * 
+   */
+  createManyAndReturn<T extends FoodCreateManyAndReturnArgs>(args?: Prisma.SelectSubset<T, FoodCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FoodPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+  /**
    * Delete a Food.
    * @param {FoodDeleteArgs} args - Arguments to delete one Food.
    * @example
@@ -1090,6 +1137,36 @@ export interface FoodDelegate<ExtArgs extends runtime.Types.Extensions.InternalA
    * 
    */
   updateMany<T extends FoodUpdateManyArgs>(args: Prisma.SelectSubset<T, FoodUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
+
+  /**
+   * Update zero or more Foods and returns the data updated in the database.
+   * @param {FoodUpdateManyAndReturnArgs} args - Arguments to update many Foods.
+   * @example
+   * // Update many Foods
+   * const food = await prisma.food.updateManyAndReturn({
+   *   where: {
+   *     // ... provide filter here
+   *   },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * 
+   * // Update zero or more Foods and only return the `id`
+   * const foodWithIdOnly = await prisma.food.updateManyAndReturn({
+   *   select: { id: true },
+   *   where: {
+   *     // ... provide filter here
+   *   },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * Note, that providing `undefined` is treated as the value not being there.
+   * Read more here: https://pris.ly/d/null-undefined
+   * 
+   */
+  updateManyAndReturn<T extends FoodUpdateManyAndReturnArgs>(args: Prisma.SelectSubset<T, FoodUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FoodPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
   /**
    * Create or update one Food.
@@ -1529,6 +1606,29 @@ export type FoodCreateManyArgs<ExtArgs extends runtime.Types.Extensions.Internal
 }
 
 /**
+ * Food createManyAndReturn
+ */
+export type FoodCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Food
+   */
+  select?: Prisma.FoodSelectCreateManyAndReturn<ExtArgs> | null
+  /**
+   * Omit specific fields from the Food
+   */
+  omit?: Prisma.FoodOmit<ExtArgs> | null
+  /**
+   * The data used to create many Foods.
+   */
+  data: Prisma.FoodCreateManyInput | Prisma.FoodCreateManyInput[]
+  skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.FoodIncludeCreateManyAndReturn<ExtArgs> | null
+}
+
+/**
  * Food update
  */
 export type FoodUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1570,6 +1670,36 @@ export type FoodUpdateManyArgs<ExtArgs extends runtime.Types.Extensions.Internal
    * Limit how many Foods to update.
    */
   limit?: number
+}
+
+/**
+ * Food updateManyAndReturn
+ */
+export type FoodUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Food
+   */
+  select?: Prisma.FoodSelectUpdateManyAndReturn<ExtArgs> | null
+  /**
+   * Omit specific fields from the Food
+   */
+  omit?: Prisma.FoodOmit<ExtArgs> | null
+  /**
+   * The data used to update Foods.
+   */
+  data: Prisma.XOR<Prisma.FoodUpdateManyMutationInput, Prisma.FoodUncheckedUpdateManyInput>
+  /**
+   * Filter which Foods to update
+   */
+  where?: Prisma.FoodWhereInput
+  /**
+   * Limit how many Foods to update.
+   */
+  limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.FoodIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**

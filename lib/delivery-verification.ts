@@ -1,6 +1,7 @@
 import { randomInt } from "node:crypto";
 
 import { sendEmail } from "@/lib/email";
+import { APP_NAME } from "@/lib/constants";
 import { hashPassword, verifyPassword } from "@/lib/password";
 
 const DELIVERY_VERIFICATION_CODE_LENGTH = 6;
@@ -71,17 +72,17 @@ function getChannel(channel: string): DeliveryVerificationChannel {
 
 function getDeliveryVerificationEmailContent(code: string, orderId: string) {
   const shortOrderId = orderId.slice(0, 8);
-  const subject = "Burger delivery confirmation code";
+  const subject = `${APP_NAME} delivery confirmation code`;
   const text = [
     "Hello,",
     "",
-    `Your Burger delivery confirmation code for order #${shortOrderId} is: ${code}`,
+    `Your ${APP_NAME} delivery confirmation code for order #${shortOrderId} is: ${code}`,
     "Share this code with your courier only after you receive your order.",
     "This code expires in 10 minutes.",
   ].join("\n");
   const html = `
     <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #111827;">
-      <h2 style="margin-bottom: 12px;">Burger delivery confirmation</h2>
+      <h2 style="margin-bottom: 12px;">${APP_NAME} delivery confirmation</h2>
       <p>Hello,</p>
       <p>Your delivery confirmation code for order <strong>#${shortOrderId}</strong> is:</p>
       <div style="margin: 16px 0; font-size: 32px; font-weight: 700; letter-spacing: 6px;">

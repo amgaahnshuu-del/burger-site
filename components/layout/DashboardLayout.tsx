@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import {
   Bars3Icon,
@@ -223,7 +224,14 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         isMenuPage && "dashboard-shell-neutral"
       )}
     >
-      <div className="fixed inset-x-0 top-0 z-40 border-b border-[var(--border-soft)] bg-[rgba(7,7,7,0.92)] px-4 py-3 backdrop-blur-xl lg:hidden">
+      <div
+        className="fixed inset-x-0 top-0 z-40 border-b border-[var(--border-soft)] bg-[rgba(7,7,7,0.92)] px-4 py-3 backdrop-blur-xl lg:hidden"
+        style={{
+          paddingLeft: "calc(1rem + var(--safe-area-left))",
+          paddingRight: "calc(1rem + var(--safe-area-right))",
+          paddingTop: "calc(0.75rem + var(--safe-area-top))",
+        }}
+      >
         <div className="flex items-center justify-between gap-3">
           <Link
             className="flex items-center gap-3"
@@ -234,8 +242,14 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               }
             }}
           >
-            <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[var(--gradient-accent)] text-sm font-black text-white shadow-[var(--shadow-button)]">
-              B
+            <span className="relative inline-flex h-9 w-9 items-center justify-center overflow-hidden rounded-[12px] bg-white/6 ring-1 ring-white/10">
+              <Image
+                alt={`${APP_NAME} logo`}
+                className="object-contain p-1"
+                fill
+                sizes="36px"
+                src="/logo.png"
+              />
             </span>
             <span className="text-lg font-extrabold text-white">{APP_NAME}</span>
           </Link>
@@ -264,6 +278,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                 : isOrdersDashboardPage
                   ? "min-h-screen lg:pb-[20px] lg:pl-[30px] lg:pr-[36px] lg:pt-[36px]"
                   : "min-h-screen lg:px-7 lg:pb-8 lg:pt-7"
+            ,
+            isMenuPage && "pb-[calc(8.5rem+var(--safe-area-bottom))] lg:pb-8"
           )}
         >
           <div
@@ -294,7 +310,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         </main>
       </div>
 
-      <nav className="fixed inset-x-3 bottom-3 z-40 rounded-[18px] border border-[var(--border-soft)] bg-[rgba(17,17,19,0.92)] p-2 shadow-[var(--shadow-card)] backdrop-blur-xl lg:hidden">
+      <nav className="fixed bottom-[calc(0.75rem+var(--safe-area-bottom))] left-[calc(0.75rem+var(--safe-area-left))] right-[calc(0.75rem+var(--safe-area-right))] z-40 rounded-[18px] border border-[var(--border-soft)] bg-[rgba(17,17,19,0.92)] p-2 shadow-[var(--shadow-card)] backdrop-blur-xl lg:hidden">
         <div
           className={cn(
             "grid gap-2",

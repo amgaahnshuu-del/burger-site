@@ -1,5 +1,7 @@
 import Link from "next/link";
 
+import { APP_NAME } from "@/lib/constants";
+
 type LegalSection = {
   body: string;
   title: string;
@@ -20,7 +22,7 @@ export default function LegalPage({
     <main className="mx-auto max-w-4xl space-y-6 px-4 py-10 sm:px-6">
       <section className="rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(18,18,19,0.96)_0%,rgba(9,9,10,0.99)_100%)] p-6 shadow-[0_28px_80px_rgba(0,0,0,0.34)] sm:p-8">
         <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-orange-300/70">
-          Burger
+          {APP_NAME}
         </p>
         <h1 className="mt-4 text-4xl font-black tracking-[-0.04em] text-white sm:text-5xl">
           {title}

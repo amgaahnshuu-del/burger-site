@@ -1,6 +1,6 @@
 import type { PaymentMethod, TrackingStatus } from "@/features/order/order.types";
 
-export const APP_NAME = "Burger";
+export const APP_NAME = "Burgernaut";
 
 export const NAV_LINKS = [
   { href: "/", label: "Нүүр" },

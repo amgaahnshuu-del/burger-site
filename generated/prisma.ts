@@ -1,20 +1,24 @@
-import { PrismaMariaDb } from "@prisma/adapter-mariadb";
+import { PrismaPg } from "@prisma/adapter-pg";
 
-import {
-  Prisma,
-  PrismaClient as GeneratedPrismaClient,
-} from "./prisma/client";
+import { Prisma, PrismaClient as GeneratedPrismaClient } from "./prisma/client";
 
 type PrismaClientOptions = {
+  comments?: Prisma.PrismaClientOptions["comments"];
   errorFormat?: Prisma.PrismaClientOptions["errorFormat"];
   log?: Prisma.PrismaClientOptions["log"];
   omit?: Prisma.PrismaClientOptions["omit"];
+  queryPlanCacheMaxSize?: Prisma.PrismaClientOptions["queryPlanCacheMaxSize"];
   transactionOptions?: Prisma.PrismaClientOptions["transactionOptions"];
 };
 
+const databaseUrlOverride = process.env.DATABASE_URL_OVERRIDE?.trim();
+
+if (databaseUrlOverride) {
+  process.env.DATABASE_URL = databaseUrlOverride;
+}
+
 function resolveDatabaseUrl() {
-  const databaseUrl =
-    process.env.DATABASE_URL_OVERRIDE?.trim() || process.env.DATABASE_URL?.trim();
+  const databaseUrl = process.env.DATABASE_URL?.trim();
 
   if (!databaseUrl) {
     throw new Error("DATABASE_URL is not configured.");
@@ -23,57 +27,21 @@ function resolveDatabaseUrl() {
   return databaseUrl;
 }
 
-function normalizeDatabaseUrl(databaseUrl: string) {
+function resolveSchema(connectionString: string) {
   try {
-    const url = new URL(databaseUrl);
-
-    if (url.protocol === "mysql:" || url.protocol === "mariadb:") {
-      const legacyConnectionLimit = url.searchParams.get("connection_limit");
-      const legacyPoolTimeout = url.searchParams.get("pool_timeout");
-
-      if (legacyConnectionLimit && !url.searchParams.has("connectionLimit")) {
-        url.searchParams.set("connectionLimit", legacyConnectionLimit);
-      }
-
-      if (legacyPoolTimeout && !url.searchParams.has("acquireTimeout")) {
-        const poolTimeoutSeconds = Number(legacyPoolTimeout);
-        url.searchParams.set(
-          "acquireTimeout",
-          Number.isFinite(poolTimeoutSeconds)
-            ? String(Math.max(poolTimeoutSeconds, 1) * 1000)
-            : legacyPoolTimeout
-        );
-      }
-
-      url.searchParams.delete("connection_limit");
-      url.searchParams.delete("pool_timeout");
-
-      if (!url.searchParams.has("allowPublicKeyRetrieval")) {
-        url.searchParams.set("allowPublicKeyRetrieval", "true");
-      }
-
-      if (!url.searchParams.has("connectionLimit")) {
-        url.searchParams.set("connectionLimit", "5");
-      }
-
-      if (!url.searchParams.has("connectTimeout")) {
-        url.searchParams.set("connectTimeout", "20000");
-      }
-
-      if (!url.searchParams.has("acquireTimeout")) {
-        url.searchParams.set("acquireTimeout", "20000");
-      }
-    }
-
-    return url.toString();
+    const schema = new URL(connectionString).searchParams.get("schema");
+    return schema?.trim() || "public";
   } catch {
-    return databaseUrl;
+    return "public";
   }
 }
 
 export class PrismaClient extends GeneratedPrismaClient {
   constructor(options: PrismaClientOptions = {}) {
-    const adapter = new PrismaMariaDb(normalizeDatabaseUrl(resolveDatabaseUrl()));
+    const connectionString = resolveDatabaseUrl();
+    const adapter = new PrismaPg(connectionString, {
+      schema: resolveSchema(connectionString),
+    });
 
     super({
       ...options,

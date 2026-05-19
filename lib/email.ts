@@ -1,5 +1,7 @@
 import nodemailer from "nodemailer";
 
+import { APP_NAME } from "@/lib/constants";
+
 type EmailPayload = {
   html: string;
   subject: string;
@@ -48,7 +50,7 @@ function getEmailConfig() {
   const user = process.env.SMTP_USER?.trim().toLowerCase() || "";
   const pass = process.env.SMTP_PASS?.trim() || "";
   const from = process.env.SMTP_FROM?.trim().toLowerCase() || user;
-  const fromName = process.env.SMTP_FROM_NAME?.trim() || "Burger";
+  const fromName = process.env.SMTP_FROM_NAME?.trim() || APP_NAME;
 
   if (
     !user ||
@@ -111,7 +113,7 @@ export async function sendRegistrationVerificationEmail(
   email: string,
   code: string
 ) {
-  const subject = "Burger бүртгэлийн баталгаажуулах код";
+  const subject = `${APP_NAME} бүртгэлийн баталгаажуулах код`;
   const text = [
     "Сайн байна уу,",
     "",
@@ -122,7 +124,7 @@ export async function sendRegistrationVerificationEmail(
   ].join("\n");
   const html = `
     <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #111827;">
-      <h2 style="margin-bottom: 12px;">Burger бүртгэлийн баталгаажуулалт</h2>
+      <h2 style="margin-bottom: 12px;">${APP_NAME} бүртгэлийн баталгаажуулалт</h2>
       <p>Сайн байна уу,</p>
       <p>Таны бүртгэлийг баталгаажуулах код:</p>
       <div style="margin: 16px 0; font-size: 32px; font-weight: 700; letter-spacing: 6px;">

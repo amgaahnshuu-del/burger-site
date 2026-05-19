@@ -100,7 +100,7 @@ A comprehensive full-stack food delivery application built with **Next.js 16**, 
 | **Frontend** | Next.js 16, React 19, TypeScript |
 | **Styling** | TailwindCSS 4, Heroicons |
 | **Backend** | Next.js API Routes |
-| **Database** | MySQL/MariaDB with Prisma ORM |
+| **Database** | PostgreSQL with Prisma ORM |
 | **Authentication** | Session-based + Google OAuth |
 | **Email** | Nodemailer (SMTP) |
 | **Maps** | Google Maps API |
@@ -244,7 +244,7 @@ my-app/
 ### Prerequisites
 - **Node.js** 20+ 
 - **npm** or **yarn**
-- **MySQL/MariaDB** database
+- **PostgreSQL** database
 - **Git**
 
 ### Local Development
@@ -287,7 +287,7 @@ my-app/
 
 ### Database Models
 
-The application uses **Prisma ORM** with **MySQL/MariaDB** and includes these core models:
+The application uses **Prisma ORM** with **PostgreSQL** and includes these core models:
 
 - **User**: Customers, Couriers, Admins, Managers
 - **Restaurant**: Food merchants
@@ -315,6 +315,8 @@ npm run db:ensure-menu
 # Optional: Load demo orders
 npm run db:seed:demo
 ```
+
+If you are switching from an older MySQL setup, provision a PostgreSQL database first and then point `DATABASE_URL` at the new PostgreSQL instance before running migrations. Existing MySQL rows are not copied automatically by this repo.
 
 ### Viewing Database (DevTools)
 
@@ -486,7 +488,7 @@ GET    /api/health                  # Health check endpoint
 
 ### Critical (Required)
 ```bash
-DATABASE_URL="mysql://user:password@host:3306/database"
+DATABASE_URL="postgresql://user:password@host:5432/database?schema=public"
 ```
 
 ### Authentication
@@ -595,7 +597,7 @@ enum PaymentMethod {
 3. **Environment Variables**
    Add in Render dashboard:
    ```
-   DATABASE_URL              (from your MySQL provider)
+   DATABASE_URL              (from your PostgreSQL provider)
    AI_PROVIDER               (auto or gemini)
    GEMINI_API_KEY
    GEMINI_MODEL              (optional, default: gemini-2.5-flash)
@@ -637,7 +639,7 @@ Build and run locally:
 ```bash
 docker build -t burger-app .
 docker run -p 3000:3000 \
-  -e DATABASE_URL="mysql://..." \
+  -e DATABASE_URL="postgresql://..." \
   -e GOOGLE_CLIENT_ID="..." \
   burger-app
 ```
@@ -773,7 +775,7 @@ If `my-app/.env` does not exist yet, create it first:
 cp my-app/.env.example my-app/.env
 ```
 
-Start the app and MySQL together:
+Start the app and PostgreSQL together:
 
 ```bash
 docker compose up --build
@@ -781,16 +783,16 @@ docker compose up --build
 
 Services:
 
-- App: [http://localhost:3000](http://localhost:3000)
-- MySQL: `localhost:3306`
+- App: [http://localhost:3001](http://localhost:3001)
+- PostgreSQL: `localhost:5433`
 
 Inside Docker, the app automatically overrides `DATABASE_URL` to:
 
 ```bash
-mysql://burger:burger@db:3306/food_db
+postgresql://burger:burger@db:5432/food_db?schema=public
 ```
 
-That means your existing local `.env` can still keep `localhost` for non-Docker development.
+That means your existing local `.env` can still keep `localhost:5433` for non-Docker development.
 
 Optional first-run seed:
 
@@ -853,21 +855,21 @@ SMTP_FROM
 
 `SMTP_FROM_NAME` is already set to `Burger` in the Blueprint.
 
-### 4. Use a MySQL database
+### 4. Use a PostgreSQL database
 
-This app uses Prisma with MySQL, so `DATABASE_URL` must point to a MySQL database.
+This app uses Prisma with PostgreSQL, so `DATABASE_URL` must point to a PostgreSQL database.
 
 You can use either:
 
-- a Render MySQL private service
-- an external MySQL provider
+- a Render PostgreSQL private service
+- an external PostgreSQL provider
 
-If you use Render MySQL, create it separately first, then paste its internal connection string into `DATABASE_URL`.
+If you use Render PostgreSQL, create it separately first, then paste its internal connection string into `DATABASE_URL`.
 
 Example format:
 
 ```bash
-mysql://USER:PASSWORD@mysql:3306/DATABASE_NAME
+postgresql://USER:PASSWORD@postgres:5432/DATABASE_NAME?schema=public
 ```
 
 ### 5. Update Google OAuth callback URLs

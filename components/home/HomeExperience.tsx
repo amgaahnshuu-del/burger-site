@@ -6,7 +6,6 @@ import { ArrowRightIcon, FireIcon } from "@heroicons/react/24/solid";
 import { useDeferredValue, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
-import ComboBanner from "@/components/home/ComboBanner";
 import ProductCard from "@/components/home/ProductCard";
 import TopBar from "@/components/layout/TopBar";
 import Card from "@/components/ui/Card";
@@ -149,9 +148,6 @@ export default function HomeExperience() {
     });
 
   const heroPick = filteredFoods[0] ?? foods[0] ?? null;
-  const featuredCombo =
-    foods.find((food) => getFoodCategoryLabel(food) === "Combo") ?? null;
-
   const heroMetrics = [
     {
       label: "хоол",
@@ -270,8 +266,6 @@ export default function HomeExperience() {
             </div>
           </div>
         </Card>
-
-        <ComboBanner price={featuredCombo?.price} />
 
         <section>
           <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">

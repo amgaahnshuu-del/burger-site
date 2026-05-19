@@ -154,24 +154,24 @@ export default function ExplorePage() {
   }
 
   return (
-    <main className="space-y-6">
-      <div className="fixed inset-x-4 top-[4.75rem] z-40 space-y-3 border-b border-white/[0.04] bg-[#050505] py-3 shadow-[0_18px_40px_rgba(0,0,0,0.42)] backdrop-blur-xl sm:inset-x-6 sm:space-y-4 lg:left-[268px] lg:right-7 lg:top-0 lg:space-y-4 lg:pb-3 lg:pt-5">
-        <div className="flex items-center justify-between gap-4">
+    <main className="space-y-6 lg:space-y-7">
+      <div className="fixed left-[calc(1rem+var(--safe-area-left))] right-[calc(1rem+var(--safe-area-right))] top-[calc(4.75rem+var(--safe-area-top))] z-40 space-y-3 overflow-hidden border-b border-white/[0.04] bg-[#050505] py-3 shadow-[0_18px_40px_rgba(0,0,0,0.42)] backdrop-blur-xl before:pointer-events-none before:absolute before:-top-4 before:inset-x-0 before:h-4 before:bg-[#050505] before:content-[''] lg:left-[268px] lg:right-7 lg:top-0 lg:space-y-4 lg:pb-3 lg:pt-5 lg:before:hidden sm:inset-x-6 sm:space-y-4">
+        <div className="flex min-w-0 items-center justify-between gap-4">
           <PageHeader title="Menu" />
         </div>
         <TopBar onSearchChange={setSearch} searchValue={search} />
       </div>
 
-      <div className="h-[252px] sm:h-[188px] lg:h-[124px]" />
+      <div className="h-[calc(252px+var(--safe-area-top))] sm:h-[188px] lg:h-[124px]" />
 
       {feedback ? <Toast message={feedback} tone="info" /> : null}
       {error ? <Toast message={error} tone="error" /> : null}
 
-      <div className="flex flex-wrap items-center gap-3">
+      <div className="-mx-1 flex gap-2.5 overflow-x-auto px-1 pb-1 premium-scrollbar sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0">
         {orderedTabs.map(([tabKey, tab]) => (
           <button
             className={cn(
-              "inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition",
+              "inline-flex min-w-fit max-w-full items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium whitespace-nowrap transition",
               tabKey === activeCategory
                 ? "border-orange-300/35 bg-orange-500 text-white shadow-[0_12px_30px_rgba(255,106,0,0.2)]"
                 : "border-transparent bg-[#18181B] text-white/80 hover:border-white/8 hover:bg-white/[0.08] hover:text-white"
@@ -180,7 +180,7 @@ export default function ExplorePage() {
             onClick={() => setActiveTab(tabKey)}
             type="button"
           >
-            {tab.label}
+            <span className="truncate">{tab.label}</span>
             <span
               className={cn(
                 "inline-flex min-w-[1.7rem] shrink-0 items-center justify-center rounded-full px-2 py-0.5 text-[11px] font-semibold leading-none",
@@ -195,8 +195,8 @@ export default function ExplorePage() {
         ))}
       </div>
 
-      <section>
-        <div className="mb-4 flex items-center justify-between gap-3">
+      <section className="pb-2">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
           <h2 className="section-title text-white">Popular</h2>
           <div className="flex items-center gap-3">
             <button
@@ -205,7 +205,7 @@ export default function ExplorePage() {
             >
               <FunnelIcon className="h-4 w-4" />
             </button>
-            <Link className="text-sm text-[var(--orange)] hover:text-[var(--orange-3)]" href="/public/explore">
+            <Link className="shrink-0 text-sm text-[var(--orange)] hover:text-[var(--orange-3)]" href="/public/explore">
               View all
             </Link>
           </div>
@@ -216,7 +216,7 @@ export default function ExplorePage() {
             Loading menu items from the database...
           </div>
         ) : visibleFoods.length ? (
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             {visibleFoods.map((food) => (
               <ProductCard
                 food={food}
@@ -241,9 +241,9 @@ export default function ExplorePage() {
       </section>
 
       <section>
-        <div className="mb-4 flex items-center justify-between gap-3">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
           <h2 className="section-title text-white">Combos</h2>
-          <Link className="text-sm text-[var(--orange)] hover:text-[var(--orange-3)]" href="/public/explore">
+          <Link className="shrink-0 text-sm text-[var(--orange)] hover:text-[var(--orange-3)]" href="/public/explore">
             View all
           </Link>
         </div>
@@ -253,14 +253,14 @@ export default function ExplorePage() {
             Loading combo items from the database...
           </div>
         ) : combos.length ? (
-          <div className="grid gap-4 xl:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
             {combos.map((combo) => (
               <article className="card-hover dashboard-card overflow-hidden rounded-[16px] p-0" key={combo.id}>
                 <div className="relative h-[148px] bg-[radial-gradient(circle,rgba(255,90,0,0.18),transparent_58%),linear-gradient(180deg,#151518_0%,#111113_100%)]">
                   <Image alt={combo.name} className="object-contain p-4" fill sizes="320px" src={combo.image} />
                 </div>
                 <div className="px-4 py-3">
-                  <p className="text-sm font-medium text-white">{combo.name}</p>
+                  <p className="break-words text-sm font-medium text-white">{combo.name}</p>
                 </div>
               </article>
             ))}
