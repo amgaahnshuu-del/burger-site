@@ -8,6 +8,22 @@ const GOOGLE_OAUTH_COOKIE_MAX_AGE_SECONDS = 60 * 10;
 
 type GoogleAuthView = "login" | "register";
 
+function isLocalhostHostname(hostname: string) {
+  return (
+    hostname === "localhost"
+    || hostname === "127.0.0.1"
+    || hostname === "0.0.0.0"
+  );
+}
+
+function isLocalOrigin(value: string) {
+  try {
+    return isLocalhostHostname(new URL(value).hostname);
+  } catch {
+    return false;
+  }
+}
+
 function parseCookies(header: string | null) {
   const cookieMap = new Map<string, string>();
 
@@ -77,14 +93,32 @@ export function getGoogleOAuthConfig() {
   };
 }
 
-export function getGoogleRedirectUri(request: Request) {
-  const { redirectUriOverride } = getGoogleOAuthConfig();
+function getRequestOrigin(request: Request) {
+  const forwardedHost = request.headers.get("x-forwarded-host")?.trim();
+  const forwardedProto = request.headers.get("x-forwarded-proto")?.trim();
 
-  if (redirectUriOverride) {
-    return redirectUriOverride;
+  if (forwardedHost) {
+    const protocol = forwardedProto || "https";
+
+    return `${protocol}://${forwardedHost}`;
   }
 
-  return new URL("/api/auth/google/callback", request.url).toString();
+  return new URL(request.url).origin;
+}
+
+export function getGoogleRedirectUri(request: Request) {
+  const { redirectUriOverride } = getGoogleOAuthConfig();
+  const requestOrigin = getRequestOrigin(request);
+
+  if (redirectUriOverride) {
+    // Ignore localhost overrides for deployed environments so Vercel callbacks
+    // don't bounce back to a stale local development URL.
+    if (!isLocalOrigin(redirectUriOverride) || isLocalOrigin(requestOrigin)) {
+      return redirectUriOverride;
+    }
+  }
+
+  return new URL("/api/auth/google/callback", `${requestOrigin}/`).toString();
 }
 
 export function createGoogleOAuthState() {
