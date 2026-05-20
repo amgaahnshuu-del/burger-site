@@ -924,6 +924,14 @@ This repo includes [`vercel.json`](./vercel.json), which makes Vercel run:
 npm run build:vercel
 ```
 
-That command applies Prisma migrations with `prisma migrate deploy` before `next build`, so production schema changes go live together with the deployment.
+That command runs `prisma generate` before `next build`.
+
+If you are using PostgreSQL without Prisma migration history for that environment, apply schema changes separately with:
+
+```bash
+npm run db:push
+```
+
+Run that before redeploying Vercel when your Prisma schema changes.
 
 Check out the [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
