@@ -27,6 +27,20 @@ function getPayloadMessage(payload: unknown) {
   return null;
 }
 
+function getPayloadRequestId(payload: unknown) {
+  if (
+    typeof payload === "object" &&
+    payload !== null &&
+    "requestId" in payload &&
+    typeof payload.requestId === "string" &&
+    payload.requestId.trim()
+  ) {
+    return payload.requestId;
+  }
+
+  return null;
+}
+
 export async function fetchJson<T>(
   input: string,
   init: RequestInit = {}
@@ -53,9 +67,16 @@ export async function fetchJson<T>(
     : await response.text();
 
   if (!response.ok) {
+    const requestId = getPayloadRequestId(payload);
+    const baseMessage =
+      getPayloadMessage(payload) ?? `Request failed with status ${response.status}.`;
+    const message =
+      requestId && response.status >= 500
+        ? `${baseMessage} Request ID: ${requestId}`
+        : baseMessage;
+
     throw new ApiError(
-      getPayloadMessage(payload) ??
-        `Request failed with status ${response.status}.`,
+      message,
       response.status,
       payload
     );
