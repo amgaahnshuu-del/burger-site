@@ -1,7 +1,5 @@
 import nodemailer from "nodemailer";
 
-import { APP_NAME } from "@/lib/constants";
-
 type EmailPayload = {
   html: string;
   subject: string;
@@ -50,7 +48,7 @@ function getEmailConfig() {
   const user = process.env.SMTP_USER?.trim().toLowerCase() || "";
   const pass = process.env.SMTP_PASS?.trim() || "";
   const from = process.env.SMTP_FROM?.trim().toLowerCase() || user;
-  const fromName = process.env.SMTP_FROM_NAME?.trim() || APP_NAME;
+  const fromName = process.env.SMTP_FROM_NAME?.trim() || "Burger";
 
   if (
     !user ||
@@ -60,18 +58,6 @@ function getEmailConfig() {
     isPlaceholderValue(pass) ||
     isPlaceholderValue(from)
   ) {
-    console.error("[email] SMTP is not configured.", {
-      fromLooksPlaceholder: isPlaceholderValue(from),
-      hasFrom: Boolean(from),
-      hasPass: Boolean(pass),
-      hasUser: Boolean(user),
-      host,
-      passLooksPlaceholder: isPlaceholderValue(pass),
-      port,
-      secure,
-      timestamp: new Date().toISOString(),
-      userLooksPlaceholder: isPlaceholderValue(user),
-    });
     throw new Error("SMTP_NOT_CONFIGURED");
   }
 
@@ -109,23 +95,6 @@ export async function sendEmail(payload: EmailPayload) {
   } catch (error) {
     const code = getSmtpErrorCode(error);
 
-    console.error("[email] Failed to send email.", {
-      code,
-      error:
-        error instanceof Error
-          ? {
-              message: error.message,
-              name: error.name,
-            }
-          : error,
-      from: config.from,
-      host: config.host,
-      port: config.port,
-      secure: config.secure,
-      timestamp: new Date().toISOString(),
-      to: payload.to,
-    });
-
     if (code === "EAUTH") {
       throw new Error("SMTP_AUTH_FAILED");
     }
@@ -142,7 +111,7 @@ export async function sendRegistrationVerificationEmail(
   email: string,
   code: string
 ) {
-  const subject = `${APP_NAME} бүртгэлийн баталгаажуулах код`;
+  const subject = "Burger бүртгэлийн баталгаажуулах код";
   const text = [
     "Сайн байна уу,",
     "",
@@ -153,7 +122,7 @@ export async function sendRegistrationVerificationEmail(
   ].join("\n");
   const html = `
     <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #111827;">
-      <h2 style="margin-bottom: 12px;">${APP_NAME} бүртгэлийн баталгаажуулалт</h2>
+      <h2 style="margin-bottom: 12px;">Burger бүртгэлийн баталгаажуулалт</h2>
       <p>Сайн байна уу,</p>
       <p>Таны бүртгэлийг баталгаажуулах код:</p>
       <div style="margin: 16px 0; font-size: 32px; font-weight: 700; letter-spacing: 6px;">

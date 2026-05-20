@@ -2,23 +2,18 @@
 
 import Image from "next/image";
 import { HeartIcon } from "@heroicons/react/24/outline";
-import {
-  HeartIcon as HeartSolidIcon,
-  PlusIcon,
-  StarIcon,
-} from "@heroicons/react/24/solid";
+import { HeartIcon as HeartSolidIcon, PlusIcon, StarIcon } from "@heroicons/react/24/solid";
 import { useState } from "react";
 
 import { getFoodCategoryLabel } from "@/features/food/food-categories";
 import type { Food } from "@/features/food/food.types";
-import { useAppLanguage } from "@/hooks/useAppLanguage";
 import { getFoodRating, getFoodReviewCount } from "@/lib/dashboard";
 import { cn, formatCurrency } from "@/lib/helpers";
 
 type ProductCardProps = {
   food: Food;
-  isFavorite?: boolean;
   onAddToCart?: (food: Food) => void;
+  isFavorite?: boolean;
   onToggleFavorite?: (food: Food) => void;
 };
 
@@ -106,11 +101,10 @@ const CATEGORY_CARD_STYLES: Record<
 
 export default function ProductCard({
   food,
-  isFavorite = false,
   onAddToCart,
+  isFavorite = false,
   onToggleFavorite,
 }: ProductCardProps) {
-  const { t } = useAppLanguage();
   const [imageSrc, setImageSrc] = useState(food.image);
   const rating = getFoodRating(food);
   const reviews = getFoodReviewCount(food);
@@ -118,12 +112,10 @@ export default function ProductCard({
   const categoryStyle = CATEGORY_CARD_STYLES[categoryLabel] ?? DEFAULT_CARD_STYLE;
 
   return (
-    <article className="card-hover card-hover-neutral dashboard-card group relative flex h-full min-w-0 flex-col overflow-hidden rounded-[22px] p-[16px]">
+    <article className="card-hover card-hover-neutral dashboard-card group relative flex h-full flex-col overflow-hidden rounded-[22px] p-[16px]">
       {onToggleFavorite ? (
         <button
-          aria-label={isFavorite
-            ? t({ en: "Remove favorite", mn: "Дуртайгаас хасах" })
-            : t({ en: "Add favorite", mn: "Дуртайд нэмэх" })}
+          aria-label={isFavorite ? "Remove favorite" : "Add favorite"}
           className={cn(
             "absolute right-4 top-4 z-10 inline-flex h-9 w-9 items-center justify-center rounded-full border",
             isFavorite
@@ -168,46 +160,35 @@ export default function ProductCard({
           className="object-contain p-3 drop-shadow-[0_20px_30px_rgba(0,0,0,0.45)] transition duration-300 group-hover:scale-[1.08]"
           fill
           onError={() => setImageSrc("/home-crops/burger1-clean-v2.png")}
-          sizes="(max-width: 767px) calc(100vw - 2rem), (max-width: 1279px) calc((100vw - 5rem) / 2), 240px"
+          sizes="240px"
           src={imageSrc}
         />
       </div>
 
-      <div className="mt-5 flex min-w-0 flex-1 flex-col">
-        <div className="flex min-h-[48px] min-w-0 items-start justify-between gap-3">
-          <h3 className="min-w-0 flex-1 break-words pr-2 text-[16px] font-semibold leading-6 text-white">
-            {food.name}
-          </h3>
-          <span className="max-w-[7.5rem] shrink-0 truncate rounded-full bg-white/[0.04] px-2.5 py-1 text-[11px] font-medium text-white/60">
-            {reviews} {t({ en: "reviews", mn: "үнэлгээ" })}
+      <div className="mt-5 flex flex-1 flex-col">
+        <div className="flex min-h-[48px] items-start justify-between gap-3">
+          <h3 className="pr-2 text-[16px] font-semibold leading-6 text-white">{food.name}</h3>
+          <span className="shrink-0 rounded-full bg-white/[0.04] px-2.5 py-1 text-[11px] font-medium text-white/60">
+            {reviews} reviews
           </span>
         </div>
-        <p className="mt-2 min-h-[56px] break-words text-sm leading-5 text-[var(--text-secondary)]">
-          {food.description
-            ?? t({
-              en: "Freshly prepared and made for quick cravings.",
-              mn: "Шинэхэн бэлтгэсэн, хурдан идэхэд яг таарсан сонголт.",
-            })}
+        <p className="mt-2 min-h-[56px] text-sm leading-5 text-[var(--text-secondary)]">
+          {food.description ?? "Freshly prepared and made for quick cravings."}
         </p>
         <div className="mt-3 flex items-center gap-1 text-[13px] text-[var(--text-secondary)]">
           <StarIcon className="h-4 w-4 text-[var(--accent-3)]" />
           <span>{rating}</span>
           <span className="text-white/28">|</span>
-          <span>{t({ en: "Top rated", mn: "Өндөр үнэлгээтэй" })}</span>
+          <span>Top rated</span>
         </div>
 
         <div className="mt-auto flex items-end justify-between gap-3 pt-5">
           <div>
-            <p className="text-[11px] uppercase tracking-[0.14em] text-white/36">
-              {t({ en: "Price", mn: "Үнэ" })}
-            </p>
+            <p className="text-[11px] uppercase tracking-[0.14em] text-white/36">Price</p>
             <p className="mt-1 text-[18px] font-semibold text-white">{formatCurrency(food.price)}</p>
           </div>
           <button
-            aria-label={t({
-              en: `Add ${food.name}`,
-              mn: `${food.name} нэмэх`,
-            })}
+            aria-label={`Add ${food.name}`}
             className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-[12px] bg-orange-500 text-white hover:brightness-110"
             onClick={() => onAddToCart?.(food)}
             type="button"

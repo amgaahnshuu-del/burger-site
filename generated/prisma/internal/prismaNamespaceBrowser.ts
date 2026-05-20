@@ -317,20 +317,92 @@ export const NullableJsonNullValueInput = {
 export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
 
 
-export const QueryMode = {
-  default: 'default',
-  insensitive: 'insensitive'
-} as const
-
-export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
-
-
 export const NullsOrder = {
   first: 'first',
   last: 'last'
 } as const
 
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+export const UserOrderByRelevanceFieldEnum = {
+  id: 'id',
+  name: 'name',
+  email: 'email',
+  password: 'password',
+  phone: 'phone'
+} as const
+
+export type UserOrderByRelevanceFieldEnum = (typeof UserOrderByRelevanceFieldEnum)[keyof typeof UserOrderByRelevanceFieldEnum]
+
+
+export const RestaurantOrderByRelevanceFieldEnum = {
+  id: 'id',
+  name: 'name',
+  description: 'description',
+  image: 'image',
+  address: 'address'
+} as const
+
+export type RestaurantOrderByRelevanceFieldEnum = (typeof RestaurantOrderByRelevanceFieldEnum)[keyof typeof RestaurantOrderByRelevanceFieldEnum]
+
+
+export const FoodOrderByRelevanceFieldEnum = {
+  id: 'id',
+  name: 'name',
+  description: 'description',
+  image: 'image',
+  category: 'category',
+  restaurantId: 'restaurantId'
+} as const
+
+export type FoodOrderByRelevanceFieldEnum = (typeof FoodOrderByRelevanceFieldEnum)[keyof typeof FoodOrderByRelevanceFieldEnum]
+
+
+export const CartOrderByRelevanceFieldEnum = {
+  id: 'id',
+  userId: 'userId'
+} as const
+
+export type CartOrderByRelevanceFieldEnum = (typeof CartOrderByRelevanceFieldEnum)[keyof typeof CartOrderByRelevanceFieldEnum]
+
+
+export const CartItemOrderByRelevanceFieldEnum = {
+  id: 'id',
+  cartId: 'cartId',
+  foodId: 'foodId'
+} as const
+
+export type CartItemOrderByRelevanceFieldEnum = (typeof CartItemOrderByRelevanceFieldEnum)[keyof typeof CartItemOrderByRelevanceFieldEnum]
+
+
+export const OrderOrderByRelevanceFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  courierId: 'courierId',
+  address: 'address',
+  addressLabel: 'addressLabel',
+  addressDistrict: 'addressDistrict',
+  addressKhoroo: 'addressKhoroo',
+  addressUnit: 'addressUnit',
+  addressNotes: 'addressNotes',
+  contactPhone: 'contactPhone',
+  cancelReason: 'cancelReason'
+} as const
+
+export type OrderOrderByRelevanceFieldEnum = (typeof OrderOrderByRelevanceFieldEnum)[keyof typeof OrderOrderByRelevanceFieldEnum]
+
+
+export const OrderItemOrderByRelevanceFieldEnum = {
+  id: 'id',
+  orderId: 'orderId',
+  foodId: 'foodId',
+  foodName: 'foodName',
+  foodImage: 'foodImage',
+  foodCategory: 'foodCategory'
+} as const
+
+export type OrderItemOrderByRelevanceFieldEnum = (typeof OrderItemOrderByRelevanceFieldEnum)[keyof typeof OrderItemOrderByRelevanceFieldEnum]
 
 
 export const JsonNullValueFilter = {
@@ -340,4 +412,94 @@ export const JsonNullValueFilter = {
 } as const
 
 export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
+
+
+export const QueryMode = {
+  default: 'default',
+  insensitive: 'insensitive'
+} as const
+
+export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
+
+
+export const PaymentOrderByRelevanceFieldEnum = {
+  id: 'id',
+  orderId: 'orderId',
+  providerReference: 'providerReference',
+  failureReason: 'failureReason'
+} as const
+
+export type PaymentOrderByRelevanceFieldEnum = (typeof PaymentOrderByRelevanceFieldEnum)[keyof typeof PaymentOrderByRelevanceFieldEnum]
+
+
+export const TrackingOrderByRelevanceFieldEnum = {
+  id: 'id',
+  orderId: 'orderId'
+} as const
+
+export type TrackingOrderByRelevanceFieldEnum = (typeof TrackingOrderByRelevanceFieldEnum)[keyof typeof TrackingOrderByRelevanceFieldEnum]
+
+
+export const DeliveryVerificationOrderByRelevanceFieldEnum = {
+  id: 'id',
+  orderId: 'orderId',
+  codeHash: 'codeHash',
+  channel: 'channel',
+  recipientPhone: 'recipientPhone',
+  recipientEmail: 'recipientEmail'
+} as const
+
+export type DeliveryVerificationOrderByRelevanceFieldEnum = (typeof DeliveryVerificationOrderByRelevanceFieldEnum)[keyof typeof DeliveryVerificationOrderByRelevanceFieldEnum]
+
+
+export const UserSettingsOrderByRelevanceFieldEnum = {
+  id: 'id',
+  userId: 'userId'
+} as const
+
+export type UserSettingsOrderByRelevanceFieldEnum = (typeof UserSettingsOrderByRelevanceFieldEnum)[keyof typeof UserSettingsOrderByRelevanceFieldEnum]
+
+
+export const SavedAddressOrderByRelevanceFieldEnum = {
+  id: 'id',
+  userSettingsId: 'userSettingsId',
+  label: 'label',
+  details: 'details',
+  district: 'district',
+  khoroo: 'khoroo',
+  apartmentUnit: 'apartmentUnit'
+} as const
+
+export type SavedAddressOrderByRelevanceFieldEnum = (typeof SavedAddressOrderByRelevanceFieldEnum)[keyof typeof SavedAddressOrderByRelevanceFieldEnum]
+
+
+export const SessionOrderByRelevanceFieldEnum = {
+  id: 'id',
+  tokenHash: 'tokenHash',
+  userId: 'userId'
+} as const
+
+export type SessionOrderByRelevanceFieldEnum = (typeof SessionOrderByRelevanceFieldEnum)[keyof typeof SessionOrderByRelevanceFieldEnum]
+
+
+export const PendingRegistrationOrderByRelevanceFieldEnum = {
+  id: 'id',
+  email: 'email',
+  name: 'name',
+  passwordHash: 'passwordHash',
+  codeHash: 'codeHash'
+} as const
+
+export type PendingRegistrationOrderByRelevanceFieldEnum = (typeof PendingRegistrationOrderByRelevanceFieldEnum)[keyof typeof PendingRegistrationOrderByRelevanceFieldEnum]
+
+
+export const FeedbackOrderByRelevanceFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  name: 'name',
+  email: 'email',
+  message: 'message'
+} as const
+
+export type FeedbackOrderByRelevanceFieldEnum = (typeof FeedbackOrderByRelevanceFieldEnum)[keyof typeof FeedbackOrderByRelevanceFieldEnum]
 

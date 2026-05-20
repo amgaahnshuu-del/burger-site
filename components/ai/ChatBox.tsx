@@ -16,7 +16,6 @@ import type {
   AIResponseMode,
   ChatMessage as AIChatMessage,
 } from "@/features/ai/ai.types";
-import { APP_NAME } from "@/lib/constants";
 import { cn } from "@/lib/helpers";
 
 const CHAT_STORAGE_KEY = "burger-ai-chat-v2";
@@ -25,7 +24,7 @@ const INITIAL_ASSISTANT_MESSAGE_ID = `assistant-${INITIAL_ASSISTANT_TIMESTAMP}-w
 
 const INITIAL_ASSISTANT_MESSAGE = {
   content:
-    `Сайн байна уу. Би таны ${APP_NAME} AI туслах байна.\n\nНадаас хоол санал болгуулах, захиалгын явц шалгах, эсвэл QPay төлбөрийн талаар шууд асууж болно.`,
+    "Сайн байна уу. Би таны Burger AI туслах байна.\n\nНадаас хоол санал болгуулах, захиалгын явц шалгах, эсвэл QPay төлбөрийн талаар шууд асууж болно.",
   id: INITIAL_ASSISTANT_MESSAGE_ID,
   role: "assistant" as const,
 };

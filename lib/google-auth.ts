@@ -1,11 +1,10 @@
 import { randomBytes } from "node:crypto";
-import type { NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
 const GOOGLE_OAUTH_STATE_COOKIE = "google_oauth_state";
 const GOOGLE_OAUTH_REDIRECT_COOKIE = "google_oauth_redirect";
 const GOOGLE_OAUTH_VIEW_COOKIE = "google_oauth_view";
 const GOOGLE_OAUTH_COOKIE_MAX_AGE_SECONDS = 60 * 10;
-const LOCAL_HOSTNAMES = new Set(["localhost", "127.0.0.1", "0.0.0.0", "::1", "[::1]"]);
 
 type GoogleAuthView = "login" | "register";
 
@@ -35,93 +34,6 @@ function shouldUseSecureCookie(request: Request) {
   } catch {
     return false;
   }
-}
-
-function isLocalHostname(hostname: string) {
-  return LOCAL_HOSTNAMES.has(hostname);
-}
-
-function readForwardedHeaderValue(value: string | null) {
-  return value?.split(",")[0]?.trim() ?? "";
-}
-
-function createOrigin(value: string | null | undefined) {
-  if (!value) {
-    return null;
-  }
-
-  try {
-    return new URL(value).origin;
-  } catch {
-    return null;
-  }
-}
-
-function createOriginFromHost(host: string, protocol: string) {
-  if (!host) {
-    return null;
-  }
-
-  const normalizedProtocol = protocol === "http" || protocol === "https"
-    ? protocol
-    : "https";
-
-  return createOrigin(`${normalizedProtocol}://${host}`);
-}
-
-function getConfiguredAppOrigin() {
-  return createOrigin(process.env.NEXT_PUBLIC_APP_URL?.trim());
-}
-
-function getForwardedOrigin(request: Request) {
-  const forwardedHost = readForwardedHeaderValue(
-    request.headers.get("x-forwarded-host")
-  );
-  const forwardedProto = readForwardedHeaderValue(
-    request.headers.get("x-forwarded-proto")
-  );
-
-  return createOriginFromHost(forwardedHost, forwardedProto);
-}
-
-function getGoogleAuthOrigin(request: Request) {
-  const requestUrl = new URL(request.url);
-  const configuredAppOrigin = getConfiguredAppOrigin();
-  const forwardedOrigin = getForwardedOrigin(request);
-
-  if (configuredAppOrigin) {
-    try {
-      if (!isLocalHostname(new URL(configuredAppOrigin).hostname)) {
-        return configuredAppOrigin;
-      }
-    } catch {
-      // Ignore invalid values and keep resolving below.
-    }
-  }
-
-  if (forwardedOrigin) {
-    try {
-      if (!isLocalHostname(new URL(forwardedOrigin).hostname)) {
-        return forwardedOrigin;
-      }
-    } catch {
-      // Ignore invalid values and keep resolving below.
-    }
-  }
-
-  if (!isLocalHostname(requestUrl.hostname)) {
-    return requestUrl.origin;
-  }
-
-  if (configuredAppOrigin) {
-    return configuredAppOrigin;
-  }
-
-  if (forwardedOrigin) {
-    return forwardedOrigin;
-  }
-
-  return requestUrl.origin;
 }
 
 export function getGoogleAuthView(value: string | null | undefined): GoogleAuthView {
@@ -167,33 +79,12 @@ export function getGoogleOAuthConfig() {
 
 export function getGoogleRedirectUri(request: Request) {
   const { redirectUriOverride } = getGoogleOAuthConfig();
-  const requestUrl = new URL(request.url);
-  const googleAuthOrigin = getGoogleAuthOrigin(request);
 
   if (redirectUriOverride) {
-    try {
-      const overrideUrl = new URL(redirectUriOverride);
-
-      if (!isLocalHostname(overrideUrl.hostname)) {
-        return overrideUrl.toString();
-      }
-
-      if (
-        isLocalHostname(requestUrl.hostname)
-        && isLocalHostname(new URL(googleAuthOrigin).hostname)
-      ) {
-        return overrideUrl.toString();
-      }
-
-      if (overrideUrl.origin === googleAuthOrigin) {
-        return overrideUrl.toString();
-      }
-    } catch {
-      // Fall through to the current request origin when the override is invalid.
-    }
+    return redirectUriOverride;
   }
 
-  return new URL("/api/auth/google/callback", googleAuthOrigin).toString();
+  return new URL("/api/auth/google/callback", request.url).toString();
 }
 
 export function createGoogleOAuthState() {

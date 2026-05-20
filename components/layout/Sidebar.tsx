@@ -116,7 +116,7 @@ function getAdminNavItems(isMn: boolean): readonly NavItem[] {
     {
       href: "/admin/managers",
       icon: BriefcaseIcon,
-      label: isMn ? "Менежерүүд" : "Managers",
+      label: "Managers",
       match: ["/admin/managers"],
     },
     {
@@ -148,7 +148,7 @@ function getCourierNavItems(isMn: boolean): readonly NavItem[] {
     {
       href: "/courier/active-track",
       icon: MapIcon,
-      label: isMn ? "Идэвхтэй хяналт" : "Active Track",
+      label: "Active Track",
       match: ["/courier/active-track"],
       exactMatch: ["/courier/active-track"],
     },
@@ -173,21 +173,21 @@ function getManagerNavItems(isMn: boolean): readonly NavItem[] {
     {
       href: "/manager/preparing",
       icon: Squares2X2Icon,
-      label: isMn ? "Бэлтгэж буй" : "Preparing",
+      label: "Preparing",
       match: ["/manager/preparing"],
       exactMatch: ["/manager/preparing"],
     },
     {
       href: "/manager/ready",
       icon: TruckIcon,
-      label: isMn ? "Бэлэн" : "Ready",
+      label: "Ready",
       match: ["/manager/ready"],
       exactMatch: ["/manager/ready"],
     },
     {
       href: "/manager/delivering",
       icon: MapIcon,
-      label: isMn ? "Замд" : "On Road",
+      label: "On Road",
       match: ["/manager/delivering"],
       exactMatch: ["/manager/delivering"],
     },
@@ -248,7 +248,7 @@ export default function Sidebar({ mobileOpen, onClose }: SidebarProps) {
   const brandHref = isAdmin ? "/admin?section=most-sell" : isManager ? "/manager" : isCourier ? "/courier" : "/";
   const adminNavItems: readonly NavItem[] = [
     ...getAdminNavItems(isMn),
-    { href: "/admin/settings", icon: Cog6ToothIcon, label: isMn ? "Тохиргоо" : "Settings", match: ["/admin/settings"] },
+    { href: "/admin/settings", icon: Cog6ToothIcon, label: "Settings", match: ["/admin/settings"] },
   ];
   const navItems = isAdmin
     ? adminNavItems
@@ -266,7 +266,7 @@ export default function Sidebar({ mobileOpen, onClose }: SidebarProps) {
     ? `${activeCourierOrder.addressLabel.trim()}${activeCourierOrder.address ? ` • ${activeCourierOrder.address}` : ""}`
     : activeCourierOrder?.address ?? null;
   const activeCourierLocationLabel = activeCourierLocation?.replace("â€¢", " - ");
-  const activeCourierCustomerName = activeCourierOrder?.user?.name ?? (isMn ? "Хэрэглэгч" : "Customer");
+  const activeCourierCustomerName = activeCourierOrder?.user?.name ?? "Customer";
   void activeCourierLocationLabel;
   void activeCourierCustomerName;
 
@@ -341,16 +341,10 @@ export default function Sidebar({ mobileOpen, onClose }: SidebarProps) {
           }}
         >
           <span className={cn(
-            "relative inline-flex items-center justify-center overflow-hidden rounded-[12px] bg-white/6 ring-1 ring-white/10",
-            isOrdersDashboardPage ? "h-8 w-8" : isAIAgentPage ? "h-7 w-7" : "h-8 w-8"
+            "inline-flex items-center justify-center rounded-full bg-[var(--gradient-accent)] text-sm font-black text-white shadow-[0_0_26px_rgba(255,106,0,0.18)]",
+            isOrdersDashboardPage ? "h-8 w-8" : isAIAgentPage ? "h-7 w-7 text-[11px]" : "h-8 w-8"
           )}>
-            <Image
-              alt={`${APP_NAME} logo`}
-              className="object-contain "
-              fill
-              sizes={isAIAgentPage ? "38px" : "42px"}
-              src="/logo.png"
-            />
+            B
           </span>
           <span className={cn("font-extrabold text-white", isOrdersDashboardPage ? "text-[21px]" : isAIAgentPage ? "text-[18px]" : "text-[22px]")}>
             {APP_NAME}
@@ -495,7 +489,7 @@ export default function Sidebar({ mobileOpen, onClose }: SidebarProps) {
               <div className="mt-4 hidden rounded-[14px] border border-orange-400/14 bg-orange-500/[0.06] p-3">
                 <div className="flex items-center justify-between gap-3">
                   <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-orange-200/72">
-                    {isMn ? "Идэвхтэй хяналт" : "Active Track"}
+                    Active Track
                   </p>
                   {activeCourierOrder ? (
                     <span className="rounded-full border border-white/10 bg-black/20 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-white/62">

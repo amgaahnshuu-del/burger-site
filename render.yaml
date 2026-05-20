@@ -10,14 +10,12 @@ services:
     startCommand: npm start
     envVars:
       - key: NODE_VERSION
-        value: "22"
+        value: "20"
       - key: DATABASE_URL
         sync: false
       - key: GOOGLE_CLIENT_ID
         sync: false
       - key: GOOGLE_CLIENT_SECRET
-        sync: false
-      - key: GOOGLE_REDIRECT_URI
         sync: false
       - key: SMTP_HOST
         sync: false
@@ -39,5 +37,3 @@ services:
         sync: false
       - key: GEMINI_MODEL
         value: gemini-2.5-flash
-      - key: NEXT_PUBLIC_APP_URL
-        sync: false

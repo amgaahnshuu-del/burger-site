@@ -239,6 +239,7 @@ export type TrackingOrderByWithRelationInput = {
   longitude?: Prisma.SortOrderInput | Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   order?: Prisma.OrderOrderByWithRelationInput
+  _relevance?: Prisma.TrackingOrderByRelevanceInput
 }
 
 export type TrackingWhereUniqueInput = Prisma.AtLeast<{
@@ -345,6 +346,12 @@ export type TrackingUncheckedUpdateManyInput = {
 export type TrackingNullableScalarRelationFilter = {
   is?: Prisma.TrackingWhereInput | null
   isNot?: Prisma.TrackingWhereInput | null
+}
+
+export type TrackingOrderByRelevanceInput = {
+  fields: Prisma.TrackingOrderByRelevanceFieldEnum | Prisma.TrackingOrderByRelevanceFieldEnum[]
+  sort: Prisma.SortOrder
+  search: string
 }
 
 export type TrackingCountOrderByAggregateInput = {
@@ -480,25 +487,7 @@ export type TrackingSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   order?: boolean | Prisma.OrderDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["tracking"]>
 
-export type TrackingSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
-  id?: boolean
-  orderId?: boolean
-  status?: boolean
-  latitude?: boolean
-  longitude?: boolean
-  updatedAt?: boolean
-  order?: boolean | Prisma.OrderDefaultArgs<ExtArgs>
-}, ExtArgs["result"]["tracking"]>
 
-export type TrackingSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
-  id?: boolean
-  orderId?: boolean
-  status?: boolean
-  latitude?: boolean
-  longitude?: boolean
-  updatedAt?: boolean
-  order?: boolean | Prisma.OrderDefaultArgs<ExtArgs>
-}, ExtArgs["result"]["tracking"]>
 
 export type TrackingSelectScalar = {
   id?: boolean
@@ -511,12 +500,6 @@ export type TrackingSelectScalar = {
 
 export type TrackingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "orderId" | "status" | "latitude" | "longitude" | "updatedAt", ExtArgs["result"]["tracking"]>
 export type TrackingInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  order?: boolean | Prisma.OrderDefaultArgs<ExtArgs>
-}
-export type TrackingIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  order?: boolean | Prisma.OrderDefaultArgs<ExtArgs>
-}
-export type TrackingIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   order?: boolean | Prisma.OrderDefaultArgs<ExtArgs>
 }
 
@@ -650,30 +633,6 @@ export interface TrackingDelegate<ExtArgs extends runtime.Types.Extensions.Inter
   createMany<T extends TrackingCreateManyArgs>(args?: Prisma.SelectSubset<T, TrackingCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
 
   /**
-   * Create many Trackings and returns the data saved in the database.
-   * @param {TrackingCreateManyAndReturnArgs} args - Arguments to create many Trackings.
-   * @example
-   * // Create many Trackings
-   * const tracking = await prisma.tracking.createManyAndReturn({
-   *   data: [
-   *     // ... provide data here
-   *   ]
-   * })
-   * 
-   * // Create many Trackings and only return the `id`
-   * const trackingWithIdOnly = await prisma.tracking.createManyAndReturn({
-   *   select: { id: true },
-   *   data: [
-   *     // ... provide data here
-   *   ]
-   * })
-   * Note, that providing `undefined` is treated as the value not being there.
-   * Read more here: https://pris.ly/d/null-undefined
-   * 
-   */
-  createManyAndReturn<T extends TrackingCreateManyAndReturnArgs>(args?: Prisma.SelectSubset<T, TrackingCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TrackingPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
-
-  /**
    * Delete a Tracking.
    * @param {TrackingDeleteArgs} args - Arguments to delete one Tracking.
    * @example
@@ -736,36 +695,6 @@ export interface TrackingDelegate<ExtArgs extends runtime.Types.Extensions.Inter
    * 
    */
   updateMany<T extends TrackingUpdateManyArgs>(args: Prisma.SelectSubset<T, TrackingUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
-
-  /**
-   * Update zero or more Trackings and returns the data updated in the database.
-   * @param {TrackingUpdateManyAndReturnArgs} args - Arguments to update many Trackings.
-   * @example
-   * // Update many Trackings
-   * const tracking = await prisma.tracking.updateManyAndReturn({
-   *   where: {
-   *     // ... provide filter here
-   *   },
-   *   data: [
-   *     // ... provide data here
-   *   ]
-   * })
-   * 
-   * // Update zero or more Trackings and only return the `id`
-   * const trackingWithIdOnly = await prisma.tracking.updateManyAndReturn({
-   *   select: { id: true },
-   *   where: {
-   *     // ... provide filter here
-   *   },
-   *   data: [
-   *     // ... provide data here
-   *   ]
-   * })
-   * Note, that providing `undefined` is treated as the value not being there.
-   * Read more here: https://pris.ly/d/null-undefined
-   * 
-   */
-  updateManyAndReturn<T extends TrackingUpdateManyAndReturnArgs>(args: Prisma.SelectSubset<T, TrackingUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TrackingPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
   /**
    * Create or update one Tracking.
@@ -1200,29 +1129,6 @@ export type TrackingCreateManyArgs<ExtArgs extends runtime.Types.Extensions.Inte
 }
 
 /**
- * Tracking createManyAndReturn
- */
-export type TrackingCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Tracking
-   */
-  select?: Prisma.TrackingSelectCreateManyAndReturn<ExtArgs> | null
-  /**
-   * Omit specific fields from the Tracking
-   */
-  omit?: Prisma.TrackingOmit<ExtArgs> | null
-  /**
-   * The data used to create many Trackings.
-   */
-  data: Prisma.TrackingCreateManyInput | Prisma.TrackingCreateManyInput[]
-  skipDuplicates?: boolean
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.TrackingIncludeCreateManyAndReturn<ExtArgs> | null
-}
-
-/**
  * Tracking update
  */
 export type TrackingUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1264,36 +1170,6 @@ export type TrackingUpdateManyArgs<ExtArgs extends runtime.Types.Extensions.Inte
    * Limit how many Trackings to update.
    */
   limit?: number
-}
-
-/**
- * Tracking updateManyAndReturn
- */
-export type TrackingUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Tracking
-   */
-  select?: Prisma.TrackingSelectUpdateManyAndReturn<ExtArgs> | null
-  /**
-   * Omit specific fields from the Tracking
-   */
-  omit?: Prisma.TrackingOmit<ExtArgs> | null
-  /**
-   * The data used to update Trackings.
-   */
-  data: Prisma.XOR<Prisma.TrackingUpdateManyMutationInput, Prisma.TrackingUncheckedUpdateManyInput>
-  /**
-   * Filter which Trackings to update
-   */
-  where?: Prisma.TrackingWhereInput
-  /**
-   * Limit how many Trackings to update.
-   */
-  limit?: number
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.TrackingIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**

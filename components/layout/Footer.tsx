@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 
-import { useAppLanguage } from "@/hooks/useAppLanguage";
 import { cn } from "@/lib/helpers";
 
 type FooterProps = {
@@ -10,14 +9,11 @@ type FooterProps = {
   isMn?: boolean;
 };
 
-export default function Footer({ className, isMn: forcedIsMn }: FooterProps) {
-  const { isMn: settingsIsMn } = useAppLanguage();
-  const isMn = forcedIsMn ?? settingsIsMn;
-
+export default function Footer({ className, isMn = false }: FooterProps) {
   return (
     <footer
       className={cn(
-        "flex flex-wrap items-center gap-4 border-t border-white/8 pt-6 text-xs text-white/42",
+        "flex flex-wrap items-center border-t border-white/8 text-white/42 gap-4 pt-6 text-xs",
         className
       )}
     >

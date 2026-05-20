@@ -3,7 +3,6 @@ import type {
   AIConversationMessage,
   AIResponseMode,
 } from "@/features/ai/ai.types";
-import { APP_NAME } from "@/lib/constants";
 import { prisma } from "@/lib/prisma";
 
 type AssistantUser = {
@@ -274,7 +273,7 @@ function buildDeveloperPrompt(context: AssistantContext) {
     .join(", ");
 
   return [
-    `You are ${APP_NAME} AI, a smart in-app food delivery assistant.`,
+    "You are Burger AI, a smart in-app food delivery assistant.",
     "Default to Mongolian unless the user clearly prefers another language.",
     "Your tone should feel natural, sharp, helpful, and proactive, more like ChatGPT than a scripted support bot.",
     "Ground every answer in the app context below. Never invent menu items, discounts, payment methods, couriers, order states, or policies that are not present in context.",

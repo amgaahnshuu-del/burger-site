@@ -201,6 +201,7 @@ export type RestaurantOrderByWithRelationInput = {
   address?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   foods?: Prisma.FoodOrderByRelationAggregateInput
+  _relevance?: Prisma.RestaurantOrderByRelevanceInput
 }
 
 export type RestaurantWhereUniqueInput = Prisma.AtLeast<{
@@ -305,6 +306,12 @@ export type RestaurantUncheckedUpdateManyInput = {
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type RestaurantOrderByRelevanceInput = {
+  fields: Prisma.RestaurantOrderByRelevanceFieldEnum | Prisma.RestaurantOrderByRelevanceFieldEnum[]
+  sort: Prisma.SortOrder
+  search: string
 }
 
 export type RestaurantCountOrderByAggregateInput = {
@@ -449,23 +456,7 @@ export type RestaurantSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   _count?: boolean | Prisma.RestaurantCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["restaurant"]>
 
-export type RestaurantSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
-  id?: boolean
-  name?: boolean
-  description?: boolean
-  image?: boolean
-  address?: boolean
-  createdAt?: boolean
-}, ExtArgs["result"]["restaurant"]>
 
-export type RestaurantSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
-  id?: boolean
-  name?: boolean
-  description?: boolean
-  image?: boolean
-  address?: boolean
-  createdAt?: boolean
-}, ExtArgs["result"]["restaurant"]>
 
 export type RestaurantSelectScalar = {
   id?: boolean
@@ -481,8 +472,6 @@ export type RestaurantInclude<ExtArgs extends runtime.Types.Extensions.InternalA
   foods?: boolean | Prisma.Restaurant$foodsArgs<ExtArgs>
   _count?: boolean | Prisma.RestaurantCountOutputTypeDefaultArgs<ExtArgs>
 }
-export type RestaurantIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
-export type RestaurantIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
 
 export type $RestaurantPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Restaurant"
@@ -614,30 +603,6 @@ export interface RestaurantDelegate<ExtArgs extends runtime.Types.Extensions.Int
   createMany<T extends RestaurantCreateManyArgs>(args?: Prisma.SelectSubset<T, RestaurantCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
 
   /**
-   * Create many Restaurants and returns the data saved in the database.
-   * @param {RestaurantCreateManyAndReturnArgs} args - Arguments to create many Restaurants.
-   * @example
-   * // Create many Restaurants
-   * const restaurant = await prisma.restaurant.createManyAndReturn({
-   *   data: [
-   *     // ... provide data here
-   *   ]
-   * })
-   * 
-   * // Create many Restaurants and only return the `id`
-   * const restaurantWithIdOnly = await prisma.restaurant.createManyAndReturn({
-   *   select: { id: true },
-   *   data: [
-   *     // ... provide data here
-   *   ]
-   * })
-   * Note, that providing `undefined` is treated as the value not being there.
-   * Read more here: https://pris.ly/d/null-undefined
-   * 
-   */
-  createManyAndReturn<T extends RestaurantCreateManyAndReturnArgs>(args?: Prisma.SelectSubset<T, RestaurantCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RestaurantPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
-
-  /**
    * Delete a Restaurant.
    * @param {RestaurantDeleteArgs} args - Arguments to delete one Restaurant.
    * @example
@@ -700,36 +665,6 @@ export interface RestaurantDelegate<ExtArgs extends runtime.Types.Extensions.Int
    * 
    */
   updateMany<T extends RestaurantUpdateManyArgs>(args: Prisma.SelectSubset<T, RestaurantUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
-
-  /**
-   * Update zero or more Restaurants and returns the data updated in the database.
-   * @param {RestaurantUpdateManyAndReturnArgs} args - Arguments to update many Restaurants.
-   * @example
-   * // Update many Restaurants
-   * const restaurant = await prisma.restaurant.updateManyAndReturn({
-   *   where: {
-   *     // ... provide filter here
-   *   },
-   *   data: [
-   *     // ... provide data here
-   *   ]
-   * })
-   * 
-   * // Update zero or more Restaurants and only return the `id`
-   * const restaurantWithIdOnly = await prisma.restaurant.updateManyAndReturn({
-   *   select: { id: true },
-   *   where: {
-   *     // ... provide filter here
-   *   },
-   *   data: [
-   *     // ... provide data here
-   *   ]
-   * })
-   * Note, that providing `undefined` is treated as the value not being there.
-   * Read more here: https://pris.ly/d/null-undefined
-   * 
-   */
-  updateManyAndReturn<T extends RestaurantUpdateManyAndReturnArgs>(args: Prisma.SelectSubset<T, RestaurantUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RestaurantPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
   /**
    * Create or update one Restaurant.
@@ -1164,25 +1099,6 @@ export type RestaurantCreateManyArgs<ExtArgs extends runtime.Types.Extensions.In
 }
 
 /**
- * Restaurant createManyAndReturn
- */
-export type RestaurantCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Restaurant
-   */
-  select?: Prisma.RestaurantSelectCreateManyAndReturn<ExtArgs> | null
-  /**
-   * Omit specific fields from the Restaurant
-   */
-  omit?: Prisma.RestaurantOmit<ExtArgs> | null
-  /**
-   * The data used to create many Restaurants.
-   */
-  data: Prisma.RestaurantCreateManyInput | Prisma.RestaurantCreateManyInput[]
-  skipDuplicates?: boolean
-}
-
-/**
  * Restaurant update
  */
 export type RestaurantUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1212,32 +1128,6 @@ export type RestaurantUpdateArgs<ExtArgs extends runtime.Types.Extensions.Intern
  * Restaurant updateMany
  */
 export type RestaurantUpdateManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * The data used to update Restaurants.
-   */
-  data: Prisma.XOR<Prisma.RestaurantUpdateManyMutationInput, Prisma.RestaurantUncheckedUpdateManyInput>
-  /**
-   * Filter which Restaurants to update
-   */
-  where?: Prisma.RestaurantWhereInput
-  /**
-   * Limit how many Restaurants to update.
-   */
-  limit?: number
-}
-
-/**
- * Restaurant updateManyAndReturn
- */
-export type RestaurantUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Restaurant
-   */
-  select?: Prisma.RestaurantSelectUpdateManyAndReturn<ExtArgs> | null
-  /**
-   * Omit specific fields from the Restaurant
-   */
-  omit?: Prisma.RestaurantOmit<ExtArgs> | null
   /**
    * The data used to update Restaurants.
    */

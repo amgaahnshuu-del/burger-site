@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 
 import LegalPage from "@/components/legal/LegalPage";
-import { APP_NAME } from "@/lib/constants";
 
 export const metadata: Metadata = {
   title: "Privacy Policy",
@@ -10,7 +9,7 @@ export const metadata: Metadata = {
 export default function PrivacyPage() {
   return (
     <LegalPage
-      description={`This policy explains what customer, courier, and account data ${APP_NAME} stores to operate ordering, dispatch, payments, and support.`}
+      description="This policy explains what customer, courier, and account data Burger stores to operate ordering, dispatch, payments, and support."
       sections={[
         {
           body: "We collect account details such as your name, email address, phone number, and saved delivery preferences so we can authenticate your account and complete deliveries.",

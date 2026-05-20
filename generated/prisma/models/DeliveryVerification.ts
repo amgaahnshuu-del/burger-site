@@ -289,6 +289,7 @@ export type DeliveryVerificationOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   order?: Prisma.OrderOrderByWithRelationInput
+  _relevance?: Prisma.DeliveryVerificationOrderByRelevanceInput
 }
 
 export type DeliveryVerificationWhereUniqueInput = Prisma.AtLeast<{
@@ -455,6 +456,12 @@ export type DeliveryVerificationUncheckedUpdateManyInput = {
 export type DeliveryVerificationNullableScalarRelationFilter = {
   is?: Prisma.DeliveryVerificationWhereInput | null
   isNot?: Prisma.DeliveryVerificationWhereInput | null
+}
+
+export type DeliveryVerificationOrderByRelevanceInput = {
+  fields: Prisma.DeliveryVerificationOrderByRelevanceFieldEnum | Prisma.DeliveryVerificationOrderByRelevanceFieldEnum[]
+  sort: Prisma.SortOrder
+  search: string
 }
 
 export type DeliveryVerificationCountOrderByAggregateInput = {
@@ -632,37 +639,7 @@ export type DeliveryVerificationSelect<ExtArgs extends runtime.Types.Extensions.
   order?: boolean | Prisma.OrderDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["deliveryVerification"]>
 
-export type DeliveryVerificationSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
-  id?: boolean
-  orderId?: boolean
-  codeHash?: boolean
-  channel?: boolean
-  recipientPhone?: boolean
-  recipientEmail?: boolean
-  attempts?: boolean
-  lastSentAt?: boolean
-  expiresAt?: boolean
-  verifiedAt?: boolean
-  createdAt?: boolean
-  updatedAt?: boolean
-  order?: boolean | Prisma.OrderDefaultArgs<ExtArgs>
-}, ExtArgs["result"]["deliveryVerification"]>
 
-export type DeliveryVerificationSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
-  id?: boolean
-  orderId?: boolean
-  codeHash?: boolean
-  channel?: boolean
-  recipientPhone?: boolean
-  recipientEmail?: boolean
-  attempts?: boolean
-  lastSentAt?: boolean
-  expiresAt?: boolean
-  verifiedAt?: boolean
-  createdAt?: boolean
-  updatedAt?: boolean
-  order?: boolean | Prisma.OrderDefaultArgs<ExtArgs>
-}, ExtArgs["result"]["deliveryVerification"]>
 
 export type DeliveryVerificationSelectScalar = {
   id?: boolean
@@ -681,12 +658,6 @@ export type DeliveryVerificationSelectScalar = {
 
 export type DeliveryVerificationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "orderId" | "codeHash" | "channel" | "recipientPhone" | "recipientEmail" | "attempts" | "lastSentAt" | "expiresAt" | "verifiedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["deliveryVerification"]>
 export type DeliveryVerificationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  order?: boolean | Prisma.OrderDefaultArgs<ExtArgs>
-}
-export type DeliveryVerificationIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  order?: boolean | Prisma.OrderDefaultArgs<ExtArgs>
-}
-export type DeliveryVerificationIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   order?: boolean | Prisma.OrderDefaultArgs<ExtArgs>
 }
 
@@ -826,30 +797,6 @@ export interface DeliveryVerificationDelegate<ExtArgs extends runtime.Types.Exte
   createMany<T extends DeliveryVerificationCreateManyArgs>(args?: Prisma.SelectSubset<T, DeliveryVerificationCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
 
   /**
-   * Create many DeliveryVerifications and returns the data saved in the database.
-   * @param {DeliveryVerificationCreateManyAndReturnArgs} args - Arguments to create many DeliveryVerifications.
-   * @example
-   * // Create many DeliveryVerifications
-   * const deliveryVerification = await prisma.deliveryVerification.createManyAndReturn({
-   *   data: [
-   *     // ... provide data here
-   *   ]
-   * })
-   * 
-   * // Create many DeliveryVerifications and only return the `id`
-   * const deliveryVerificationWithIdOnly = await prisma.deliveryVerification.createManyAndReturn({
-   *   select: { id: true },
-   *   data: [
-   *     // ... provide data here
-   *   ]
-   * })
-   * Note, that providing `undefined` is treated as the value not being there.
-   * Read more here: https://pris.ly/d/null-undefined
-   * 
-   */
-  createManyAndReturn<T extends DeliveryVerificationCreateManyAndReturnArgs>(args?: Prisma.SelectSubset<T, DeliveryVerificationCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DeliveryVerificationPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
-
-  /**
    * Delete a DeliveryVerification.
    * @param {DeliveryVerificationDeleteArgs} args - Arguments to delete one DeliveryVerification.
    * @example
@@ -912,36 +859,6 @@ export interface DeliveryVerificationDelegate<ExtArgs extends runtime.Types.Exte
    * 
    */
   updateMany<T extends DeliveryVerificationUpdateManyArgs>(args: Prisma.SelectSubset<T, DeliveryVerificationUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
-
-  /**
-   * Update zero or more DeliveryVerifications and returns the data updated in the database.
-   * @param {DeliveryVerificationUpdateManyAndReturnArgs} args - Arguments to update many DeliveryVerifications.
-   * @example
-   * // Update many DeliveryVerifications
-   * const deliveryVerification = await prisma.deliveryVerification.updateManyAndReturn({
-   *   where: {
-   *     // ... provide filter here
-   *   },
-   *   data: [
-   *     // ... provide data here
-   *   ]
-   * })
-   * 
-   * // Update zero or more DeliveryVerifications and only return the `id`
-   * const deliveryVerificationWithIdOnly = await prisma.deliveryVerification.updateManyAndReturn({
-   *   select: { id: true },
-   *   where: {
-   *     // ... provide filter here
-   *   },
-   *   data: [
-   *     // ... provide data here
-   *   ]
-   * })
-   * Note, that providing `undefined` is treated as the value not being there.
-   * Read more here: https://pris.ly/d/null-undefined
-   * 
-   */
-  updateManyAndReturn<T extends DeliveryVerificationUpdateManyAndReturnArgs>(args: Prisma.SelectSubset<T, DeliveryVerificationUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DeliveryVerificationPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
   /**
    * Create or update one DeliveryVerification.
@@ -1382,29 +1299,6 @@ export type DeliveryVerificationCreateManyArgs<ExtArgs extends runtime.Types.Ext
 }
 
 /**
- * DeliveryVerification createManyAndReturn
- */
-export type DeliveryVerificationCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the DeliveryVerification
-   */
-  select?: Prisma.DeliveryVerificationSelectCreateManyAndReturn<ExtArgs> | null
-  /**
-   * Omit specific fields from the DeliveryVerification
-   */
-  omit?: Prisma.DeliveryVerificationOmit<ExtArgs> | null
-  /**
-   * The data used to create many DeliveryVerifications.
-   */
-  data: Prisma.DeliveryVerificationCreateManyInput | Prisma.DeliveryVerificationCreateManyInput[]
-  skipDuplicates?: boolean
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.DeliveryVerificationIncludeCreateManyAndReturn<ExtArgs> | null
-}
-
-/**
  * DeliveryVerification update
  */
 export type DeliveryVerificationUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1446,36 +1340,6 @@ export type DeliveryVerificationUpdateManyArgs<ExtArgs extends runtime.Types.Ext
    * Limit how many DeliveryVerifications to update.
    */
   limit?: number
-}
-
-/**
- * DeliveryVerification updateManyAndReturn
- */
-export type DeliveryVerificationUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the DeliveryVerification
-   */
-  select?: Prisma.DeliveryVerificationSelectUpdateManyAndReturn<ExtArgs> | null
-  /**
-   * Omit specific fields from the DeliveryVerification
-   */
-  omit?: Prisma.DeliveryVerificationOmit<ExtArgs> | null
-  /**
-   * The data used to update DeliveryVerifications.
-   */
-  data: Prisma.XOR<Prisma.DeliveryVerificationUpdateManyMutationInput, Prisma.DeliveryVerificationUncheckedUpdateManyInput>
-  /**
-   * Filter which DeliveryVerifications to update
-   */
-  where?: Prisma.DeliveryVerificationWhereInput
-  /**
-   * Limit how many DeliveryVerifications to update.
-   */
-  limit?: number
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.DeliveryVerificationIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**

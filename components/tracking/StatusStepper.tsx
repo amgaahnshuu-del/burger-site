@@ -1,5 +1,3 @@
-"use client";
-
 import {
   CheckCircleIcon,
   ClockIcon,
@@ -7,7 +5,6 @@ import {
 } from "@heroicons/react/24/solid";
 
 import type { TrackingStatus } from "@/features/order/order.types";
-import { useAppLanguage } from "@/hooks/useAppLanguage";
 import { TRACKING_STEPS } from "@/lib/constants";
 import { cn, getTrackingStatusLabel } from "@/lib/helpers";
 
@@ -22,13 +19,12 @@ const STEP_ICON_MAP = {
 } as const;
 
 export default function StatusStepper({ status }: StatusStepperProps) {
-  const { t } = useAppLanguage();
   const currentIndex = TRACKING_STEPS.indexOf(status);
 
   return (
     <div className="surface-card rounded-[2rem] p-5 sm:p-6">
       <p className="text-[0.72rem] font-semibold uppercase tracking-[0.34em] text-white/34">
-        {t({ en: "Delivery progress", mn: "Хүргэлтийн явц" })}
+        Delivery progress
       </p>
 
       <div className="mt-6 grid gap-4 md:grid-cols-3">
@@ -57,7 +53,7 @@ export default function StatusStepper({ status }: StatusStepperProps) {
                 </div>
                 <div>
                   <p className="text-xs uppercase tracking-[0.24em] text-white/36">
-                    {t({ en: `Step ${index + 1}`, mn: `${index + 1}-р шат` })}
+                    Step {index + 1}
                   </p>
                   <p className="mt-1 font-medium text-white">
                     {getTrackingStatusLabel(step)}

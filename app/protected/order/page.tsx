@@ -13,9 +13,10 @@ import PageHeader from "@/components/ui/PageHeader";
 import { useCart } from "@/features/cart/cart.hooks";
 import type { Cart } from "@/features/cart/cart.types";
 import { createOrder } from "@/features/order/order.service";
-import type { DeliveryLocationInput } from "@/features/order/order.types";
+import type {
+  DeliveryLocationInput,
+} from "@/features/order/order.types";
 import { useUserSettings } from "@/features/settings/settings.hooks";
-import { useAppLanguage } from "@/hooks/useAppLanguage";
 import { useAuth } from "@/hooks/useAuth";
 import { CART_UPDATED_EVENT } from "@/lib/constants";
 import { dispatchAppEvent, getErrorMessage } from "@/lib/helpers";
@@ -62,7 +63,6 @@ function AuthenticatedOrderPage({
   userId,
   userPhone,
 }: AuthenticatedOrderPageProps) {
-  const { t } = useAppLanguage();
   const router = useRouter();
   const { settings } = useUserSettings(userId);
   const defaultAddress = getDefaultSavedAddress(settings);
@@ -80,26 +80,18 @@ function AuthenticatedOrderPage({
     ? deliveryLocation
     : createDeliveryLocationFromDefaultAddress(defaultAddress);
   const effectivePaymentMethod = "QPAY";
-  const effectiveContactPhone = hasEditedPhone ? contactPhone : userPhone ?? "";
+  const effectiveContactPhone = hasEditedPhone
+    ? contactPhone
+    : userPhone ?? "";
 
   async function handleSubmit() {
     if (!effectiveDeliveryLocation.address.trim()) {
-      setDeliveryLocationError(
-        t({
-          en: "Delivery address is required.",
-          mn: "Хүргэлтийн хаяг заавал шаардлагатай.",
-        })
-      );
+      setDeliveryLocationError("Delivery address is required.");
       return;
     }
 
     if (!effectiveContactPhone.trim()) {
-      setContactPhoneError(
-        t({
-          en: "Contact phone is required for delivery.",
-          mn: "Хүргэлтэд холбоо барих утас шаардлагатай.",
-        })
-      );
+      setContactPhoneError("Contact phone is required for delivery.");
       return;
     }
 
@@ -131,14 +123,11 @@ function AuthenticatedOrderPage({
 
   return (
     <main className="mx-auto w-full max-w-[1120px] space-y-6">
-      <TopBar searchPlaceholder={t({ en: "Search address or checkout notes", mn: "Хаяг эсвэл тэмдэглэл хайх" })} />
+      <TopBar searchPlaceholder="Search address or checkout notes" />
       <PageHeader
-        description={t({
-          en: "Confirm your delivery address, contact number, and payment method before sending the order.",
-          mn: "Хүргэлтийн хаяг, утасны дугаар, төлбөрийн мэдээллээ баталгаажуулаад захиалгаа илгээнэ үү.",
-        })}
-        eyebrow={t({ en: "Checkout", mn: "Захиалга" })}
-        title={t({ en: "Checkout", mn: "Захиалах" })}
+        description="Хүргэлтийн хаяг, утасны дугаар, төлбөрийн аргаа баталгаажуулаад захиалгаа илгээнэ үү."
+        eyebrow="Checkout"
+        title="Захиалах"
       />
       <OrderForm
         contactPhone={effectiveContactPhone}
@@ -148,13 +137,13 @@ function AuthenticatedOrderPage({
         error={error}
         isSubmitting={isSubmitting}
         items={cart.items}
-        onContactPhoneChange={(nextPhone) => {
-          setHasEditedPhone(true);
-          setContactPhone(nextPhone);
-        }}
         onDeliveryLocationChange={(nextLocation) => {
           setHasEditedAddress(true);
           setDeliveryLocation(nextLocation);
+        }}
+        onContactPhoneChange={(nextPhone) => {
+          setHasEditedPhone(true);
+          setContactPhone(nextPhone);
         }}
         onPaymentMethodChange={() => undefined}
         onSubmit={handleSubmit}
@@ -166,7 +155,6 @@ function AuthenticatedOrderPage({
 }
 
 export default function OrderPage() {
-  const { t } = useAppLanguage();
   const { isAuthenticated, isLoading: authLoading, user } = useAuth();
   const { cart, isLoading: cartLoading, refresh } = useCart();
 
@@ -182,29 +170,18 @@ export default function OrderPage() {
     return (
       <main className="mx-auto w-full max-w-[1120px] space-y-6">
         <PageHeader
-          description={t({
-            en: "Please sign in first to place an order.",
-            mn: "Захиалга өгөхийн тулд эхлээд нэвтэрнэ үү.",
-          })}
-          eyebrow={t({ en: "Checkout", mn: "Захиалга" })}
-          title={t({ en: "Checkout", mn: "Захиалах" })}
+        description="Захиалга өгөхийн тулд эхлээд нэвтэрч орно уу."
+          eyebrow="Checkout"
+          title="Захиалах"
         />
         <EmptyState
-          action={(
+          action={
             <Button asChild>
-              <Link href="/auth/login?redirect=/protected/order">
-                {t({ en: "Go to login", mn: "Нэвтрэх" })}
-              </Link>
+              <Link href="/auth/login?redirect=/protected/order">Go to login</Link>
             </Button>
-          )}
-          description={t({
-            en: "Sign in first to load your cart and place the order into the delivery system.",
-            mn: "Сагсаа ачаалж, захиалгаа хүргэлтийн систем рүү илгээхийн тулд эхлээд нэвтэрнэ үү.",
-          })}
-          title={t({
-            en: "Checkout requires login.",
-            mn: "Захиалга нэвтрэлт шаардлагатай.",
-          })}
+          }
+          description="Sign in first to load your cart and place the order into the delivery system."
+          title="Checkout requires login."
         />
       </main>
     );
@@ -214,27 +191,18 @@ export default function OrderPage() {
     return (
       <main className="mx-auto w-full max-w-[1120px] space-y-6">
         <PageHeader
-          description={t({
-            en: "Choose a few dishes from the menu, then return here to finish your order.",
-            mn: "Цэснээс хоолоо сонгоод, дараа нь энд эргэж ирж захиалгаа үргэлжлүүлнэ үү.",
-          })}
-          eyebrow={t({ en: "Checkout", mn: "Захиалга" })}
-          title={t({ en: "Checkout", mn: "Захиалах" })}
+        description="Цэснээс хоолоо сонгоод энд буцаж ирэн захиалгаа үргэлжлүүлээрэй."
+          eyebrow="Checkout"
+          title="Захиалах"
         />
         <EmptyState
-          action={(
+          action={
             <Button asChild>
-              <Link href="/public/explore">{t({ en: "Browse menu", mn: "Цэс үзэх" })}</Link>
+              <Link href="/public/explore">Browse menu</Link>
             </Button>
-          )}
-          description={t({
-            en: "Your basket is empty right now. Add a few dishes from the menu and come back here.",
-            mn: "Таны сагс одоогоор хоосон байна. Цэснээс хоол нэмж байгаад энд эргэж ирээрэй.",
-          })}
-          title={t({
-            en: "No items ready for checkout.",
-            mn: "Захиалахад бэлэн бүтээгдэхүүн алга.",
-          })}
+          }
+          description="Your basket is empty right now. Add a few dishes from the menu and come back here."
+          title="No items ready for checkout."
         />
       </main>
     );

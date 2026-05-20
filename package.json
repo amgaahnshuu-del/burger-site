@@ -8,7 +8,7 @@
     "build:render": "npm run prisma:generate && npm run build",
     "start": "next start",
     "lint": "eslint",
-    "test": "node --test --experimental-strip-types \"tests/*.mts\"",
+    "test": "node --test --experimental-strip-types tests",
     "prisma:generate": "prisma generate",
     "migrate:deploy": "prisma migrate deploy",
     "db:seed:menu": "prisma db execute --file prisma/seed-menu.sql",
@@ -18,11 +18,10 @@
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
-    "@prisma/adapter-pg": "^7.8.0",
+    "@prisma/adapter-mariadb": "^7.8.0",
     "@prisma/client": "^7.8.0",
     "next": "16.2.4",
     "nodemailer": "^8.0.7",
-    "pg": "^8.21.0",
     "react": "19.2.4",
     "react-dom": "19.2.4"
   },
@@ -37,4 +36,5 @@
     "tailwindcss": "^4",
     "typescript": "^5"
   }
+  
 }

@@ -1,4 +1,4 @@
-INSERT INTO "Restaurant" ("id", "name", "description", "image", "address", "createdAt")
+INSERT INTO `Restaurant` (`id`, `name`, `description`, `image`, `address`, `createdAt`)
 VALUES
   (
     'rest-burger-house',
@@ -24,14 +24,13 @@ VALUES
     'Seoul Street 21',
     NOW()
   )
-ON CONFLICT ("id") DO UPDATE
-SET
-  "name" = EXCLUDED."name",
-  "description" = EXCLUDED."description",
-  "image" = EXCLUDED."image",
-  "address" = EXCLUDED."address";
+ON DUPLICATE KEY UPDATE
+  `name` = VALUES(`name`),
+  `description` = VALUES(`description`),
+  `image` = VALUES(`image`),
+  `address` = VALUES(`address`);
 
-INSERT INTO "Food" ("id", "name", "description", "price", "image", "category", "restaurantId", "createdAt")
+INSERT INTO `Food` (`id`, `name`, `description`, `price`, `image`, `category`, `restaurantId`, `createdAt`)
 VALUES
   (
     'food-double-burger',
@@ -213,18 +212,17 @@ VALUES
     'rest-burger-house',
     NOW()
   )
-ON CONFLICT ("id") DO UPDATE
-SET
-  "name" = EXCLUDED."name",
-  "description" = EXCLUDED."description",
-  "price" = EXCLUDED."price",
-  "image" = EXCLUDED."image",
-  "category" = EXCLUDED."category",
-  "restaurantId" = EXCLUDED."restaurantId";
+ON DUPLICATE KEY UPDATE
+  `name` = VALUES(`name`),
+  `description` = VALUES(`description`),
+  `price` = VALUES(`price`),
+  `image` = VALUES(`image`),
+  `category` = VALUES(`category`),
+  `restaurantId` = VALUES(`restaurantId`);
 
-UPDATE "Food"
+UPDATE `Food`
 SET
-  "category" = 'Burger',
-  "description" = 'Two smashed beef patties, cheddar, pickles, and smoky house sauce.',
-  "image" = '/home-crops/burger1-clean-v2.png'
-WHERE "name" = 'Double Burger';
+  `category` = 'Burger',
+  `description` = 'Two smashed beef patties, cheddar, pickles, and smoky house sauce.',
+  `image` = '/home-crops/burger1-clean-v2.png'
+WHERE `name` = 'Double Burger';

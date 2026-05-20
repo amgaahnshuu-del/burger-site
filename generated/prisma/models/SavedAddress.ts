@@ -293,6 +293,7 @@ export type SavedAddressOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   userSettings?: Prisma.UserSettingsOrderByWithRelationInput
+  _relevance?: Prisma.SavedAddressOrderByRelevanceInput
 }
 
 export type SavedAddressWhereUniqueInput = Prisma.AtLeast<{
@@ -464,6 +465,12 @@ export type SavedAddressListRelationFilter = {
 
 export type SavedAddressOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
+}
+
+export type SavedAddressOrderByRelevanceInput = {
+  fields: Prisma.SavedAddressOrderByRelevanceFieldEnum | Prisma.SavedAddressOrderByRelevanceFieldEnum[]
+  sort: Prisma.SortOrder
+  search: string
 }
 
 export type SavedAddressCountOrderByAggregateInput = {
@@ -709,37 +716,7 @@ export type SavedAddressSelect<ExtArgs extends runtime.Types.Extensions.Internal
   userSettings?: boolean | Prisma.UserSettingsDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["savedAddress"]>
 
-export type SavedAddressSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
-  id?: boolean
-  userSettingsId?: boolean
-  label?: boolean
-  details?: boolean
-  isDefault?: boolean
-  district?: boolean
-  khoroo?: boolean
-  apartmentUnit?: boolean
-  latitude?: boolean
-  longitude?: boolean
-  createdAt?: boolean
-  updatedAt?: boolean
-  userSettings?: boolean | Prisma.UserSettingsDefaultArgs<ExtArgs>
-}, ExtArgs["result"]["savedAddress"]>
 
-export type SavedAddressSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
-  id?: boolean
-  userSettingsId?: boolean
-  label?: boolean
-  details?: boolean
-  isDefault?: boolean
-  district?: boolean
-  khoroo?: boolean
-  apartmentUnit?: boolean
-  latitude?: boolean
-  longitude?: boolean
-  createdAt?: boolean
-  updatedAt?: boolean
-  userSettings?: boolean | Prisma.UserSettingsDefaultArgs<ExtArgs>
-}, ExtArgs["result"]["savedAddress"]>
 
 export type SavedAddressSelectScalar = {
   id?: boolean
@@ -758,12 +735,6 @@ export type SavedAddressSelectScalar = {
 
 export type SavedAddressOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userSettingsId" | "label" | "details" | "isDefault" | "district" | "khoroo" | "apartmentUnit" | "latitude" | "longitude" | "createdAt" | "updatedAt", ExtArgs["result"]["savedAddress"]>
 export type SavedAddressInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  userSettings?: boolean | Prisma.UserSettingsDefaultArgs<ExtArgs>
-}
-export type SavedAddressIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  userSettings?: boolean | Prisma.UserSettingsDefaultArgs<ExtArgs>
-}
-export type SavedAddressIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   userSettings?: boolean | Prisma.UserSettingsDefaultArgs<ExtArgs>
 }
 
@@ -903,30 +874,6 @@ export interface SavedAddressDelegate<ExtArgs extends runtime.Types.Extensions.I
   createMany<T extends SavedAddressCreateManyArgs>(args?: Prisma.SelectSubset<T, SavedAddressCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
 
   /**
-   * Create many SavedAddresses and returns the data saved in the database.
-   * @param {SavedAddressCreateManyAndReturnArgs} args - Arguments to create many SavedAddresses.
-   * @example
-   * // Create many SavedAddresses
-   * const savedAddress = await prisma.savedAddress.createManyAndReturn({
-   *   data: [
-   *     // ... provide data here
-   *   ]
-   * })
-   * 
-   * // Create many SavedAddresses and only return the `id`
-   * const savedAddressWithIdOnly = await prisma.savedAddress.createManyAndReturn({
-   *   select: { id: true },
-   *   data: [
-   *     // ... provide data here
-   *   ]
-   * })
-   * Note, that providing `undefined` is treated as the value not being there.
-   * Read more here: https://pris.ly/d/null-undefined
-   * 
-   */
-  createManyAndReturn<T extends SavedAddressCreateManyAndReturnArgs>(args?: Prisma.SelectSubset<T, SavedAddressCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SavedAddressPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
-
-  /**
    * Delete a SavedAddress.
    * @param {SavedAddressDeleteArgs} args - Arguments to delete one SavedAddress.
    * @example
@@ -989,36 +936,6 @@ export interface SavedAddressDelegate<ExtArgs extends runtime.Types.Extensions.I
    * 
    */
   updateMany<T extends SavedAddressUpdateManyArgs>(args: Prisma.SelectSubset<T, SavedAddressUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
-
-  /**
-   * Update zero or more SavedAddresses and returns the data updated in the database.
-   * @param {SavedAddressUpdateManyAndReturnArgs} args - Arguments to update many SavedAddresses.
-   * @example
-   * // Update many SavedAddresses
-   * const savedAddress = await prisma.savedAddress.updateManyAndReturn({
-   *   where: {
-   *     // ... provide filter here
-   *   },
-   *   data: [
-   *     // ... provide data here
-   *   ]
-   * })
-   * 
-   * // Update zero or more SavedAddresses and only return the `id`
-   * const savedAddressWithIdOnly = await prisma.savedAddress.updateManyAndReturn({
-   *   select: { id: true },
-   *   where: {
-   *     // ... provide filter here
-   *   },
-   *   data: [
-   *     // ... provide data here
-   *   ]
-   * })
-   * Note, that providing `undefined` is treated as the value not being there.
-   * Read more here: https://pris.ly/d/null-undefined
-   * 
-   */
-  updateManyAndReturn<T extends SavedAddressUpdateManyAndReturnArgs>(args: Prisma.SelectSubset<T, SavedAddressUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SavedAddressPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
   /**
    * Create or update one SavedAddress.
@@ -1459,29 +1376,6 @@ export type SavedAddressCreateManyArgs<ExtArgs extends runtime.Types.Extensions.
 }
 
 /**
- * SavedAddress createManyAndReturn
- */
-export type SavedAddressCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the SavedAddress
-   */
-  select?: Prisma.SavedAddressSelectCreateManyAndReturn<ExtArgs> | null
-  /**
-   * Omit specific fields from the SavedAddress
-   */
-  omit?: Prisma.SavedAddressOmit<ExtArgs> | null
-  /**
-   * The data used to create many SavedAddresses.
-   */
-  data: Prisma.SavedAddressCreateManyInput | Prisma.SavedAddressCreateManyInput[]
-  skipDuplicates?: boolean
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.SavedAddressIncludeCreateManyAndReturn<ExtArgs> | null
-}
-
-/**
  * SavedAddress update
  */
 export type SavedAddressUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1523,36 +1417,6 @@ export type SavedAddressUpdateManyArgs<ExtArgs extends runtime.Types.Extensions.
    * Limit how many SavedAddresses to update.
    */
   limit?: number
-}
-
-/**
- * SavedAddress updateManyAndReturn
- */
-export type SavedAddressUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the SavedAddress
-   */
-  select?: Prisma.SavedAddressSelectUpdateManyAndReturn<ExtArgs> | null
-  /**
-   * Omit specific fields from the SavedAddress
-   */
-  omit?: Prisma.SavedAddressOmit<ExtArgs> | null
-  /**
-   * The data used to update SavedAddresses.
-   */
-  data: Prisma.XOR<Prisma.SavedAddressUpdateManyMutationInput, Prisma.SavedAddressUncheckedUpdateManyInput>
-  /**
-   * Filter which SavedAddresses to update
-   */
-  where?: Prisma.SavedAddressWhereInput
-  /**
-   * Limit how many SavedAddresses to update.
-   */
-  limit?: number
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.SavedAddressIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**

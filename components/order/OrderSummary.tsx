@@ -1,9 +1,6 @@
-"use client";
-
 import Image from "next/image";
 
 import type { CartItem } from "@/features/cart/cart.types";
-import { useAppLanguage } from "@/hooks/useAppLanguage";
 import { formatCurrency } from "@/lib/helpers";
 
 type OrderSummaryProps = {
@@ -17,7 +14,6 @@ export default function OrderSummary({
   items,
   subtotal,
 }: OrderSummaryProps) {
-  const { t } = useAppLanguage();
   const total = subtotal + deliveryFee;
 
   return (
@@ -25,10 +21,10 @@ export default function OrderSummary({
       <div className="flex items-center justify-between gap-3">
         <div>
           <p className="text-[0.72rem] font-semibold uppercase tracking-[0.34em] text-white/34">
-            {t({ en: "Order summary", mn: "Захиалгын тойм" })}
+            Order summary
           </p>
           <h2 className="mt-3 text-3xl font-black tracking-[-0.04em] text-white">
-            {t({ en: "Current basket", mn: "Одоогийн сагс" })}
+            Current basket
           </h2>
         </div>
         <div className="relative h-[4.5rem] w-[4.5rem] shrink-0">
@@ -63,9 +59,7 @@ export default function OrderSummary({
               <p className="truncate text-sm font-semibold text-white">
                 {item.food.name}
               </p>
-              <p className="mt-1 text-xs text-white/42">
-                {t({ en: "Qty", mn: "Тоо" })} {item.quantity}
-              </p>
+              <p className="mt-1 text-xs text-white/42">Qty {item.quantity}</p>
             </div>
 
             <p className="text-sm font-semibold text-white/80">
@@ -77,15 +71,15 @@ export default function OrderSummary({
 
       <div className="mt-6 rounded-[1.45rem] border border-orange-500/18 bg-[linear-gradient(180deg,rgba(255,106,0,0.1)_0%,rgba(255,106,0,0.03)_100%)] p-4">
         <div className="flex items-center justify-between text-sm text-white/65">
-          <span>{t({ en: "Subtotal", mn: "Дүн" })}</span>
+          <span>Subtotal</span>
           <span>{formatCurrency(subtotal)}</span>
         </div>
         <div className="mt-3 flex items-center justify-between text-sm text-white/65">
-          <span>{t({ en: "Delivery fee", mn: "Хүргэлтийн төлбөр" })}</span>
+          <span>Delivery fee</span>
           <span>{formatCurrency(deliveryFee)}</span>
         </div>
         <div className="mt-4 flex items-center justify-between border-t border-white/8 pt-4 text-lg font-semibold text-white">
-          <span>{t({ en: "Total", mn: "Нийт" })}</span>
+          <span>Total</span>
           <span className="text-orange-300">{formatCurrency(total)}</span>
         </div>
       </div>

@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import {
   Bars3Icon,
@@ -23,7 +22,7 @@ import Footer from "@/components/layout/Footer";
 import Sidebar from "@/components/layout/Sidebar";
 import Loader from "@/components/ui/Loader";
 import { useAuth } from "@/hooks/useAuth";
-import { useAppLanguage } from "@/hooks/useAppLanguage";
+import { useInterfaceSettings } from "@/hooks/useInterfaceSettings";
 import {
   ADMIN_SECTION_EVENT,
   DEFAULT_ADMIN_SECTION,
@@ -39,49 +38,49 @@ type DashboardLayoutProps = {
 };
 
 type MobileNavItem = {
-  exactMatch?: readonly string[];
   href: string;
   icon: React.ComponentType<{ className?: string }>;
   label: string;
   match?: readonly string[];
+  exactMatch?: readonly string[];
   section?: AdminSection;
 };
 
 function getCustomerMobileItems(isMn: boolean): readonly MobileNavItem[] {
   return [
-    { href: "/", icon: HomeIcon, label: isMn ? "Нүүр" : "Home" },
-    { href: "/menu", icon: Squares2X2Icon, label: isMn ? "Цэс" : "Menu" },
-    { href: "/orders", icon: ChartBarIcon, label: isMn ? "Захиалга" : "Orders" },
+    { href: "/", icon: HomeIcon, label: isMn ? "ÃÂÃ’Â¯Ã’Â¯Ã‘â‚¬" : "Home" },
+    { href: "/menu", icon: Squares2X2Icon, label: isMn ? "ÃÂ¦Ã‘ÂÃ‘Â" : "Menu" },
+    { href: "/orders", icon: ChartBarIcon, label: isMn ? "Ãâ€”ÃÂ°Ã‘â€¦ÃÂ¸ÃÂ°ÃÂ»ÃÂ³ÃÂ°" : "Orders" },
     { href: "/ai-assistant", icon: ChartBarIcon, label: "AI" },
   ] as const;
 }
 
 function getAdminMobileItems(isMn: boolean): readonly MobileNavItem[] {
   return [
-    { href: "/admin?section=foods", icon: Squares2X2Icon, label: isMn ? "Хоол" : "Foods", section: "foods" },
-    { href: "/admin?section=most-sell", icon: ChartBarIcon, label: isMn ? "Борлуулалт" : "Most Sell", section: "most-sell" },
-    { href: "/admin?section=users", icon: UserGroupIcon, label: isMn ? "Хэрэглэгч" : "Users", section: "users" },
-    { href: "/admin/managers", icon: BriefcaseIcon, label: isMn ? "Менежер" : "Managers", match: ["/admin/managers"] },
-    { href: "/admin?section=couriers", icon: TruckIcon, label: isMn ? "Хүргэгч" : "Couriers", section: "couriers" },
-    { href: "/admin?section=add-food", icon: PlusCircleIcon, label: isMn ? "Хоол нэмэх" : "Add Food", section: "add-food" },
+    { href: "/admin?section=foods", icon: Squares2X2Icon, label: isMn ? "ÃÂ¥ÃÂ¾ÃÂ¾ÃÂ»ÃÂ½Ã‘Æ’Ã‘Æ’ÃÂ´" : "Foods", section: "foods" },
+    { href: "/admin?section=most-sell", icon: ChartBarIcon, label: isMn ? "Ãâ€˜ÃÂ¾Ã‘â‚¬ÃÂ»Ã‘Æ’Ã‘Æ’ÃÂ»ÃÂ°ÃÂ»Ã‘â€š" : "Most Sell", section: "most-sell" },
+    { href: "/admin?section=users", icon: UserGroupIcon, label: isMn ? "ÃÂ¥Ã‘ÂÃ‘â‚¬Ã‘ÂÃÂ³ÃÂ»Ã‘ÂÃÂ³Ã‘â€¡ÃÂ¸ÃÂ´" : "Users", section: "users" },
+    { href: "/admin/managers", icon: BriefcaseIcon, label: "Managers", match: ["/admin/managers"] },
+    { href: "/admin?section=couriers", icon: TruckIcon, label: isMn ? "ÃÂ¥Ã’Â¯Ã‘â‚¬ÃÂ³Ã‘ÂÃÂ³Ã‘â€¡ÃÂ¸ÃÂ´" : "Couriers", section: "couriers" },
+    { href: "/admin?section=add-food", icon: PlusCircleIcon, label: isMn ? "ÃÂ¥ÃÂ¾ÃÂ¾ÃÂ» ÃÂ½Ã‘ÂÃÂ¼Ã‘ÂÃ‘â€¦" : "Add Food", section: "add-food" },
   ] as const;
 }
 
 function getCourierMobileItems(isMn: boolean): readonly MobileNavItem[] {
   return [
-    { href: "/courier", icon: HomeIcon, label: isMn ? "Хүргэлт" : "Deliveries" },
-    { href: "/courier/active-track", icon: MapIcon, label: isMn ? "Хянах" : "Track" },
-    { href: "/settings", icon: UserGroupIcon, label: isMn ? "Бүртгэл" : "Account" },
+    { href: "/courier", icon: HomeIcon, label: isMn ? "ÃÂ¥Ã’Â¯Ã‘â‚¬ÃÂ³Ã‘ÂÃÂ»Ã‘â€š" : "Deliveries" },
+    { href: "/courier/active-track", icon: MapIcon, label: isMn ? "ÃÂ¥Ã‘ÂÃÂ½ÃÂ°Ã‘â€¦" : "Track" },
+    { href: "/settings", icon: UserGroupIcon, label: isMn ? "Ãâ€˜Ã’Â¯Ã‘â‚¬Ã‘â€šÃÂ³Ã‘ÂÃÂ»" : "Account" },
   ] as const;
 }
 
 function getManagerMobileItems(isMn: boolean): readonly MobileNavItem[] {
   return [
-    { href: "/manager", icon: ClipboardDocumentListIcon, label: isMn ? "Ирсэн" : "Incoming", exactMatch: ["/manager"] },
-    { href: "/manager/preparing", icon: Squares2X2Icon, label: isMn ? "Бэлтгэж буй" : "Preparing", exactMatch: ["/manager/preparing"] },
-    { href: "/manager/ready", icon: TruckIcon, label: isMn ? "Бэлэн" : "Ready", exactMatch: ["/manager/ready"] },
-    { href: "/manager/delivering", icon: MapIcon, label: isMn ? "Замд" : "On Road", exactMatch: ["/manager/delivering"] },
-    { href: "/settings", icon: UserGroupIcon, label: isMn ? "Бүртгэл" : "Account", match: ["/settings", "/protected/settings", "/profile", "/protected/profile"] },
+    { href: "/manager", icon: ClipboardDocumentListIcon, label: isMn ? "Incoming" : "Incoming", exactMatch: ["/manager"] },
+    { href: "/manager/preparing", icon: Squares2X2Icon, label: isMn ? "Cooking" : "Cooking", exactMatch: ["/manager/preparing"] },
+    { href: "/manager/ready", icon: TruckIcon, label: isMn ? "Ready" : "Ready", exactMatch: ["/manager/ready"] },
+    { href: "/manager/delivering", icon: MapIcon, label: isMn ? "On Road" : "On Road", exactMatch: ["/manager/delivering"] },
+    { href: "/settings", icon: UserGroupIcon, label: isMn ? "Ãâ€˜Ã’Â¯Ã‘â‚¬Ã‘â€šÃÂ³Ã‘ÂÃÂ»" : "Account", match: ["/settings", "/protected/settings", "/profile", "/protected/profile"] },
   ] as const;
 }
 
@@ -144,12 +143,13 @@ function isManagerMobileActive(pathname: string, item: MobileNavItem) {
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const pathname = usePathname();
   const router = useRouter();
-  const { isMn, t } = useAppLanguage();
+  const { settings: interfaceSettings } = useInterfaceSettings();
   const { isLoading, user } = useAuth();
 
   const [activeSection, setActiveSection] = useState(DEFAULT_ADMIN_SECTION);
   const [mobileOpen, setMobileOpen] = useState(false);
 
+  const isMn = interfaceSettings.language === "mn";
   const isAdmin = user?.role === "ADMIN";
   const isManager = user?.role === "MANAGER";
   const isCourier = user?.role === "COURIER";
@@ -163,12 +163,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const brandHref = isAdmin ? "/admin?section=most-sell" : isManager ? "/manager" : isCourier ? "/courier" : "/";
   const adminMobileItems: readonly MobileNavItem[] = [
     ...getAdminMobileItems(isMn),
-    {
-      href: "/admin/settings",
-      icon: Cog6ToothIcon,
-      label: isMn ? "Тохиргоо" : "Settings",
-      match: ["/admin/settings"],
-    },
+    { href: "/admin/settings", icon: Cog6ToothIcon, label: "Settings", match: ["/admin/settings"] },
   ];
   const mobileItems = isAdmin
     ? adminMobileItems
@@ -228,14 +223,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         isMenuPage && "dashboard-shell-neutral"
       )}
     >
-      <div
-        className="fixed inset-x-0 top-0 z-40 border-b border-[var(--border-soft)] bg-[rgba(7,7,7,0.92)] px-4 py-3 backdrop-blur-xl lg:hidden"
-        style={{
-          paddingLeft: "calc(1rem + var(--safe-area-left))",
-          paddingRight: "calc(1rem + var(--safe-area-right))",
-          paddingTop: "calc(0.75rem + var(--safe-area-top))",
-        }}
-      >
+      <div className="fixed inset-x-0 top-0 z-40 border-b border-[var(--border-soft)] bg-[rgba(7,7,7,0.92)] px-4 py-3 backdrop-blur-xl lg:hidden">
         <div className="flex items-center justify-between gap-3">
           <Link
             className="flex items-center gap-3"
@@ -246,30 +234,20 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               }
             }}
           >
-            <span className="relative inline-flex h-9 w-9 items-center justify-center overflow-hidden rounded-[12px] bg-white/6 ring-1 ring-white/10">
-              <Image
-                alt={`${APP_NAME} logo`}
-                className="object-contain p-1"
-                fill
-                sizes="36px"
-                src="/logo.png"
-              />
+            <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[var(--gradient-accent)] text-sm font-black text-white shadow-[var(--shadow-button)]">
+              B
             </span>
             <span className="text-lg font-extrabold text-white">{APP_NAME}</span>
           </Link>
 
-          <div className="flex items-center gap-2">
-            <button
-              aria-label={mobileOpen
-                ? t({ en: "Close navigation", mn: "Цэс хаах" })
-                : t({ en: "Open navigation", mn: "Цэс нээх" })}
-              className="inline-flex h-11 w-11 items-center justify-center rounded-[14px] border border-[var(--border-soft)] bg-[var(--bg-card)] text-white"
-              onClick={() => setMobileOpen((current) => !current)}
-              type="button"
-            >
-              {mobileOpen ? <XMarkIcon className="h-5 w-5" /> : <Bars3Icon className="h-5 w-5" />}
-            </button>
-          </div>
+          <button
+            aria-label={mobileOpen ? "Close navigation" : "Open navigation"}
+            className="inline-flex h-11 w-11 items-center justify-center rounded-[14px] border border-[var(--border-soft)] bg-[var(--bg-card)] text-white"
+            onClick={() => setMobileOpen((current) => !current)}
+            type="button"
+          >
+            {mobileOpen ? <XMarkIcon className="h-5 w-5" /> : <Bars3Icon className="h-5 w-5" />}
+          </button>
         </div>
       </div>
 
@@ -285,8 +263,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                 ? "min-h-0 lg:pb-[20px] lg:pl-[30px] lg:pr-[36px] lg:pt-[36px]"
                 : isOrdersDashboardPage
                   ? "min-h-screen lg:pb-[20px] lg:pl-[30px] lg:pr-[36px] lg:pt-[36px]"
-                  : "min-h-screen lg:px-7 lg:pb-8 lg:pt-7",
-            isMenuPage && "pb-[calc(8.5rem+var(--safe-area-bottom))] lg:pb-8"
+                  : "min-h-screen lg:px-7 lg:pb-8 lg:pt-7"
           )}
         >
           <div
@@ -317,7 +294,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         </main>
       </div>
 
-      <nav className="fixed bottom-[calc(0.75rem+var(--safe-area-bottom))] left-[calc(0.75rem+var(--safe-area-left))] right-[calc(0.75rem+var(--safe-area-right))] z-40 rounded-[18px] border border-[var(--border-soft)] bg-[rgba(17,17,19,0.92)] p-2 shadow-[var(--shadow-card)] backdrop-blur-xl lg:hidden">
+      <nav className="fixed inset-x-3 bottom-3 z-40 rounded-[18px] border border-[var(--border-soft)] bg-[rgba(17,17,19,0.92)] p-2 shadow-[var(--shadow-card)] backdrop-blur-xl lg:hidden">
         <div
           className={cn(
             "grid gap-2",
@@ -360,8 +337,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                 }}
                 style={active
                   ? {
-                    boxShadow: "0 10px 24px rgba(255, 106, 0, 0.26), inset 0 1px 0 rgba(255, 255, 255, 0.08)",
-                  }
+                      boxShadow: "0 10px 24px rgba(255, 106, 0, 0.26), inset 0 1px 0 rgba(255, 255, 255, 0.08)",
+                    }
                   : undefined}
               >
                 <Icon className="mb-1 h-4 w-4" />
