@@ -21,7 +21,6 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import Button from "@/components/ui/Button";
-import LanguageToggle from "@/components/ui/LanguageToggle";
 import { useCourierOrders } from "@/features/courier/courier.hooks";
 import { useAuth } from "@/hooks/useAuth";
 import { useInterfaceSettings } from "@/hooks/useInterfaceSettings";
@@ -628,9 +627,6 @@ export default function Sidebar({ mobileOpen, onClose }: SidebarProps) {
                 : "mt-3 border-white/6"
           )}
         >
-          <div className="mb-3 flex justify-start">
-            <LanguageToggle compact />
-          </div>
           <div className={cn(
             "border p-3 shadow-[0_16px_40px_rgba(0,0,0,0.26)]",
             isOrdersDashboardPage

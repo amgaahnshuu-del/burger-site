@@ -8,7 +8,6 @@ import {
   ShoppingCartIcon,
 } from "@heroicons/react/24/outline";
 
-import LanguageToggle from "@/components/ui/LanguageToggle";
 import { useCart } from "@/features/cart/cart.hooks";
 import { useAppLanguage } from "@/hooks/useAppLanguage";
 import { useAuth } from "@/hooks/useAuth";
@@ -52,7 +51,6 @@ export default function TopBar({
     return (
       <div className={containerClassName}>
         {rightSlot}
-        <LanguageToggle compact />
         <button
           aria-label={t({
             en: "Notifications",

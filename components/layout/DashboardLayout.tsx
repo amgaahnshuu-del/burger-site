@@ -21,7 +21,6 @@ import { useEffect, useState } from "react";
 
 import Footer from "@/components/layout/Footer";
 import Sidebar from "@/components/layout/Sidebar";
-import LanguageToggle from "@/components/ui/LanguageToggle";
 import Loader from "@/components/ui/Loader";
 import { useAuth } from "@/hooks/useAuth";
 import { useAppLanguage } from "@/hooks/useAppLanguage";
@@ -260,7 +259,6 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           </Link>
 
           <div className="flex items-center gap-2">
-            <LanguageToggle compact />
             <button
               aria-label={mobileOpen
                 ? t({ en: "Close navigation", mn: "Цэс хаах" })

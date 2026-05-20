@@ -6,7 +6,6 @@ import { useEffect, useState } from "react";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 import { useRouter, useSearchParams } from "next/navigation";
 
-import LanguageToggle from "@/components/ui/LanguageToggle";
 import Button from "@/components/ui/Button";
 import Toast from "@/components/ui/Toast";
 import {
@@ -432,9 +431,6 @@ export default function RegisterPage() {
         </div>
       </section>
 
-      <div className="fixed bottom-4 left-4">
-        <LanguageToggle />
-      </div>
     </main>
   );
 }
