@@ -203,7 +203,6 @@ export type UserSettingsOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
   savedAddresses?: Prisma.SavedAddressOrderByRelationAggregateInput
-  _relevance?: Prisma.UserSettingsOrderByRelevanceInput
 }
 
 export type UserSettingsWhereUniqueInput = Prisma.AtLeast<{
@@ -313,12 +312,6 @@ export type UserSettingsUncheckedUpdateManyInput = {
 export type UserSettingsNullableScalarRelationFilter = {
   is?: Prisma.UserSettingsWhereInput | null
   isNot?: Prisma.UserSettingsWhereInput | null
-}
-
-export type UserSettingsOrderByRelevanceInput = {
-  fields: Prisma.UserSettingsOrderByRelevanceFieldEnum | Prisma.UserSettingsOrderByRelevanceFieldEnum[]
-  sort: Prisma.SortOrder
-  search: string
 }
 
 export type UserSettingsCountOrderByAggregateInput = {
@@ -546,7 +539,25 @@ export type UserSettingsSelect<ExtArgs extends runtime.Types.Extensions.Internal
   _count?: boolean | Prisma.UserSettingsCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["userSettings"]>
 
+export type UserSettingsSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  id?: boolean
+  userId?: boolean
+  notificationsEnabled?: boolean
+  preferredPaymentMethod?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+}, ExtArgs["result"]["userSettings"]>
 
+export type UserSettingsSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  id?: boolean
+  userId?: boolean
+  notificationsEnabled?: boolean
+  preferredPaymentMethod?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+}, ExtArgs["result"]["userSettings"]>
 
 export type UserSettingsSelectScalar = {
   id?: boolean
@@ -562,6 +573,12 @@ export type UserSettingsInclude<ExtArgs extends runtime.Types.Extensions.Interna
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   savedAddresses?: boolean | Prisma.UserSettings$savedAddressesArgs<ExtArgs>
   _count?: boolean | Prisma.UserSettingsCountOutputTypeDefaultArgs<ExtArgs>
+}
+export type UserSettingsIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+}
+export type UserSettingsIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
 
 export type $UserSettingsPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -695,6 +712,30 @@ export interface UserSettingsDelegate<ExtArgs extends runtime.Types.Extensions.I
   createMany<T extends UserSettingsCreateManyArgs>(args?: Prisma.SelectSubset<T, UserSettingsCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
 
   /**
+   * Create many UserSettings and returns the data saved in the database.
+   * @param {UserSettingsCreateManyAndReturnArgs} args - Arguments to create many UserSettings.
+   * @example
+   * // Create many UserSettings
+   * const userSettings = await prisma.userSettings.createManyAndReturn({
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * 
+   * // Create many UserSettings and only return the `id`
+   * const userSettingsWithIdOnly = await prisma.userSettings.createManyAndReturn({
+   *   select: { id: true },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * Note, that providing `undefined` is treated as the value not being there.
+   * Read more here: https://pris.ly/d/null-undefined
+   * 
+   */
+  createManyAndReturn<T extends UserSettingsCreateManyAndReturnArgs>(args?: Prisma.SelectSubset<T, UserSettingsCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserSettingsPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+  /**
    * Delete a UserSettings.
    * @param {UserSettingsDeleteArgs} args - Arguments to delete one UserSettings.
    * @example
@@ -757,6 +798,36 @@ export interface UserSettingsDelegate<ExtArgs extends runtime.Types.Extensions.I
    * 
    */
   updateMany<T extends UserSettingsUpdateManyArgs>(args: Prisma.SelectSubset<T, UserSettingsUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
+
+  /**
+   * Update zero or more UserSettings and returns the data updated in the database.
+   * @param {UserSettingsUpdateManyAndReturnArgs} args - Arguments to update many UserSettings.
+   * @example
+   * // Update many UserSettings
+   * const userSettings = await prisma.userSettings.updateManyAndReturn({
+   *   where: {
+   *     // ... provide filter here
+   *   },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * 
+   * // Update zero or more UserSettings and only return the `id`
+   * const userSettingsWithIdOnly = await prisma.userSettings.updateManyAndReturn({
+   *   select: { id: true },
+   *   where: {
+   *     // ... provide filter here
+   *   },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * Note, that providing `undefined` is treated as the value not being there.
+   * Read more here: https://pris.ly/d/null-undefined
+   * 
+   */
+  updateManyAndReturn<T extends UserSettingsUpdateManyAndReturnArgs>(args: Prisma.SelectSubset<T, UserSettingsUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserSettingsPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
   /**
    * Create or update one UserSettings.
@@ -1192,6 +1263,29 @@ export type UserSettingsCreateManyArgs<ExtArgs extends runtime.Types.Extensions.
 }
 
 /**
+ * UserSettings createManyAndReturn
+ */
+export type UserSettingsCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the UserSettings
+   */
+  select?: Prisma.UserSettingsSelectCreateManyAndReturn<ExtArgs> | null
+  /**
+   * Omit specific fields from the UserSettings
+   */
+  omit?: Prisma.UserSettingsOmit<ExtArgs> | null
+  /**
+   * The data used to create many UserSettings.
+   */
+  data: Prisma.UserSettingsCreateManyInput | Prisma.UserSettingsCreateManyInput[]
+  skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserSettingsIncludeCreateManyAndReturn<ExtArgs> | null
+}
+
+/**
  * UserSettings update
  */
 export type UserSettingsUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1233,6 +1327,36 @@ export type UserSettingsUpdateManyArgs<ExtArgs extends runtime.Types.Extensions.
    * Limit how many UserSettings to update.
    */
   limit?: number
+}
+
+/**
+ * UserSettings updateManyAndReturn
+ */
+export type UserSettingsUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the UserSettings
+   */
+  select?: Prisma.UserSettingsSelectUpdateManyAndReturn<ExtArgs> | null
+  /**
+   * Omit specific fields from the UserSettings
+   */
+  omit?: Prisma.UserSettingsOmit<ExtArgs> | null
+  /**
+   * The data used to update UserSettings.
+   */
+  data: Prisma.XOR<Prisma.UserSettingsUpdateManyMutationInput, Prisma.UserSettingsUncheckedUpdateManyInput>
+  /**
+   * Filter which UserSettings to update
+   */
+  where?: Prisma.UserSettingsWhereInput
+  /**
+   * Limit how many UserSettings to update.
+   */
+  limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserSettingsIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**

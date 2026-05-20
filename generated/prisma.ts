@@ -1,4 +1,5 @@
 import { PrismaMariaDb } from "@prisma/adapter-mariadb";
+import { PrismaPg } from "@prisma/adapter-pg";
 
 import {
   Prisma,
@@ -77,9 +78,27 @@ function normalizeDatabaseUrl(databaseUrl: string) {
   }
 }
 
+function createDatabaseAdapter(databaseUrl: string) {
+  const normalizedDatabaseUrl = normalizeDatabaseUrl(databaseUrl);
+
+  try {
+    const url = new URL(normalizedDatabaseUrl);
+
+    if (url.protocol === "postgres:" || url.protocol === "postgresql:") {
+      return new PrismaPg({
+        connectionString: normalizedDatabaseUrl,
+      });
+    }
+  } catch {
+    // Fall back to the legacy MariaDB adapter for malformed or legacy URLs.
+  }
+
+  return new PrismaMariaDb(normalizedDatabaseUrl);
+}
+
 export class PrismaClient extends GeneratedPrismaClient {
   constructor(options: PrismaClientOptions = {}) {
-    const adapter = new PrismaMariaDb(normalizeDatabaseUrl(resolveDatabaseUrl()));
+    const adapter = createDatabaseAdapter(resolveDatabaseUrl());
 
     super({
       ...options,

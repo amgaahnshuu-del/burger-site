@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql" 
+  provider = "postgresql" 
 }
 
 //////////////////////
@@ -54,7 +54,7 @@ model Food {
   name        String
   description String?
   price       Int
-  image       String   @db.LongText
+  image       String   @db.Text
   category    String
   isAvailable Boolean  @default(true)
   restaurantId String?
@@ -134,7 +134,7 @@ model OrderItem {
   orderId      String
   foodId       String?
   foodName     String
-  foodImage    String @db.LongText
+  foodImage    String @db.Text
   foodCategory String
   quantity     Int
   price        Int
