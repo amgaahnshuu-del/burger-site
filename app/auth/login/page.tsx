@@ -14,33 +14,6 @@ import { useAuth } from "@/hooks/useAuth";
 import { AUTH_UPDATED_EVENT, CART_UPDATED_EVENT } from "@/lib/constants";
 import { dispatchAppEvent, getErrorMessage } from "@/lib/helpers";
 
-function GoogleIcon() {
-  return (
-    <svg
-      aria-hidden="true"
-      className="h-5 w-5"
-      viewBox="0 0 24 24"
-    >
-      <path
-        d="M21.805 12.23c0-.79-.066-1.37-.21-1.972H12.2v3.703h5.517c-.11.92-.704 2.306-2.024 3.237l-.018.124 2.961 2.25.205.02c1.88-1.702 2.964-4.206 2.964-7.362Z"
-        fill="#4285F4"
-      />
-      <path
-        d="M12.2 21.75c2.7 0 4.966-.871 6.622-2.358l-3.148-2.394c-.842.574-1.97.98-3.474.98-2.645 0-4.89-1.702-5.688-4.052l-.12.01-3.08 2.337-.041.113c1.644 3.19 5.025 5.364 8.93 5.364Z"
-        fill="#34A853"
-      />
-      <path
-        d="M6.512 13.926a5.81 5.81 0 0 1-.333-1.926c0-.673.122-1.326.322-1.925l-.006-.129-3.12-2.375-.102.047A9.559 9.559 0 0 0 2.125 12c0 1.524.366 2.971 1.148 4.383l3.24-2.457Z"
-        fill="#FBBC05"
-      />
-      <path
-        d="M12.2 6.022c1.898 0 3.184.801 3.916 1.473l2.86-2.74C17.155 3.092 14.899 2.25 12.2 2.25c-3.905 0-7.286 2.173-8.93 5.364l3.228 2.457c.81-2.35 3.054-4.049 5.701-4.049Z"
-        fill="#EB4335"
-      />
-    </svg>
-  );
-}
-
 function BrandMark() {
   return (
     <svg
@@ -84,23 +57,13 @@ export default function LoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get("redirect");
-  const oauthError = searchParams.get("error");
   const { isAuthenticated, isLoading, user } = useAuth();
   const [email, setEmail] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const googleSearchParams = new URLSearchParams({
-    source: "login",
-  });
-
-  if (redirectTo) {
-    googleSearchParams.set("redirect", redirectTo);
-  }
-
-  const googleAuthHref = `/api/auth/google/start?${googleSearchParams.toString()}`;
-  const displayError = error ?? oauthError;
+  const displayError = error;
 
   useEffect(() => {
     if (!isLoading && isAuthenticated && user) {
@@ -268,23 +231,6 @@ export default function LoginPage() {
               >
                 {t({ en: "Sign in to account", mn: "Бүртгэлдээ нэвтрэх" })}
               </Button>
-
-              <div className="my-[24px] flex items-center gap-4">
-                <span className="h-px flex-1 bg-white/8" />
-                <span className="text-[12px] uppercase tracking-[0.32em] text-white/34">
-                  {t({ en: "OR CONTINUE WITH", mn: "ЭСВЭЛ ҮРГЭЛЖЛҮҮЛЭХ" })}
-                </span>
-                <span className="h-px flex-1 bg-white/8" />
-              </div>
-
-              <a
-                className="flex h-[56px] w-full items-center justify-center gap-3 rounded-[18px] border border-white/8 bg-white/[0.03] px-5 text-[16px] font-bold text-white transition hover:border-orange-400/45 hover:bg-white/[0.045]"
-                href={googleAuthHref}
-              >
-                <GoogleIcon />
-                <span>{t({ en: "Continue with Google", mn: "Google-ээр үргэлжлүүлэх" })}</span>
-              </a>
-
               <p className="mt-[24px] text-[14px] text-white/52">
                 {t({ en: "No account yet?", mn: "Бүртгэлгүй юу?" })}{" "}
                 <Link

@@ -29,7 +29,6 @@ A comprehensive full-stack food delivery application built with **Next.js 16**, 
 ### 👤 User Management
 - **Multi-role system**: Customer, Courier, Admin, Manager
 - **Email verification** during registration with SMTP
-- **Google OAuth authentication**
 - **Session management** with secure cookies
 - **User settings persistence** (addresses, payment preferences, notifications)
 
@@ -101,7 +100,7 @@ A comprehensive full-stack food delivery application built with **Next.js 16**, 
 | **Styling** | TailwindCSS 4, Heroicons |
 | **Backend** | Next.js API Routes |
 | **Database** | PostgreSQL with Prisma ORM |
-| **Authentication** | Session-based + Google OAuth |
+| **Authentication** | Session-based auth |
 | **Email** | Nodemailer (SMTP) |
 | **Maps** | Google Maps API |
 | **AI** | Gemini API + OpenAI fallback |
@@ -199,7 +198,6 @@ my-app/
 │   ├── email.ts                  # Email utilities
 │   ├── fetcher.ts                # API fetcher
 │   ├── food-images.ts            # Food image URLs
-│   ├── google-auth.ts            # Google OAuth config
 │   ├── helpers.ts                # General helpers
 │   ├── order-lifecycle.ts        # Order state machine
 │   ├── password.ts               # Password utilities
@@ -335,16 +333,6 @@ Opens Prisma Studio at [http://localhost:5555](http://localhost:5555) for browsi
 - Server-side session validation
 - Protected API routes with middleware
 
-### Google OAuth Integration
-- **Setup**: Configure credentials in [Google Cloud Console](https://console.cloud.google.com)
-- **Callback URL**: `http://localhost:3000/api/auth/google/callback`
-- **Environment Variables**:
-  ```
-  GOOGLE_CLIENT_ID=your-client-id
-  GOOGLE_CLIENT_SECRET=your-secret
-  GOOGLE_REDIRECT_URI=your-callback-url (optional)
-  ```
-
 ### Email Verification
 - 6-digit code sent via SMTP
 - User must verify email before account activation
@@ -416,7 +404,6 @@ Browse Menu → Add to Cart → Checkout → Select Address & Payment
 ```
 POST   /api/auth/register           # Register new user
 POST   /api/auth/login              # Login with email/password
-POST   /api/auth/google/callback    # Google OAuth callback
 GET    /api/auth/me                 # Get current user
 ```
 
@@ -489,13 +476,6 @@ GET    /api/health                  # Health check endpoint
 ### Critical (Required)
 ```bash
 DATABASE_URL="postgresql://user:password@host:5432/database?schema=public"
-```
-
-### Authentication
-```bash
-GOOGLE_CLIENT_ID=your-id
-GOOGLE_CLIENT_SECRET=your-secret
-GOOGLE_REDIRECT_URI=http://localhost:3000/api/auth/google/callback  # Optional
 ```
 
 ### Email (SMTP)
@@ -601,8 +581,6 @@ enum PaymentMethod {
    AI_PROVIDER               (auto or gemini)
    GEMINI_API_KEY
    GEMINI_MODEL              (optional, default: gemini-2.5-flash)
-   GOOGLE_CLIENT_ID
-   GOOGLE_CLIENT_SECRET
    SMTP_* (all email variables)
    NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
    PAYMENT_WEBHOOK_SECRET
@@ -640,7 +618,6 @@ Build and run locally:
 docker build -t burger-app .
 docker run -p 3000:3000 \
   -e DATABASE_URL="postgresql://..." \
-  -e GOOGLE_CLIENT_ID="..." \
   burger-app
 ```
 
@@ -843,8 +820,6 @@ During the initial Blueprint setup, Render will prompt you for these secret valu
 
 ```bash
 DATABASE_URL
-GOOGLE_CLIENT_ID
-GOOGLE_CLIENT_SECRET
 SMTP_HOST
 SMTP_PORT
 SMTP_SECURE
@@ -871,16 +846,6 @@ Example format:
 ```bash
 postgresql://USER:PASSWORD@postgres:5432/DATABASE_NAME?schema=public
 ```
-
-### 5. Update Google OAuth callback URLs
-
-After Render gives you a live domain, add it in Google Cloud Console as an authorized redirect URI:
-
-```text
-https://your-service-name.onrender.com/api/auth/google/callback
-```
-
-If you later connect a custom domain, add that callback too.
 
 ## Learn More
 
