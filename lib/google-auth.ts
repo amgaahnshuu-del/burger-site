@@ -5,6 +5,7 @@ const GOOGLE_OAUTH_STATE_COOKIE = "google_oauth_state";
 const GOOGLE_OAUTH_REDIRECT_COOKIE = "google_oauth_redirect";
 const GOOGLE_OAUTH_VIEW_COOKIE = "google_oauth_view";
 const GOOGLE_OAUTH_COOKIE_MAX_AGE_SECONDS = 60 * 10;
+export const GOOGLE_OAUTH_CALLBACK_PATH = "/api/auth/google/callback";
 
 type GoogleAuthView = "login" | "register";
 
@@ -19,14 +20,6 @@ function isLocalhostHostname(hostname: string) {
 function isLocalOrigin(value: string) {
   try {
     return isLocalhostHostname(new URL(value).hostname);
-  } catch {
-    return false;
-  }
-}
-
-function isSameOrigin(left: string, right: string) {
-  try {
-    return new URL(left).origin === new URL(right).origin;
   } catch {
     return false;
   }
@@ -118,24 +111,15 @@ export function getGoogleRedirectUri(request: Request) {
   const { redirectUriOverride } = getGoogleOAuthConfig();
   const requestOrigin = getRequestOrigin(request);
 
-  if (redirectUriOverride) {
-    // In local development, allow an explicit callback override.
-    if (isLocalOrigin(requestOrigin)) {
-      return redirectUriOverride;
-    }
-
-    // In deployed environments, only trust the override when it matches the
-    // current request origin. This prevents stale Vercel/Render domains from
-    // bouncing Google OAuth back to an old deployment that shows a 404 page.
-    if (
-      !isLocalOrigin(redirectUriOverride)
-      && isSameOrigin(redirectUriOverride, requestOrigin)
-    ) {
-      return redirectUriOverride;
-    }
+  // Only allow explicit callback overrides during local development. In
+  // deployed environments we always derive the callback URI from the incoming
+  // request origin so stale Vercel env vars can't send Google OAuth to an old
+  // callback path or domain.
+  if (redirectUriOverride && isLocalOrigin(requestOrigin)) {
+    return redirectUriOverride;
   }
 
-  return new URL("/api/auth/google/callback", `${requestOrigin}/`).toString();
+  return new URL(GOOGLE_OAUTH_CALLBACK_PATH, `${requestOrigin}/`).toString();
 }
 
 export function createGoogleOAuthState() {
