@@ -25,6 +25,20 @@ type GoogleUserInfo = {
   name?: string;
 };
 
+async function readGoogleErrorPayload(response: Response) {
+  const contentType = response.headers.get("content-type") ?? "";
+
+  try {
+    if (contentType.includes("application/json")) {
+      return await response.json();
+    }
+
+    return await response.text();
+  } catch {
+    return null;
+  }
+}
+
 function createFailureRedirect(
   request: Request,
   options: {
@@ -44,6 +58,7 @@ function createFailureRedirect(
 
 async function exchangeCodeForToken(request: Request, code: string) {
   const { clientId, clientSecret } = getGoogleOAuthConfig();
+  const redirectUri = getGoogleRedirectUri(request);
   const tokenResponse = await fetch("https://oauth2.googleapis.com/token", {
     method: "POST",
     headers: {
@@ -54,11 +69,17 @@ async function exchangeCodeForToken(request: Request, code: string) {
       client_secret: clientSecret,
       code,
       grant_type: "authorization_code",
-      redirect_uri: getGoogleRedirectUri(request),
+      redirect_uri: redirectUri,
     }),
   });
 
   if (!tokenResponse.ok) {
+    console.error("[api/auth/google/callback] Token exchange failed.", {
+      redirectUri,
+      responseBody: await readGoogleErrorPayload(tokenResponse),
+      status: tokenResponse.status,
+      timestamp: new Date().toISOString(),
+    });
     throw new Error("GOOGLE_TOKEN_EXCHANGE_FAILED");
   }
 
@@ -82,6 +103,11 @@ async function fetchGoogleProfile(accessToken: string) {
   );
 
   if (!profileResponse.ok) {
+    console.error("[api/auth/google/callback] Profile fetch failed.", {
+      responseBody: await readGoogleErrorPayload(profileResponse),
+      status: profileResponse.status,
+      timestamp: new Date().toISOString(),
+    });
     throw new Error("GOOGLE_PROFILE_FETCH_FAILED");
   }
 
@@ -125,6 +151,13 @@ export async function GET(request: Request) {
   const { redirectPath, state, view } = readGoogleOAuthCookies(request);
 
   if (googleError) {
+    console.warn("[api/auth/google/callback] Google returned an OAuth error.", {
+      googleError,
+      redirectPath,
+      timestamp: new Date().toISOString(),
+      view,
+    });
+
     return createFailureRedirect(request, {
       message: "Google login цуцлагдсан эсвэл зөвшөөрөл олгогдоогүй байна.",
       redirectPath,
@@ -133,6 +166,16 @@ export async function GET(request: Request) {
   }
 
   if (!code || !returnedState || !state || returnedState !== state) {
+    console.warn("[api/auth/google/callback] OAuth state validation failed.", {
+      hasCode: Boolean(code),
+      hasCookieState: Boolean(state),
+      hasReturnedState: Boolean(returnedState),
+      redirectPath,
+      returnedStateMatches: returnedState === state,
+      timestamp: new Date().toISOString(),
+      view,
+    });
+
     return createFailureRedirect(request, {
       message: "Google login session хүчингүй болсон байна. Дахин оролдоно уу.",
       redirectPath,

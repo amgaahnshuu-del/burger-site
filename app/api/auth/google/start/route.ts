@@ -30,6 +30,20 @@ export async function GET(request: Request) {
 
     return response;
   } catch (error) {
+    console.error("[api/auth/google/start]", {
+      error:
+        error instanceof Error
+          ? {
+              message: error.message,
+              name: error.name,
+            }
+          : error,
+      redirectPath,
+      requestUrl: request.url,
+      timestamp: new Date().toISOString(),
+      view,
+    });
+
     const message =
       error instanceof Error && error.message === "GOOGLE_OAUTH_NOT_CONFIGURED"
         ? "Google login тохируулагдаагүй байна. GOOGLE_CLIENT_ID болон GOOGLE_CLIENT_SECRET утгуудаа нэмнэ үү."

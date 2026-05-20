@@ -60,6 +60,18 @@ function getEmailConfig() {
     isPlaceholderValue(pass) ||
     isPlaceholderValue(from)
   ) {
+    console.error("[email] SMTP is not configured.", {
+      fromLooksPlaceholder: isPlaceholderValue(from),
+      hasFrom: Boolean(from),
+      hasPass: Boolean(pass),
+      hasUser: Boolean(user),
+      host,
+      passLooksPlaceholder: isPlaceholderValue(pass),
+      port,
+      secure,
+      timestamp: new Date().toISOString(),
+      userLooksPlaceholder: isPlaceholderValue(user),
+    });
     throw new Error("SMTP_NOT_CONFIGURED");
   }
 
@@ -96,6 +108,23 @@ export async function sendEmail(payload: EmailPayload) {
     });
   } catch (error) {
     const code = getSmtpErrorCode(error);
+
+    console.error("[email] Failed to send email.", {
+      code,
+      error:
+        error instanceof Error
+          ? {
+              message: error.message,
+              name: error.name,
+            }
+          : error,
+      from: config.from,
+      host: config.host,
+      port: config.port,
+      secure: config.secure,
+      timestamp: new Date().toISOString(),
+      to: payload.to,
+    });
 
     if (code === "EAUTH") {
       throw new Error("SMTP_AUTH_FAILED");
