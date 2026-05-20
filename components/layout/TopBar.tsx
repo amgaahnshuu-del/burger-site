@@ -29,8 +29,8 @@ export default function TopBar({
   className,
   rightSlot,
 }: TopBarProps) {
-  const { cart } = useCart();
   const { isAuthenticated } = useAuth();
+  const { cart } = useCart(isAuthenticated);
   const cartCount = cart?.totalItems ?? 0;
 
   return (

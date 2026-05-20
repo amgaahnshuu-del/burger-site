@@ -29,6 +29,10 @@ const INITIAL_CART_SNAPSHOT: CartSnapshot = {
   isLoading: true,
   isMutating: false,
 };
+const DISABLED_CART_SNAPSHOT: CartSnapshot = {
+  ...INITIAL_CART_SNAPSHOT,
+  isLoading: false,
+};
 
 let cartSnapshot = INITIAL_CART_SNAPSHOT;
 let cartRequest: Promise<void> | null = null;
@@ -231,7 +235,7 @@ async function runCartMutation(action: () => Promise<CartMutation>) {
   }
 }
 
-export function useCart() {
+export function useCart(enabled = true) {
   const { cart, error, isLoading, isMutating } = useSyncExternalStore(
     subscribe,
     getSnapshot,
@@ -239,12 +243,29 @@ export function useCart() {
   );
 
   useEffect(() => {
+    if (!enabled) {
+      if (
+        cartSnapshot.cart !== null
+        || cartSnapshot.error !== null
+        || cartSnapshot.hasLoaded
+        || cartSnapshot.isLoading
+        || cartSnapshot.isMutating
+      ) {
+        setCartSnapshot(DISABLED_CART_SNAPSHOT);
+      }
+      return;
+    }
+
     if (!cartSnapshot.hasLoaded) {
       void syncCart();
     }
-  }, []);
+  }, [enabled]);
 
   useEffect(() => {
+    if (!enabled) {
+      return;
+    }
+
     const handleCartChange = () => {
       void syncCart({ force: true });
     };
@@ -254,17 +275,21 @@ export function useCart() {
     return () => {
       window.removeEventListener(CART_UPDATED_EVENT, handleCartChange);
     };
-  }, []);
+  }, [enabled]);
+
+  const effectiveIsLoading = enabled
+    ? !cartSnapshot.hasLoaded || isLoading
+    : false;
 
   return {
     addItem: (foodId: string, quantity = 1) =>
       runCartMutation(() => addToCart(foodId, quantity)),
-    cart,
+    cart: enabled ? cart : null,
     clear: () => runCartMutation(() => clearCart()),
-    error,
-    isLoading,
-    isMutating,
-    refresh: () => syncCart({ force: true }),
+    error: enabled ? error : null,
+    isLoading: effectiveIsLoading,
+    isMutating: enabled ? isMutating : false,
+    refresh: () => (enabled ? syncCart({ force: true }) : Promise.resolve()),
     removeItem: (foodId: string) =>
       runCartMutation(() => removeCartItem(foodId)),
     updateItem: (foodId: string, quantity: number) =>

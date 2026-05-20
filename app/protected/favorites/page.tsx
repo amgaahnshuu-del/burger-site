@@ -22,6 +22,7 @@ import { useCart } from "@/features/cart/cart.hooks";
 import { useFavoriteFoods } from "@/features/favorites/favorites.storage";
 import { useFoodCatalog } from "@/features/food/food.hooks";
 import type { Food } from "@/features/food/food.types";
+import { useAuth } from "@/hooks/useAuth";
 import { useInterfaceSettings } from "@/hooks/useInterfaceSettings";
 import { getFoodRating, getFoodReviewCount } from "@/lib/dashboard";
 import { ApiError } from "@/lib/fetcher";
@@ -179,8 +180,9 @@ function getFavoriteAccent(category: string) {
 
 export default function FavoritesPage() {
   const router = useRouter();
+  const { isAuthenticated } = useAuth();
   const { settings: interfaceSettings } = useInterfaceSettings();
-  const { addItem } = useCart();
+  const { addItem } = useCart(isAuthenticated);
   const { favoriteIds, toggleFavorite } = useFavoriteFoods();
   const { error, foods, isLoading } = useFoodCatalog();
   const [feedback, setFeedback] = useState<string | null>(null);

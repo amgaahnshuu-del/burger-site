@@ -156,7 +156,7 @@ function AuthenticatedOrderPage({
 
 export default function OrderPage() {
   const { isAuthenticated, isLoading: authLoading, user } = useAuth();
-  const { cart, isLoading: cartLoading, refresh } = useCart();
+  const { cart, isLoading: cartLoading, refresh } = useCart(isAuthenticated);
 
   if (authLoading || cartLoading) {
     return (

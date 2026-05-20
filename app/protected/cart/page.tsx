@@ -16,7 +16,9 @@ import { formatCurrency } from "@/lib/helpers";
 
 export default function CartPage() {
   const { isAuthenticated, isLoading: authLoading } = useAuth();
-  const { cart, error, isLoading, isMutating, removeItem, updateItem } = useCart();
+  const { cart, error, isLoading, isMutating, removeItem, updateItem } = useCart(
+    isAuthenticated
+  );
 
   if (authLoading || isLoading) {
     return (

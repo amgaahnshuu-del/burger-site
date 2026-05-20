@@ -17,6 +17,7 @@ import {
 } from "@/features/food/food-categories";
 import { useFoodCatalog } from "@/features/food/food.hooks";
 import type { Food } from "@/features/food/food.types";
+import { useAuth } from "@/hooks/useAuth";
 import { ApiError } from "@/lib/fetcher";
 import { cn, formatCurrency } from "@/lib/helpers";
 
@@ -46,7 +47,8 @@ function getCategoryTabLabel(category: string) {
 
 export default function HomeExperience() {
   const router = useRouter();
-  const { addItem } = useCart();
+  const { isAuthenticated } = useAuth();
+  const { addItem } = useCart(isAuthenticated);
   const { error, foods, isLoading } = useFoodCatalog();
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");

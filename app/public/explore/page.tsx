@@ -20,6 +20,7 @@ import {
 } from "@/features/food/food-categories";
 import { useFoodCatalog } from "@/features/food/food.hooks";
 import type { Food } from "@/features/food/food.types";
+import { useAuth } from "@/hooks/useAuth";
 import { ApiError } from "@/lib/fetcher";
 import { cn } from "@/lib/helpers";
 
@@ -51,7 +52,8 @@ function isComboFood(food: Food) {
 
 export default function ExplorePage() {
   const router = useRouter();
-  const { addItem } = useCart();
+  const { isAuthenticated } = useAuth();
+  const { addItem } = useCart(isAuthenticated);
   const { isFavorite, toggleFavorite } = useFavoriteFoods();
   const { error, foods, isLoading } = useFoodCatalog();
   const [activeTab, setActiveTab] = useState("All");
