@@ -24,6 +24,14 @@ function isLocalOrigin(value: string) {
   }
 }
 
+function isSameOrigin(left: string, right: string) {
+  try {
+    return new URL(left).origin === new URL(right).origin;
+  } catch {
+    return false;
+  }
+}
+
 function parseCookies(header: string | null) {
   const cookieMap = new Map<string, string>();
 
@@ -111,9 +119,18 @@ export function getGoogleRedirectUri(request: Request) {
   const requestOrigin = getRequestOrigin(request);
 
   if (redirectUriOverride) {
-    // Ignore localhost overrides for deployed environments so Vercel callbacks
-    // don't bounce back to a stale local development URL.
-    if (!isLocalOrigin(redirectUriOverride) || isLocalOrigin(requestOrigin)) {
+    // In local development, allow an explicit callback override.
+    if (isLocalOrigin(requestOrigin)) {
+      return redirectUriOverride;
+    }
+
+    // In deployed environments, only trust the override when it matches the
+    // current request origin. This prevents stale Vercel/Render domains from
+    // bouncing Google OAuth back to an old deployment that shows a 404 page.
+    if (
+      !isLocalOrigin(redirectUriOverride)
+      && isSameOrigin(redirectUriOverride, requestOrigin)
+    ) {
       return redirectUriOverride;
     }
   }
