@@ -36,6 +36,10 @@ function shouldUseSecureCookie(request: Request) {
   }
 }
 
+function isLocalHostname(hostname: string) {
+  return hostname === "localhost" || hostname === "127.0.0.1";
+}
+
 export function getGoogleAuthView(value: string | null | undefined): GoogleAuthView {
   return value === "register" ? "register" : "login";
 }
@@ -79,12 +83,26 @@ export function getGoogleOAuthConfig() {
 
 export function getGoogleRedirectUri(request: Request) {
   const { redirectUriOverride } = getGoogleOAuthConfig();
+  const requestUrl = new URL(request.url);
 
   if (redirectUriOverride) {
-    return redirectUriOverride;
+    try {
+      const overrideUrl = new URL(redirectUriOverride);
+
+      // In production we prefer the live request origin so stale localhost
+      // overrides cannot break Google OAuth on Render or custom domains.
+      if (
+        isLocalHostname(requestUrl.hostname)
+        || overrideUrl.origin === requestUrl.origin
+      ) {
+        return overrideUrl.toString();
+      }
+    } catch {
+      // Fall through to the current request origin when the override is invalid.
+    }
   }
 
-  return new URL("/api/auth/google/callback", request.url).toString();
+  return new URL("/api/auth/google/callback", requestUrl).toString();
 }
 
 export function createGoogleOAuthState() {
