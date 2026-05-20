@@ -379,13 +379,7 @@ export default function RegisterPage() {
                     <span className="h-px flex-1 bg-white/8" />
                   </div>
 
-                  <a
-                    className="flex h-[52px] w-full items-center justify-center gap-3 rounded-[18px] border border-white/8 bg-white/[0.03] px-5 text-[15px] font-bold text-white transition hover:border-orange-400/45 hover:bg-white/[0.045]"
-                    href={googleAuthHref}
-                  >
-                    <GoogleIcon />
-                    <span>Continue with Google</span>
-                  </a>
+        
                 </>
               )}
 
