@@ -15,10 +15,14 @@ import { useRouter } from "next/navigation";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import EmptyState from "@/components/ui/EmptyState";
+import Input from "@/components/ui/Input";
 import Loader from "@/components/ui/Loader";
 import PageHeader from "@/components/ui/PageHeader";
 import Toast from "@/components/ui/Toast";
-import { completeCourierOrder } from "@/features/courier/courier.service";
+import {
+  completeCourierOrder,
+  verifyCourierOrderDelivery,
+} from "@/features/courier/courier.service";
 import { useCourierOrders } from "@/features/courier/courier.hooks";
 import type { Order, Tracking } from "@/features/order/order.types";
 import { useAuth } from "@/hooks/useAuth";
@@ -260,7 +264,9 @@ export default function CourierActiveTrackPage() {
   });
   const [actionError, setActionError] = useState<string | null>(null);
   const [actionFeedback, setActionFeedback] = useState<string | null>(null);
-  const [isCompletingDelivery, setIsCompletingDelivery] = useState(false);
+  const [deliveryCode, setDeliveryCode] = useState("");
+  const [isRequestingCode, setIsRequestingCode] = useState(false);
+  const [isVerifyingCode, setIsVerifyingCode] = useState(false);
 
   useEffect(() => {
     if (!authLoading && isAuthenticated && user?.role === "ADMIN") {
@@ -276,16 +282,45 @@ export default function CourierActiveTrackPage() {
   async function handleComplete(orderId: string) {
     setActionError(null);
     setActionFeedback(null);
-    setIsCompletingDelivery(true);
+    setIsRequestingCode(true);
 
     try {
-      await completeCourierOrder(orderId);
-      setActionFeedback("Delivery confirmed successfully.");
+      const nextOrder = await completeCourierOrder(orderId);
+      const destination =
+        nextOrder.deliveryVerification?.maskedDestination ?? "the customer";
+
+      setActionFeedback(
+        `A 6-digit delivery code was emailed to ${destination}. Ask the customer for that code before completing the handoff.`
+      );
       refresh();
     } catch (completeError) {
       setActionError(getErrorMessage(completeError));
     } finally {
-      setIsCompletingDelivery(false);
+      setIsRequestingCode(false);
+    }
+  }
+
+  async function handleVerify(orderId: string) {
+    const trimmedCode = deliveryCode.trim();
+
+    if (trimmedCode.length !== 6) {
+      setActionError("Enter the 6-digit customer code before confirming delivery.");
+      return;
+    }
+
+    setActionError(null);
+    setActionFeedback(null);
+    setIsVerifyingCode(true);
+
+    try {
+      await verifyCourierOrderDelivery(orderId, trimmedCode);
+      setDeliveryCode("");
+      setActionFeedback("Delivery confirmed successfully.");
+      refresh();
+    } catch (verifyError) {
+      setActionError(getErrorMessage(verifyError));
+    } finally {
+      setIsVerifyingCode(false);
     }
   }
 
@@ -341,6 +376,9 @@ export default function CourierActiveTrackPage() {
 
   const activeOrder = data?.activeOrders[0] ?? null;
   const contactPhone = activeOrder ? getContactPhone(activeOrder) : null;
+  const deliveryVerification = activeOrder?.deliveryVerification ?? null;
+  const isVerificationPending = deliveryVerification?.status === "PENDING";
+  const isVerificationExpired = deliveryVerification?.status === "EXPIRED";
 
   return (
     <main className="space-y-6">
@@ -492,6 +530,64 @@ export default function CourierActiveTrackPage() {
                 </div>
               </div>
 
+              {deliveryVerification ? (
+                <div className="rounded-[1.35rem] border border-white/8 bg-white/[0.03] p-4">
+                  <p className="text-xs uppercase tracking-[0.22em] text-white/34">
+                    Delivery confirmation
+                  </p>
+                  <p className="mt-3 text-base font-semibold text-white">
+                    {isVerificationPending
+                      ? "Customer email code required"
+                      : isVerificationExpired
+                        ? "Previous code expired"
+                        : "Send a customer email code"}
+                  </p>
+                  <p className="mt-2 text-sm leading-7 text-white/62">
+                    {isVerificationPending
+                      ? `A 6-digit code was emailed to ${deliveryVerification.maskedDestination}. Enter the code the customer reads back to you.`
+                      : isVerificationExpired
+                        ? `The last code emailed to ${deliveryVerification.maskedDestination} expired. Send a new code before trying to complete the order.`
+                        : "Send a fresh delivery code to the customer's email before completing the handoff."}
+                  </p>
+
+                  {isVerificationPending ? (
+                    <div className="mt-4 space-y-4">
+                      <Input
+                        autoComplete="one-time-code"
+                        inputMode="numeric"
+                        label="6-digit customer code"
+                        maxLength={6}
+                        onChange={(event) => {
+                          setDeliveryCode(event.target.value.replace(/\D/g, "").slice(0, 6));
+                        }}
+                        pattern="[0-9]*"
+                        placeholder="Enter the code"
+                        value={deliveryCode}
+                      />
+
+                      <div className="flex flex-wrap gap-3">
+                        <Button
+                          disabled={deliveryCode.trim().length !== 6}
+                          isLoading={isVerifyingCode}
+                          onClick={() => handleVerify(activeOrder.id)}
+                          size="sm"
+                        >
+                          Confirm delivery
+                        </Button>
+                        <Button
+                          isLoading={isRequestingCode}
+                          onClick={() => handleComplete(activeOrder.id)}
+                          size="sm"
+                          variant="secondary"
+                        >
+                          Resend email code
+                        </Button>
+                      </div>
+                    </div>
+                  ) : null}
+                </div>
+              ) : null}
+
               <div className="flex flex-wrap gap-3">
                 {contactPhone ? (
                   <Button asChild size="sm">
@@ -502,11 +598,12 @@ export default function CourierActiveTrackPage() {
                   </Button>
                 ) : null}
                 <Button
-                  isLoading={isCompletingDelivery}
+                  isLoading={isRequestingCode}
                   onClick={() => handleComplete(activeOrder.id)}
                   size="sm"
+                  variant="secondary"
                 >
-                  Mark as delivered
+                  {isVerificationPending ? "Resend delivery code email" : "Send delivery code email"}
                 </Button>
                 <Button asChild size="sm" variant="secondary">
                   <Link href="/courier">Back to deliveries</Link>

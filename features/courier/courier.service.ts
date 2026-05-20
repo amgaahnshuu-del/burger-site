@@ -19,7 +19,17 @@ export function completeCourierOrder(orderId: string) {
   return fetchJson<Order>(`/api/courier/orders/${orderId}`, {
     method: "PATCH",
     body: JSON.stringify({
-      action: "complete",
+      action: "request-complete",
+    }),
+  });
+}
+
+export function verifyCourierOrderDelivery(orderId: string, code: string) {
+  return fetchJson<Order>(`/api/courier/orders/${orderId}`, {
+    method: "PATCH",
+    body: JSON.stringify({
+      action: "verify-complete",
+      code,
     }),
   });
 }

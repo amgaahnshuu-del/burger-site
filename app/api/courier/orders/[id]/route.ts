@@ -5,7 +5,13 @@ import type { OrderStatus } from "@/generated/prisma/client";
 import { forbiddenResponse, requireCourier, unauthorizedResponse } from "@/lib/auth";
 import { sanitizeCourierAvailableOrder } from "@/lib/courier-order-security";
 import {
+  createDeliveryVerificationCode,
+  getDeliveryVerificationExpiryDate,
+  getDeliveryVerificationMaxAttempts,
   getPublicDeliveryVerification,
+  hashDeliveryVerificationCode,
+  sendDeliveryVerificationCode,
+  verifyDeliveryVerificationCode,
 } from "@/lib/delivery-verification";
 import { withResolvedNestedFoodImages } from "@/lib/food-images";
 import { prisma } from "@/lib/prisma";
@@ -161,15 +167,18 @@ export async function PATCH(request: Request) {
 
     const body = (await request.json()) as {
       action?: unknown;
+      code?: unknown;
       latitude?: unknown;
       longitude?: unknown;
     };
 
     const action =
       body.action === "claim" ||
-      body.action === "complete"
+      body.action === "request-complete" ||
+      body.action === "verify-complete"
         ? body.action
         : null;
+    const code = typeof body.code === "string" ? body.code.trim() : "";
     const latitude = parseCoordinate(body.latitude);
     const longitude = parseCoordinate(body.longitude);
 
@@ -178,6 +187,80 @@ export async function PATCH(request: Request) {
         { error: "Provide an action or live location coordinates." },
         { status: 400 }
       );
+    }
+
+    let preparedDeliveryVerification:
+      | {
+          channel: string;
+          codeHash: string;
+          expiresAt: Date;
+          recipientEmail: string | null;
+          recipientPhone: string | null;
+          sentAt: Date;
+        }
+      | null = null;
+
+    if (action === "request-complete") {
+      const orderForDeliveryCode = await prisma.order.findUnique({
+        where: {
+          id,
+        },
+        include: {
+          user: {
+            select: orderPartySelect,
+          },
+        },
+      });
+
+      if (!orderForDeliveryCode) {
+        throw new Error("ORDER_NOT_FOUND");
+      }
+
+      if (orderForDeliveryCode.status === "CANCELLED") {
+        throw new Error("ORDER_CANCELLED");
+      }
+
+      if (orderForDeliveryCode.status === "DELIVERED") {
+        throw new Error("ORDER_DELIVERED");
+      }
+
+      if (orderForDeliveryCode.courierId !== user.id) {
+        throw new Error("COURIER_MISMATCH");
+      }
+
+      if (orderForDeliveryCode.status !== "DELIVERING") {
+        throw new Error("ORDER_NOT_ACTIVE_DELIVERY");
+      }
+
+      const deliveryEmail =
+        orderForDeliveryCode.user?.email?.trim().toLowerCase() ||
+        "";
+
+      if (!deliveryEmail) {
+        throw new Error("CUSTOMER_EMAIL_MISSING");
+      }
+
+      const deliveryCode = createDeliveryVerificationCode();
+      const expiresAt = getDeliveryVerificationExpiryDate();
+      const sentAt = new Date();
+      const notificationResult = await sendDeliveryVerificationCode({
+        code: deliveryCode,
+        customerEmail: deliveryEmail,
+        orderId: orderForDeliveryCode.id,
+        phone:
+          orderForDeliveryCode.contactPhone?.trim() ||
+          orderForDeliveryCode.user?.phone?.trim() ||
+          null,
+      });
+
+      preparedDeliveryVerification = {
+        channel: notificationResult.channel,
+        codeHash: await hashDeliveryVerificationCode(deliveryCode),
+        expiresAt,
+        recipientEmail: notificationResult.recipientEmail,
+        recipientPhone: notificationResult.recipientPhone,
+        sentAt,
+      };
     }
 
     const updatedOrder = await prisma.$transaction(async (tx) => {
@@ -266,13 +349,92 @@ export async function PATCH(request: Request) {
             },
           });
         }
-      } else if (action === "complete") {
+      } else if (action === "request-complete") {
         if (currentOrder.courierId !== user.id) {
           throw new Error("COURIER_MISMATCH");
         }
 
         if (currentOrder.status !== "DELIVERING") {
           throw new Error("ORDER_NOT_ACTIVE_DELIVERY");
+        }
+
+        if (!preparedDeliveryVerification) {
+          throw new Error("DELIVERY_CODE_NOT_PREPARED");
+        }
+
+        await tx.deliveryVerification.upsert({
+          where: {
+            orderId: id,
+          },
+          create: {
+            orderId: id,
+            attempts: 0,
+            channel: preparedDeliveryVerification.channel,
+            codeHash: preparedDeliveryVerification.codeHash,
+            expiresAt: preparedDeliveryVerification.expiresAt,
+            lastSentAt: preparedDeliveryVerification.sentAt,
+            recipientEmail: preparedDeliveryVerification.recipientEmail,
+            recipientPhone: preparedDeliveryVerification.recipientPhone,
+          },
+          update: {
+            attempts: 0,
+            channel: preparedDeliveryVerification.channel,
+            codeHash: preparedDeliveryVerification.codeHash,
+            expiresAt: preparedDeliveryVerification.expiresAt,
+            lastSentAt: preparedDeliveryVerification.sentAt,
+            recipientEmail: preparedDeliveryVerification.recipientEmail,
+            recipientPhone: preparedDeliveryVerification.recipientPhone,
+            verifiedAt: null,
+          },
+        });
+      } else if (action === "verify-complete") {
+        if (currentOrder.courierId !== user.id) {
+          throw new Error("COURIER_MISMATCH");
+        }
+
+        if (currentOrder.status !== "DELIVERING") {
+          throw new Error("ORDER_NOT_ACTIVE_DELIVERY");
+        }
+
+        if (!currentOrder.deliveryVerification) {
+          throw new Error("DELIVERY_CODE_NOT_REQUESTED");
+        }
+
+        if (!code) {
+          throw new Error("DELIVERY_CODE_REQUIRED");
+        }
+
+        if (
+          currentOrder.deliveryVerification.expiresAt.getTime() <= Date.now()
+        ) {
+          throw new Error("DELIVERY_CODE_EXPIRED");
+        }
+
+        if (
+          currentOrder.deliveryVerification.attempts >=
+          getDeliveryVerificationMaxAttempts()
+        ) {
+          throw new Error("DELIVERY_CODE_TOO_MANY_ATTEMPTS");
+        }
+
+        const isCodeValid = await verifyDeliveryVerificationCode(
+          code,
+          currentOrder.deliveryVerification.codeHash
+        );
+
+        if (!isCodeValid) {
+          await tx.deliveryVerification.update({
+            where: {
+              orderId: id,
+            },
+            data: {
+              attempts: {
+                increment: 1,
+              },
+            },
+          });
+
+          throw new Error("DELIVERY_CODE_INVALID");
         }
 
         const deliveredAt = new Date();
@@ -325,16 +487,14 @@ export async function PATCH(request: Request) {
           });
         }
 
-        if (currentOrder.deliveryVerification) {
-          await tx.deliveryVerification.update({
-            where: {
-              orderId: id,
-            },
-            data: {
-              verifiedAt: deliveredAt,
-            },
-          });
-        }
+        await tx.deliveryVerification.update({
+          where: {
+            orderId: id,
+          },
+          data: {
+            verifiedAt: deliveredAt,
+          },
+        });
       } else {
         if (currentOrder.courierId !== user.id) {
           throw new Error("COURIER_MISMATCH");
@@ -432,6 +592,13 @@ export async function PATCH(request: Request) {
       );
     }
 
+    if (error instanceof Error && error.message === "CUSTOMER_EMAIL_MISSING") {
+      return NextResponse.json(
+        { error: "The customer email is missing for this delivery." },
+        { status: 400 }
+      );
+    }
+
     if (
       error instanceof Error &&
       error.message === "ORDER_NOT_ACTIVE_DELIVERY"
@@ -439,6 +606,108 @@ export async function PATCH(request: Request) {
       return NextResponse.json(
         { error: "Only active courier deliveries can be completed." },
         { status: 409 }
+      );
+    }
+
+    if (
+      error instanceof Error &&
+      error.message === "DELIVERY_CODE_REQUIRED"
+    ) {
+      return NextResponse.json(
+        { error: "Enter the customer delivery code to complete this order." },
+        { status: 400 }
+      );
+    }
+
+    if (
+      error instanceof Error &&
+      error.message === "DELIVERY_CODE_NOT_REQUESTED"
+    ) {
+      return NextResponse.json(
+        { error: "Send a delivery confirmation code before completing this order." },
+        { status: 409 }
+      );
+    }
+
+    if (
+      error instanceof Error &&
+      error.message === "DELIVERY_CODE_EXPIRED"
+    ) {
+      return NextResponse.json(
+        { error: "The delivery confirmation code has expired. Send a new one." },
+        { status: 400 }
+      );
+    }
+
+    if (
+      error instanceof Error &&
+      error.message === "DELIVERY_CODE_TOO_MANY_ATTEMPTS"
+    ) {
+      return NextResponse.json(
+        { error: "Too many incorrect codes. Send a new delivery code." },
+        { status: 429 }
+      );
+    }
+
+    if (
+      error instanceof Error &&
+      error.message === "DELIVERY_CODE_INVALID"
+    ) {
+      return NextResponse.json(
+        { error: "The delivery confirmation code is incorrect." },
+        { status: 400 }
+      );
+    }
+
+    if (
+      error instanceof Error &&
+      error.message === "SMTP_NOT_CONFIGURED"
+    ) {
+      return NextResponse.json(
+        {
+          error:
+            "Email delivery is not configured. Add valid SMTP settings before sending customer delivery codes.",
+        },
+        { status: 503 }
+      );
+    }
+
+    if (
+      error instanceof Error &&
+      error.message === "SMTP_AUTH_FAILED"
+    ) {
+      return NextResponse.json(
+        {
+          error:
+            "Email login failed. Check SMTP_USER, SMTP_PASS, and SMTP_FROM.",
+        },
+        { status: 503 }
+      );
+    }
+
+    if (
+      error instanceof Error &&
+      error.message === "SMTP_CONNECTION_FAILED"
+    ) {
+      return NextResponse.json(
+        {
+          error:
+            "Unable to reach the email provider right now. Check the SMTP server and try again.",
+        },
+        { status: 503 }
+      );
+    }
+
+    if (
+      error instanceof Error &&
+      error.message === "DELIVERY_CODE_DELIVERY_UNAVAILABLE"
+    ) {
+      return NextResponse.json(
+        {
+          error:
+            "No email delivery channel is configured. Add a customer email address and valid SMTP settings before sending codes.",
+        },
+        { status: 503 }
       );
     }
 
